@@ -135,6 +135,7 @@ import org.thunderdog.challegram.util.CustomTypefaceSpan;
 import org.thunderdog.challegram.util.HapticMenuHelper;
 import org.thunderdog.challegram.util.OptionDelegate;
 import org.thunderdog.challegram.util.StringList;
+import org.thunderdog.challegram.util.text.Text;
 import org.thunderdog.challegram.voip.VoIPLogs;
 import org.thunderdog.challegram.widget.CheckBoxView;
 import org.thunderdog.challegram.widget.ForceTouchView;
@@ -2462,7 +2463,7 @@ public class TdlibUi extends Handler {
     if (messageLink.message != null) {
       // TODO support for album, media timestamp, etc
       MessageId messageId = new MessageId(messageLink.message.chatId, messageLink.message.id);
-      if (messageLink.messageThreadId != 0) {
+      if (Td.messageThreadId(messageLink.topicId) != 0) {
         // FIXME TDLib/Server: need GetMessageThread alternative that accepts (chatId, messageThreadId)
         context.tdlib().send(new TdApi.GetMessageThread(messageId.getChatId(), messageId.getMessageId()), (messageThreadInfo, error) -> {
           if (error != null) {
@@ -2493,6 +2494,7 @@ public class TdlibUi extends Handler {
           }
         });
       } else {
+        // TODO: properly handle messageLink.topicId
         openMessage(context, messageLink.chatId, messageId, openParameters);
       }
     } else {
@@ -6778,7 +6780,7 @@ public class TdlibUi extends Handler {
       } else if (menuItemId == R.id.btn_sendNoMarkdown) {
         sendCallback.onSendRequested(Td.newSendOptions(), true);
       } else if (menuItemId == R.id.btn_sendNoSound) {
-        sendCallback.onSendRequested(Td.newSendOptions(0L, null, true), false);
+        sendCallback.onSendRequested(Td.newSendOptions(null, true), false);
       } else if (menuItemId == R.id.btn_sendOnceOnline) {
         sendCallback.onSendRequested(Td.newSendOptions(new TdApi.MessageSchedulingStateSendWhenOnline()), false);
       }
@@ -6847,7 +6849,7 @@ public class TdlibUi extends Handler {
     context.showOptions(null, ids.get(), strings.get(), null, icons.get(), (v, optionId) -> {
       long seconds = 0;
       if (optionId == R.id.btn_sendNoSound) {
-        callback.runWithData(Td.newSendOptions(defaultSendOptions, 0L, null, true));
+        callback.runWithData(Td.newSendOptions(defaultSendOptions, null, true));
         return true;
       } else if (optionId == R.id.btn_sendOnceOnline) {
         callback.runWithData(Td.newSendOptions(defaultSendOptions, new TdApi.MessageSchedulingStateSendWhenOnline()));
@@ -7730,7 +7732,8 @@ public class TdlibUi extends Handler {
           new int[] {R.id.btn_send, R.id.btn_cancel},
           new String[] {Lang.getString(R.string.SetBirthdateOk), Lang.getString(R.string.Cancel)},
           new int[] {ViewController.OptionColor.BLUE, ViewController.OptionColor.NORMAL},
-          new int[] {R.drawable.baseline_check_24, R.drawable.baseline_cancel_24}
+          new int[] {R.drawable.baseline_check_24, R.drawable.baseline_cancel_24},
+          Text.LINE_COUNT_UNLIMITED
         );
         options.setIgnoreOtherPopUps(true);
         controller.showOptions(options, (optionItemView, id) -> {

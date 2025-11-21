@@ -37,7 +37,9 @@ public class Config {
   public static final boolean RESTRICT_HIDING_MAIN_LIST = true;
   public static final boolean SEARCH_MESSAGES_ONLY_IN_SELECTED_FOLDER = BuildConfig.EXPERIMENTAL;
   public static final boolean CHAT_FOLDERS_UNSET_DEFAULT_ICONS = false; // Until there's a fix on server
+  public static final boolean TEST_TDLIB_RESTARTS = BuildConfig.DEBUG;
 
+  public static final boolean TEST_MULTI_SPONSORED_MESSAGES = false;
   public static final boolean TEST_NEW_FEATURES_PROMPTS = false;
   public static final boolean ADJUST_STATUS_BAR_TO_AVOID_DISPLAY_CUTOUT = false;
 
@@ -148,14 +150,16 @@ public class Config {
   public static final boolean CAMERA_ALLOW_SNAPSHOTS = false; // true;
   public static final boolean CAMERA_X_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
+  public static final int MAX_COPY_TEXT_LINE_COUNT = 12;
+
   public static final boolean CROP_USE_REGION_READER = true;
   public static final boolean CROP_ENABLED = true;
   public static final boolean MODERN_VIDEO_TRANSCODING_ENABLED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
   public static final boolean IN_APP_BROWSER_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1;
 
-  public static final boolean VIDEO_PLAYER_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-  public static final boolean HLS_VIDEO_ENABLED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean VIDEO_PLAYER_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+  public static final boolean HLS_VIDEO_ENABLED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
   public static final boolean FORCE_TOUCH_ENABLED = true;
   public static final boolean HOLD_TO_PREVIEW_AVAILABLE = true;

@@ -57,12 +57,18 @@ data class PullRequest (
   )
 }
 
+apply(from = "${rootProject.projectDir}/properties.gradle.kts")
+val extensionName = extra["extension"] as String
+val isHuaweiBuild = extra["huawei"] == true
+
 android {
   namespace = "org.thunderdog.challegram"
 
   defaultConfig {
     val jniVersion = versions.getProperty("version.jni")
     val leveldbVersion = versions.getProperty("version.leveldb")
+
+    buildConfigString("TGX_EXTENSION", extensionName)
 
     buildConfigString("JNI_VERSION", jniVersion)
     buildConfigString("LEVELDB_VERSION", leveldbVersion)
@@ -287,7 +293,11 @@ android {
       create(variant.flavor) {
         dimension = "abi"
         versionCode = (abi + 1)
-        minSdk = variant.minSdkVersion
+        minSdk = if (isHuaweiBuild) {
+          maxOf(variant.minSdkVersion, Config.MIN_SDK_VERSION_HUAWEI)
+        } else {
+          variant.minSdkVersion
+        }
         val ndkVersionKey = if (variant.is64Bit) {
           "version.ndk_primary"
         } else {
@@ -315,9 +325,26 @@ android {
     val versionCode = defaultConfig.versionCode ?: fatal("null")
 
     val versionCodeOverride = versionCode * 1000 + abi * 10
-    val versionNameOverride = "${versionName}.${defaultConfig.versionCode}${if (extra.has("app_version_suffix")) extra["app_version_suffix"] else ""}-${abiVariant.displayName}${if (extra.has("app_name_suffix")) "-" + extra["app_name_suffix"] else ""}${if (buildType.isDebuggable) "-debug" else ""}"
-    val outputFileNamePrefix = properties.getProperty("app.file", projectName.replace(" ", "-").replace("#", ""))
-    val fileName = "${outputFileNamePrefix}-${versionNameOverride.replace("-universal(?=-|\$)", "")}"
+    val versionNameOverride = StringBuilder("${versionName}.${defaultConfig.versionCode}").apply {
+      if (extra.has("app_version_suffix")) {
+        append(extra["app_version_suffix"])
+      }
+      if (extensionName != "none") {
+        append("-$extensionName")
+      }
+      if (abiVariant.displayName != "universal" || extensionName == "none") {
+        append("-${abiVariant.displayName}")
+      }
+      if (extra.has("app_name_suffix")) {
+        append("-${extra["app_name_suffix"]}")
+      }
+      if (buildType.isDebuggable) {
+        append("-debug")
+      }
+    }.toString()
+    val defaultFileNamePrefix = projectName.replace(" ", "-").replace("#", "")
+    val outputFileNamePrefix = properties.getProperty("app.file", defaultFileNamePrefix)
+    val fileName = "${outputFileNamePrefix}-${versionNameOverride.replace(Regex("-universal(?=-|$)"), "")}"
 
     buildConfigField("int", "ORIGINAL_VERSION_CODE", versionCode.toString())
     buildConfigField("int", "ABI", abi.toString())
@@ -376,6 +403,7 @@ gradle.projectsEvaluated {
 }
 
 dependencies {
+  implementation(project(":extension:${extensionName}"))
   // TDLib: https://github.com/tdlib/td/blob/master/CHANGELOG.md
   implementation(project(":tdlib"))
   implementation(project(":vkryl:core"))
@@ -431,7 +459,7 @@ dependencies {
   // The Checker Framework: https://checkerframework.org/CHANGELOG.md
   compileOnly("org.checkerframework:checker-qual:3.51.0")
   // OkHttp: https://github.com/square/okhttp/blob/master/CHANGELOG.md
-  implementation("com.squareup.okhttp3:okhttp:4.12.0")
+  implementation("com.squareup.okhttp3:okhttp:4.12.0") // 5.x+ requires minSdkVersion 21
   // ShortcutBadger: https://github.com/leolin310148/ShortcutBadger
   implementation("me.leolin:ShortcutBadger:1.1.22@aar")
   // ReLinker: https://github.com/KeepSafe/ReLinker/blob/master/CHANGELOG.md
@@ -456,4 +484,7 @@ dependencies {
 
 if (!isExperimentalBuild) {
   apply(plugin = "com.google.gms.google-services")
+  if (isHuaweiBuild) {
+    apply(plugin = "com.huawei.agconnect")
+  }
 }

@@ -1261,7 +1261,15 @@ public class U {
   }
 
   public static void openFile (TdlibDelegate context, TdApi.Video video) {
-    openFile(context, StringUtils.isEmpty(video.fileName) ? ("video/mp4".equals(video.mimeType) ? "video.mp4" : "video/quicktime".equals(video.mimeType) ? "video.mov" : "") : video.fileName, new File(video.video.local.path), video.mimeType, 0);
+    String displayName = StringUtils.isEmpty(video.fileName) ? ("video/mp4".equals(video.mimeType) ? "video.mp4" : "video/quicktime".equals(video.mimeType) ? "video.mov" : "") : video.fileName;
+    String mimeType = video.mimeType;
+    openFile(context, displayName, new File(video.video.local.path), mimeType, 0);
+  }
+
+  public static void openFile (TdlibDelegate context, TdApi.Animation animation) {
+    String displayName = StringUtils.isEmpty(animation.fileName) ? ("video/mp4".equals(animation.mimeType) ? "animation.mp4" : "video/quicktime".equals(animation.mimeType) ? "animation.mov" : "") : animation.fileName;
+    String mimeType = animation.mimeType;
+    openFile(context, displayName, new File(animation.animation.local.path), mimeType, 0);
   }
 
   public static Uri getUri (Parcelable parcelable) {
@@ -2532,6 +2540,7 @@ public class U {
     String appLocale = Lang.locale().toString();
     String metadata = Lang.getAppBuildAndVersion(tdlib) + " (" + BuildConfig.COMMIT + ")\n" +
       (!buildInfo.getPullRequests().isEmpty() ? "PRs: " + buildInfo.pullRequestsList() + "\n" : "") +
+      (!"none".equals(BuildConfig.TGX_EXTENSION) ? "Extension: " + BuildConfig.TGX_EXTENSION + "\n" : "") +
       "TDLib: " + Td.tdlibVersion() + " (tdlib/td@" + Td.tdlibCommitHash() + ")\n" +
       "tgcalls: TGX-Android/tgcalls@" + BuildConfig.TGCALLS_COMMIT + "\n" +
       "WebRTC: TGX-Android/webrtc@" + BuildConfig.WEBRTC_COMMIT + "\n" +

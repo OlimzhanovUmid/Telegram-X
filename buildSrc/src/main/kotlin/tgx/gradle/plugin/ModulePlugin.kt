@@ -25,7 +25,6 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.get
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import tgx.gradle.*
 import java.io.File
 
@@ -71,11 +70,6 @@ open class ModulePlugin : Plugin<Project> {
     } else {
       null
     }
-    val recaptchaKeyId = if (keystore != null) {
-      properties.getProperty("recaptcha.key_id", "")
-    } else {
-      null
-    }
     fun getOrSample (key: String): String {
       return properties.getProperty(key, null) ?: sampleProperties.getOrThrow(key)
     }
@@ -90,6 +84,11 @@ open class ModulePlugin : Plugin<Project> {
     val isExperimentalBuild = isExampleBuild || keystore == null || properties.getProperty("app.experimental", "false") == "true"
     val dontObfuscate = isExampleBuild || properties.getProperty("app.dontobfuscate", "false") == "true"
     val forceOptimize = properties.getProperty("app.forceoptimize") == "true"
+    val appExtension = getOrSample("tgx.extension")
+    if (appExtension != "none" && appExtension != "hms") {
+      error("Unknown tgx.extension: $appExtension")
+    }
+    val isHuaweiBuild = appExtension == "hms"
 
     project.extra.set("experimental", isExperimentalBuild)
     project.extra.set("app_name", appName)
@@ -181,7 +180,6 @@ open class ModulePlugin : Plugin<Project> {
               buildConfigBool("SHARED_STL", Config.SHARED_STL)
 
               buildConfigString("SAFETYNET_API_KEY", safetyNetToken)
-              buildConfigString("RECAPTCHA_KEY_ID", recaptchaKeyId)
 
               buildConfigString("DOWNLOAD_URL", appDownloadUrl)
               buildConfigString("GOOGLE_PLAY_URL", googlePlayUrl)
@@ -216,6 +214,9 @@ open class ModulePlugin : Plugin<Project> {
                       getDefaultProguardFile(ProguardFiles.ProguardFile.OPTIMIZE.fileName),
                       "proguard-rules.pro"
                     )
+                    if (isHuaweiBuild) {
+                      proguardFile("proguard-hms.pro")
+                    }
                   }
                 }
 
@@ -231,6 +232,10 @@ open class ModulePlugin : Plugin<Project> {
                     getDefaultProguardFile(ProguardFiles.ProguardFile.OPTIMIZE.fileName),
                     "proguard-rules.pro"
                   )
+
+                  if (isHuaweiBuild) {
+                    proguardFile("proguard-hms.pro")
+                  }
                 }
               }
             }

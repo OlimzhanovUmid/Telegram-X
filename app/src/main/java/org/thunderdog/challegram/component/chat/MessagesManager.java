@@ -20,16 +20,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.collection.LongSparseArray;
+import androidx.core.os.CancellationSignal;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.drinkless.tdlib.Client;
 import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.BaseActivity;
+import org.thunderdog.challegram.BuildConfig;
 import org.thunderdog.challegram.Log;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.config.Config;
@@ -74,7 +77,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -559,6 +564,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
       tdlib.closeChat(chatId, context, true);
     }
     loader.reuse();
+    resetSponsoredContext();
     messageViewer = null;
     adapter.clear(true);
     clearHeaderMessage();
@@ -744,6 +750,9 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
           return true;
         }
         MessageProvider provider = (MessageProvider) view;
+        if ((Config.TEST_MULTI_SPONSORED_MESSAGES || BuildConfig.DEBUG) && provider.isSponsoredMessage()) {
+          return false;
+        }
         ViewGroup parent = (ViewGroup) view.getParent();
         int bottomEdge = parent.getMeasuredHeight() - parent.getPaddingBottom() - getExtraScrollSpacing();
         int top = view.getTop() + provider.getMessage().getTopContentEdge();
@@ -926,11 +935,6 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
 
   private void scrollToBottom (boolean smooth) {
     stopScroll();
-
-    if (!controller.sponsoredMessageLoaded) {
-      requestSponsoredMessage();
-    }
-
     if (!Config.SMOOTH_SCROLL_TO_BOTTOM_ENABLED || !smooth) {
       if (adapter.getBottomMessage() != null && adapter.getBottomMessage().isSponsoredMessage()) {
         controller.setScrollToBottomVisible(false, false, false);
@@ -1230,6 +1234,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
         if (mode == MessagesLoader.MODE_REPEAT_INITIAL) {
           adapter.resetMessages(items);
         } else {
+          insertExtraSponsoredMessages(items, true);
           adapter.addMessages(items, true);
         }
         checkTopEndReached(items, willRepeat, canLoadTop);
@@ -1253,6 +1258,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
         break;
       }
       case MessagesLoader.MODE_MORE_TOP: {
+        insertExtraSponsoredMessages(items, true);
         adapter.addMessages(items, true);
         onChatAwaitFinish();
         break;
@@ -1261,6 +1267,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
         int firstIndex = manager.findFirstVisibleItemPosition();
         View view = manager.findViewByPosition(firstIndex);
         int currentOffset = view == null ? 0 : calculateOffsetInPixels(view, 0);
+        insertExtraSponsoredMessages(items, false);
         adapter.addMessages(items, false);
         scrollToPositionWithOffsetImpl(firstIndex + items.size(), currentOffset);
         break;
@@ -1328,12 +1335,12 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     onCanLoadMoreBottomChanged();
     checkMessageThreadReplyCounter();
     checkMessageThreadUnreadCounter();
+    if (isFocused) {
+      checkSponsoredMessages();
+    }
   }
 
   public void onBottomEndChecked () {
-    if (isFocused) {
-      requestSponsoredMessage();
-    }
   }
 
   private void checkTopEndReached (List<TGMessage> items, boolean willRepeat, boolean canLoadTop) {
@@ -1343,7 +1350,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
         topEndReached = true;
       } else if (!items.isEmpty()) {
         final int accountId = tdlib.id();
-        Settings.SavedMessageId messageId = Settings.instance().getScrollMessageId(accountId, loader.getChatId(), loader.getMessageThreadId());
+        Settings.SavedMessageId messageId = Settings.instance().getScrollMessageId(accountId, loader.getChatId(), loader.getMessageTopicId());
         if (messageId != null && messageId.topEndMessageId != 0) {
           TGMessage topMessage = items.get(items.size() - 1);
           topEndReached = topMessage.isDescendantOrSelf(messageId.topEndMessageId);
@@ -1399,27 +1406,219 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     manager.scrollToPositionWithOffset(position, offset);
   }
 
-  private void requestSponsoredMessage () {
-    synchronized (controller) {
-      if (controller.sponsoredMessageLoaded) {
+  private CancellationSignal sponsoredContext;
+  private TdApi.SponsoredMessages sponsoredMessages;
+
+  private void resetSponsoredContext () {
+    sponsoredContext = null;
+    sponsoredMessages = null;
+  }
+
+  private int calculateInsertedSponsoredMessagesCount () {
+    if (sponsoredMessages != null && sponsoredMessages.messages.length > 0) {
+      return adapter.countMessages(TGMessage::isSponsoredMessage);
+    }
+    return 0;
+  }
+
+  private void insertExtraSponsoredMessages (List<TGMessage> addedItems, boolean fromTop) {
+    if (sponsoredMessages == null || sponsoredMessages.messages.length == 0 || sponsoredMessages.messagesBetween == 0) {
+      return;
+    }
+
+    int keepExtraSponsoredMessagesCount = 0;
+    if (!isLastMessageSponsored()) {
+      // Keep one sponsored message for bottom.
+      keepExtraSponsoredMessagesCount = 1;
+    }
+
+    int insertedSponsoredMessagesCount = calculateInsertedSponsoredMessagesCount();
+    if (insertedSponsoredMessagesCount >= sponsoredMessages.messages.length - keepExtraSponsoredMessagesCount) {
+      return;
+    }
+
+    int insertIndex;
+    if (fromTop) {
+      int indexOfClosestSponsoredMessage = adapter.indexOfMessageReverse(TGMessage::isSponsoredMessage);
+      insertIndex = indexOfClosestSponsoredMessage != -1 ? sponsoredMessages.messagesBetween - (adapter.getItemCount() - indexOfClosestSponsoredMessage) : 0;
+      if (insertIndex >= addedItems.size()) {
         return;
       }
-      controller.sponsoredMessageLoaded = true;
+      if (insertIndex < 0) {
+        insertIndex = 0;
+      }
+    } else {
+      int indexOfClosestSponsoredMessage = adapter.indexOfMessage(TGMessage::isSponsoredMessage);
+      insertIndex = indexOfClosestSponsoredMessage != -1 ? addedItems.size() - sponsoredMessages.messagesBetween + indexOfClosestSponsoredMessage : addedItems.size();
+      if (insertIndex <= 0) {
+        return;
+      }
+      if (insertIndex > addedItems.size()) {
+        insertIndex = addedItems.size();
+      }
+    }
 
-      loader.requestSponsoredMessage(loader.getChatId(), sponsoredMessages -> {
-        if (sponsoredMessages == null || sponsoredMessages.messages.length == 0) {
-          return;
+    do {
+      TGMessage topMessage = insertIndex < addedItems.size() ? addedItems.get(insertIndex) : null;
+      if (topMessage != null) {
+        topMessage.setNeedExtraPadding(false);
+        topMessage.rebuildLayout();
+      }
+
+      boolean isBottom = insertIndex == 0;
+      boolean isBelowAllMessages = isBottom && !loader.canLoadBottom() && (!fromTop || adapter.getMessageCount() == 0);
+      TGMessage sponsoredMessage = TGMessage.valueOf(this, loader.getChatId(), sponsoredMessages.messages[insertedSponsoredMessagesCount], isBelowAllMessages);
+      sponsoredMessage.mergeWith(topMessage, isBottom);
+      sponsoredMessage.prepareLayout();
+      addedItems.add(insertIndex, sponsoredMessage);
+      insertedSponsoredMessagesCount++;
+
+      TGMessage bottomMessage = insertIndex > 0 ? addedItems.get(insertIndex - 1) : null;
+      if (bottomMessage != null) {
+        bottomMessage.mergeWith(sponsoredMessage, true);
+        bottomMessage.rebuildLayout();
+      }
+
+      if (fromTop) {
+        insertIndex = insertIndex + sponsoredMessages.messagesBetween + 1;
+        if (insertIndex >= addedItems.size()) {
+          break;
         }
+      } else {
+        insertIndex = insertIndex - sponsoredMessages.messagesBetween;
+        if (insertIndex <= 0) {
+          break;
+        }
+      }
+    } while (insertedSponsoredMessagesCount + keepExtraSponsoredMessagesCount < sponsoredMessages.messages.length);
+  }
 
-        RunnableData<TGMessage> action = (lastMessage) -> {
-          adapter.addMessage(TGMessage.valueOf(this, loader.getChatId(), sponsoredMessages.messages[0]), false, false);
-        };
+  private void insertFirstSponsoredMessage () {
+    UI.post(this::insertFirstSponsoredMessageImpl, 350L);
+  }
 
-        TGMessage bottomMessage = findBottomMessage();
-        if (bottomMessage != null) {
-          action.runWithData(bottomMessage);
-        } else {
-          UI.post(() -> action.runWithData(findBottomMessage()), 1000L);
+  private void insertFirstSponsoredMessageImpl () {
+    if (sponsoredMessages == null || sponsoredMessages.messages.length == 0 || loader.canLoadBottom()) {
+      return;
+    }
+
+    TGMessage bottomMessage = adapter.getBottomMessage();
+    if (bottomMessage == null) {
+      CancellationSignal sponsoredContext = this.sponsoredContext;
+      UI.post(() -> {
+        if (this.sponsoredContext == sponsoredContext) {
+          insertFirstSponsoredMessage();
+        }
+      }, 1000L);
+      return;
+    }
+
+    if (bottomMessage.isSponsoredMessage()) {
+      return;
+    }
+
+    int insertedSponsoredMessagesCount = calculateInsertedSponsoredMessagesCount();
+    if (insertedSponsoredMessagesCount >= sponsoredMessages.messages.length) return;
+
+    final TdApi.SponsoredMessage sponsoredMessage = sponsoredMessages.messages[insertedSponsoredMessagesCount];
+    adapter.addMessage(TGMessage.valueOf(this, loader.getChatId(), sponsoredMessage, true), false, false);
+  }
+
+  private void checkSponsoredMessages () {
+    if (sponsoredContext != null) {
+      insertFirstSponsoredMessage();
+      return;
+    }
+    CancellationSignal sponsoredContext = new CancellationSignal();
+    sponsoredContext.setOnCancelListener(() -> {
+      if (sponsoredContext == this.sponsoredContext) {
+        resetSponsoredContext();
+      }
+    });
+    this.sponsoredContext = sponsoredContext;
+
+    RunnableData<TdApi.SponsoredMessages> act = sponsoredMessages -> controller.runOnUiThreadOptional(() -> {
+      if (sponsoredContext == this.sponsoredContext) {
+        if (Config.TEST_MULTI_SPONSORED_MESSAGES && sponsoredMessages != null && sponsoredMessages.messages.length > 0) {
+          TdApi.SponsoredMessage[] newMessages = new TdApi.SponsoredMessage[100];
+          for (int i = 0; i < newMessages.length; i++) {
+            newMessages[i] = sponsoredMessages.messages[i % sponsoredMessages.messages.length];
+          }
+          sponsoredMessages.messagesBetween = 2;
+          sponsoredMessages.messages = newMessages;
+        }
+        this.sponsoredMessages = sponsoredMessages;
+        insertFirstSponsoredMessage();
+      }
+    });
+
+    loader.requestSponsoredMessages(loader.getChatId(), sponsoredMessages -> {
+      if (sponsoredMessages != null && sponsoredMessages.messages.length > 0) {
+        filterSponsoredMessages(sponsoredMessages, act);
+      } else {
+        act.runWithData(sponsoredMessages);
+      }
+    });
+  }
+
+  @SuppressWarnings("SwitchIntDef")
+  private static boolean isSupported (@NonNull TdApi.InternalLinkType internalLinkType) {
+    // Matches TdlibUi.openInternalLinkType
+    switch (internalLinkType.getConstructor()) {
+      case TdApi.InternalLinkTypeBotAddToChannel.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeStory.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeStoryAlbum.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeDefaultMessageAutoDeleteTimerSettings.CONSTRUCTOR:
+
+      case TdApi.InternalLinkTypeAttachmentMenuBot.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeWebApp.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeMainWebApp.CONSTRUCTOR:
+
+      case TdApi.InternalLinkTypeInvoice.CONSTRUCTOR:
+
+      case TdApi.InternalLinkTypePremiumFeatures.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeRestorePurchases.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeBuyStars.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeChatBoost.CONSTRUCTOR:
+      case TdApi.InternalLinkTypePremiumGift.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeGiftCollection.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeChatAffiliateProgram.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeUpgradedGift.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeMyStars.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeMyToncoins.CONSTRUCTOR:
+
+      case TdApi.InternalLinkTypePassportDataRequest.CONSTRUCTOR:
+        return false;
+
+      default:
+        Td.assertInternalLinkType_eaa9fead();
+        return true;
+    }
+  }
+
+  private void filterSponsoredMessages (TdApi.SponsoredMessages sponsoredMessages, RunnableData<TdApi.SponsoredMessages> after) {
+    Map<String, TdApi.InternalLinkType> internalLinkTypeMap = new HashMap<>();
+    Runnable act = () -> {
+      List<TdApi.SponsoredMessage> sponsoredMessagesList = new ArrayList<>();
+      for (TdApi.SponsoredMessage sponsoredMessage : sponsoredMessages.messages) {
+        TdApi.InternalLinkType internalLinkType = internalLinkTypeMap.get(sponsoredMessage.sponsor.url);
+        if (internalLinkType == null || isSupported(internalLinkType)) {
+          sponsoredMessagesList.add(sponsoredMessage);
+        }
+      }
+      if (sponsoredMessagesList.size() < sponsoredMessages.messages.length) {
+        sponsoredMessages.messages = sponsoredMessagesList.toArray(new TdApi.SponsoredMessage[0]);
+      }
+      after.runWithData(sponsoredMessages);
+    };
+    AtomicInteger remaining = new AtomicInteger(sponsoredMessages.messages.length);
+    for (TdApi.SponsoredMessage sponsoredMessage : sponsoredMessages.messages) {
+      tdlib.send(new TdApi.GetInternalLinkType(sponsoredMessage.sponsor.url), (internalLinkType, error) -> {
+        if (internalLinkType != null) {
+          internalLinkTypeMap.put(sponsoredMessage.sponsor.url, internalLinkType);
+        }
+        if (remaining.decrementAndGet() == 0) {
+          act.run();
         }
       });
     }
@@ -1637,8 +1836,8 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
       case MessagesLoader.SPECIAL_MODE_SEARCH:
         return;
     }
-    long messageThreadId = loader.getMessageThreadId();
-    if (messageThreadId != 0 && message.getMessageThreadId() != messageThreadId) {
+    TdApi.MessageTopic topicId = loader.getMessageTopicId();
+    if (!Td.matchesTopic(message.getMessageTopicId(), topicId)) {
       return;
     }
     ThreadInfo messageThread = loader.getMessageThread();
@@ -2114,7 +2313,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
 
   // Collectors
 
-  public MediaStack collectMedias (final long fromMessageId, @Nullable TdApi.SearchMessagesFilter filter) {
+  public MediaStack collectMedias (final long fromMessageId, final boolean isSponsored, @Nullable TdApi.SearchMessagesFilter filter) {
     ArrayList<TGMessage> items = adapter.getItems();
     if (items == null) {
       return null;
@@ -2125,16 +2324,21 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     AtomicBoolean found = new AtomicBoolean();
     AtomicInteger addedAfter = new AtomicInteger();
 
+    RunnableData<MediaItem> addItem = item -> {
+      if (item != null) {
+        result.add(0, item);
+        if (found.get()) {
+          addedAfter.incrementAndGet();
+        }
+      }
+    };
     RunnableData<TdApi.Message> callback = message -> {
       if (Td.isSecret(message.content))
         return;
       boolean matchesFilter = filter == null || Td.matchesFilter(message, filter);
       MediaItem item = matchesFilter ? MediaItem.valueOf(controller.context(), tdlib, message) : null;
       if (item != null) {
-        result.add(0, item);
-        if (found.get()) {
-          addedAfter.incrementAndGet();
-        }
+        addItem.runWithData(item);
         if (message.id == fromMessageId) {
           found.set(true);
         }
@@ -2142,7 +2346,22 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     };
 
     for (TGMessage parsedMessage : items) {
-      parsedMessage.iterate(callback, true);
+      if (parsedMessage.isSponsoredMessage() != isSponsored) {
+        continue;
+      }
+      if (!isSponsored) {
+        parsedMessage.iterate(callback, true);
+        continue;
+      }
+      if (Td.matchesFilter(parsedMessage.getMessage(), filter)) {
+        MediaItem item = MediaItem.valueOf(controller.context(), tdlib, parsedMessage.getChatId(), parsedMessage.getSponsoredMessage());
+        if (item != null) {
+          addItem.runWithData(item);
+          if (parsedMessage.getId() == fromMessageId) {
+            found.set(true);
+          }
+        }
+      }
     }
 
     if (!found.get()) {
@@ -2284,16 +2503,18 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     int lastVisibleItemPosition = manager.findLastVisibleItemPosition();
 
     int overlayHeight = getExtraScrollSpacing();
-    if (overlayHeight > 0 && firstVisibleItemPosition != RecyclerView.NO_POSITION) {
+    if (firstVisibleItemPosition != RecyclerView.NO_POSITION) {
       while (firstVisibleItemPosition != lastVisibleItemPosition) {
         View view = manager.findViewByPosition(firstVisibleItemPosition);
         if (view == null) {
           break;
         }
-        int offset = calculateOffsetInPixels(view, 0);
-        int top = offset + view.getMeasuredHeight();
-        if (top > overlayHeight) {
-          break;
+        int top = calculateOffsetInPixels(view, 0) + view.getMeasuredHeight();
+        if (overlayHeight == 0 || top > overlayHeight) {
+          TGMessage message = adapter.getMessage(firstVisibleItemPosition);
+          if (message == null || !message.isSponsoredMessage() || (firstVisibleItemPosition == 0 && !loader.canLoadBottom())) {
+            break;
+          }
         }
         firstVisibleItemPosition++;
       }
@@ -2358,7 +2579,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     if (scrollChatId != 0) {
       final int accountId = tdlib.id();
       final long chatId = loader.getChatId();
-      final long messageThreadId = loader.getMessageThreadId();
+      final TdApi.MessageTopic topicId = loader.getMessageTopicId();
       Settings.SavedMessageId savedMessageId = new Settings.SavedMessageId(
         new MessageId(scrollMessageChatId, scrollMessageId, scrollMessageOtherIds),
         scrollOffsetInPixels,
@@ -2366,7 +2587,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
         readFully, topEndMessageId
       );
       Settings.instance().setScrollMessageId(accountId,
-        chatId, messageThreadId,
+        chatId, topicId,
         savedMessageId
       );
 
@@ -2384,7 +2605,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
   private void onFocus () {
     viewMessages(false);
     saveScrollPosition();
-    requestSponsoredMessage();
+    checkSponsoredMessages();
   }
 
   // Highlight message id
@@ -2780,7 +3001,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     }
     if (highlightMode == HIGHLIGHT_MODE_POSITION_RESTORE) {
       final int accountId = tdlib.id();
-      Settings.SavedMessageId messageId = Settings.instance().getScrollMessageId(accountId, loader.getChatId(), loader.getMessageThreadId());
+      Settings.SavedMessageId messageId = Settings.instance().getScrollMessageId(accountId, loader.getChatId(), loader.getMessageTopicId());
       int offset = messageId != null ? messageId.offsetPixels - scrollMessage.getExtraPadding() : 0;
       this.returnToMessageIds = messageId != null ? messageId.returnToMessageIds : null;
       scrollToPositionWithOffset(index, offset, false);
@@ -3035,8 +3256,9 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
       return HIGHLIGHT_MODE_NONE;
     }
     boolean canGoUnread = canGoUnread(chat, threadInfo);
-    long messageThreadId = threadInfo != null ? threadInfo.getMessageThreadId() : 0;
-    Settings.SavedMessageId messageId = Settings.instance().getScrollMessageId(accountId, chat.id, messageThreadId);
+    Settings.SavedMessageId messageId = Settings.instance().getScrollMessageId(accountId, chat.id,
+      threadInfo != null ? threadInfo.getMessageTopicId() : null
+    );
     boolean preferUnreadFirst = messageId == null || messageId.readFully;
     if (preferUnreadFirst) {
       if (canGoUnread)
@@ -3059,7 +3281,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     switch (anchorMode) {
       case HIGHLIGHT_MODE_POSITION_RESTORE: {
         Settings.SavedMessageId messageId = Settings.instance().getScrollMessageId(
-          accountId, chat.id, threadInfo != null ? threadInfo.getMessageThreadId() : 0
+          accountId, chat.id, threadInfo != null ? threadInfo.getMessageTopicId() : null
         );
         return messageId != null && messageId.id.getMessageId() != 0 ? messageId.id : null;
       }
@@ -3336,8 +3558,8 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
   }
 
   @Override
-  public void onMessageThreadReadOutbox (long chatId, long messageThreadId, long lastReadOutboxMessageId) {
-    if (chatId == loader.getChatId() && messageThreadId == loader.getMessageThreadId()) {
+  public void onMessageThreadReadOutbox (long chatId, TdApi.MessageTopic topicId, long lastReadOutboxMessageId) {
+    if (chatId == loader.getChatId() && Td.equalsTo(topicId, loader.getMessageTopicId())) {
       TdApi.Chat chat = tdlib.chat(chatId);
       long lastGlobalReadOutboxMessageId = chat != null ? chat.lastReadOutboxMessageId : 0;
       if (lastReadOutboxMessageId > lastGlobalReadOutboxMessageId) {

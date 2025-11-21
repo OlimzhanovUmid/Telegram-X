@@ -236,8 +236,8 @@ public class MediaViewController extends ViewController<MediaViewController.Args
 
     private boolean reverseMode;
 
-    private long receiverChatId, messageThreadId;
-    private TdApi.MessageTopic topicId;
+    private long receiverChatId;
+    private @Nullable TdApi.MessageTopic topicId;
 
     private boolean areOnlyScheduled;
 
@@ -260,6 +260,11 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     }
 
     private @AvatarPickerMode int avatarPickerMode;
+
+    public Args setCustomSubtitle (String subtitle) {
+      this.customSubtitle = subtitle;
+      return this;
+    }
 
     public Args setAvatarPickerMode (@AvatarPickerMode int avatarPickerMode) {
       if (mode != MODE_GALLERY) {
@@ -298,11 +303,6 @@ public class MediaViewController extends ViewController<MediaViewController.Args
 
     public Args setReceiverChatId (long chatId) {
       this.receiverChatId = chatId;
-      return this;
-    }
-
-    public Args setMessageThreadId (long messageThreadId) {
-      this.messageThreadId = messageThreadId;
       return this;
     }
 
@@ -377,8 +377,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   private @Nullable MediaSendDelegate sendDelegate;
   private MediaStack stack;
   private @Nullable TdApi.SearchMessagesFilter filter;
-  private TdApi.MessageTopic topicId;
-  private long messageThreadId;
+  private @Nullable TdApi.MessageTopic topicId;
 
   @Override
   public void setArguments (Args args) {
@@ -390,7 +389,6 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     this.stack = args.stack;
     this.reverseMode = args.reverseMode;
     this.filter = args.filter;
-    this.messageThreadId = args.messageThreadId;
     this.topicId = args.topicId;
   }
 
@@ -1123,7 +1121,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   }
 
   public void onMediaZoomStart () {
-    if (mode == MODE_GALLERY && currentSection == SECTION_PAINT) {
+    if (mode == MODE_GALLERY && currentSection == SECTION_PAINT && paintView != null) {
       paintView.getContentWrap().cancelDrawingByZoom();
     }
   }
@@ -1803,7 +1801,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
         UI.copyText(getArgumentsStrict().copyLink, R.string.CopiedLink);
       } else if (item.getSourceChatId() != 0) {
         if (tdlib.canCopyPostLink(item.getMessage())) {
-          tdlib.getMessageLink(item.getMessage(), false, messageThreadId != 0, link -> UI.copyText(link.url, link.isPublic ? R.string.CopiedLink : R.string.CopiedLinkPrivate));
+          tdlib.getMessageLink(item.getMessage(), false, Td.messageThreadId(topicId) != 0, link -> UI.copyText(link.url, link.isPublic ? R.string.CopiedLink : R.string.CopiedLinkPrivate));
         }
       }
     } else if (id == R.id.btn_open) {
@@ -1895,7 +1893,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
       forceAnimationType = ANIMATION_TYPE_FADE;
 
       ViewController<?> c = context.navigation().getCurrentStackItem();
-      if (c instanceof MessagesController && c.getChatId() == item.getSourceChatId() && ((MessagesController) c).getMessageThreadId() == messageThreadId) {
+      if (c instanceof MessagesController && ((MessagesController) c).compareChat(item.getSourceChatId(), topicId)) {
         ((MessagesController) c).highlightMessage(new MessageId(item.getSourceChatId(), item.getSourceMessageId()));
       } else {
         tdlib.ui().openMessage(this, item.getSourceChatId(), new MessageId(item.getSourceChatId(), item.getSourceMessageId()), null);
@@ -2053,7 +2051,10 @@ public class MediaViewController extends ViewController<MediaViewController.Args
         String currentIndex = Strings.buildCounter(stack.getEstimatedIndex() + 1);
         String totalIndex = Strings.buildCounter(stack.getEstimatedSize());
         if (getArgumentsStrict().noLoadMore && stack.getEstimatedSize() == 1) {
-          if (stack.getCurrent().isVideo()) {
+          TdApi.SponsoredMessage sponsoredMessage = stack.getCurrent().getSourceSponsoredMessage();
+          if (sponsoredMessage != null) {
+            headerCell.setTitle(sponsoredMessage.isRecommended ? R.string.MediaRecommendation : R.string.MediaAd);
+          } else if (stack.getCurrent().isVideo()) {
             headerCell.setTitle(R.string.Video);
           } else if (stack.getCurrent().isGif()) {
             headerCell.setTitle(R.string.Gif);
@@ -3527,15 +3528,14 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     int thumbsDistance = (Screen.dp(THUMBS_PADDING) * 2 + Screen.dp(THUMBS_HEIGHT)) * (inForceEditMode() ? 0 : 1);
     float offsetDistance = (float) measureBottomWrapHeight() * dismissFactor - getKeyboardOffset();
     float maxY = 0;
-    int appliedBottomPadding = emojiShown ? 0 : this.appliedBottomPadding;
     if (bottomWrap != null) {
-      float y = offsetDistance - (thumbsFactor * (float) thumbsDistance) * (1f - dismissFactor) - appliedBottomPadding;
+      float y = offsetDistance - (thumbsFactor * (float) thumbsDistance) * (1f - dismissFactor);
       bottomWrap.setTranslationY(y);
       maxY = Math.max(0, y);
     }
     if (thumbsRecyclerView != null) {
       float dy = ((float) thumbsDistance * Math.max((1f - thumbsFactor), dismissFactor));
-      float y = offsetDistance + dy - appliedBottomPadding;
+      float y = offsetDistance + dy;
       thumbsRecyclerView.setTranslationY(y);
       maxY = Math.max(0, y);
     }
@@ -5384,15 +5384,6 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     return bottomInnerMargin;
   }
 
-  private int appliedBottomPadding;
-
-  private void setAppliedBottomPadding (int padding) {
-    if (this.appliedBottomPadding != padding) {
-      this.appliedBottomPadding = padding;
-      checkBottomWrapY();
-    }
-  }
-
   private int topOffset;
 
   private void setTopOffset (int topOffset) {
@@ -5459,9 +5450,6 @@ public class MediaViewController extends ViewController<MediaViewController.Args
       if (changed) {
         int offsetBottom = getSectionBottomOffset(currentSection);
         mediaView.setNavigationalOffsets(0, 0, offsetBottom);
-        if (canRunFullscreen() && mode != MODE_SECRET) {
-          setAppliedBottomPadding(offsetBottom);
-        }
       }
       mediaView.layoutCells();
     }
@@ -8277,7 +8265,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
       filter = new TdApi.SearchMessagesFilterAnimation();
     }
     if (context instanceof MediaCollectorDelegate) {
-      stack = ((MediaCollectorDelegate) context).collectMedias(item.getSourceMessageId(), filter);
+      stack = ((MediaCollectorDelegate) context).collectMedias(item.getSourceMessageId(), false, filter);
     }
 
     if (stack == null) {
@@ -8393,7 +8381,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     if (context instanceof MediaCollectorDelegate) {
       ((MediaCollectorDelegate) context).modifyMediaArguments(message, args);
     }
-    args.noLoadMore = message.isEventLog();
+    args.noLoadMore = message.isEventLog() || message.isSponsoredMessage();
     args.areOnlyScheduled = message.isScheduled();
 
     openWithArgs(context, args);
@@ -8438,7 +8426,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     if (context instanceof MediaCollectorDelegate) {
       ((MediaCollectorDelegate) context).modifyMediaArguments(msg, args);
     }
-    args.setMessageThreadId(msg.messagesController().getMessageThreadId());
+    args.setTopicId(msg.messagesController().getMessageTopicId());
 
     openWithArgs(context, args);
   }
@@ -8459,12 +8447,12 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   public static void openFromMessage (TGMessageMedia messageContainer, long messageId) {
     ViewController<?> context = messageContainer.controller();
     TdApi.Message msg = messageContainer.getMessage(messageId);
-    MediaItem item = MediaItem.valueOf(context.context(), context.tdlib(), msg);
+    MediaItem item = MediaItem.valueOf(messageContainer, messageId);
     if (item == null) {
       return;
     }
 
-    boolean allowLoadMore = !item.isSecret() && !item.isViewOnce();
+    boolean allowLoadMore = !messageContainer.isSponsoredMessage() && !item.isSecret() && !item.isViewOnce();
     TdApi.SearchMessagesFilter filter = null;
     if (allowLoadMore) {
       //noinspection SwitchIntDef
@@ -8506,7 +8494,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
       return;
     }
     if (allowLoadMore && context instanceof MediaCollectorDelegate) {
-      stack = ((MediaCollectorDelegate) context).collectMedias(msg.id, filter);
+      stack = ((MediaCollectorDelegate) context).collectMedias(msg.id, messageContainer.isSponsoredMessage(), filter);
     }
 
     if (stack == null) {
@@ -8515,13 +8503,17 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     }
 
     Args args = new Args(context, MODE_MESSAGES, stack);
-    args.noLoadMore = !allowLoadMore || messageContainer.isEventLog();
+    args.noLoadMore = !allowLoadMore || messageContainer.isEventLog() || messageContainer.isSponsoredMessage();
     if (context instanceof MediaCollectorDelegate) {
       ((MediaCollectorDelegate) context).modifyMediaArguments(msg, args);
     }
     args.setFilter(filter);
-    args.setMessageThreadId(messageContainer.messagesController().getMessageThreadId());
+    args.setTopicId(messageContainer.messagesController().getMessageTopicId());
     args.areOnlyScheduled = TD.isScheduled(msg);
+
+    if (messageContainer.isSponsoredMessage()) {
+      args.setCustomSubtitle(messageContainer.getSponsoredMessage().title);
+    }
 
     openWithArgs(context, args);
   }
