@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 
 import me.vkryl.core.lambda.Destroyable;
 
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class EmojiUtils {
   static boolean handleDeleteSurroundingText(@NonNull final InputConnection inputConnection,
                                              @NonNull final Editable editable, @IntRange(from = 0) final int beforeLength,

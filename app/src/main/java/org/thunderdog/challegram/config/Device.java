@@ -178,7 +178,7 @@ public class Device {
   public static final boolean NEED_LESS_PREVIEW_MARGINS = IS_SAMSUNG_SGS8;
   public static final boolean DISABLE_FULLSCREEN_PREVIEW = IS_SAMSUNG_SGS_FAMILY;
 
-  public static final boolean HIDE_POPUP_KEYBOARD = MANUFACTURER == BLACKBERRY && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean HIDE_POPUP_KEYBOARD = false;
 
   public static final boolean NEED_HQ_ROUND_VIDEOS = IS_SAMSUNG_SGS_FAMILY || StringUtils.equalsOrBothEmpty(Build.DEVICE, "zeroflte") || StringUtils.equalsOrBothEmpty(Build.DEVICE, "zenlte");
 

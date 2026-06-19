@@ -797,11 +797,7 @@ public class TooltipOverlayView extends ViewGroup {
         }
         this.attachedToView = view;
         if (view != null) {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.viewAttachedToWindow = view.isAttachedToWindow();
-          } else {
-            this.viewAttachedToWindow = true;
-          }
+          this.viewAttachedToWindow = view.isAttachedToWindow();
           view.addOnLayoutChangeListener(onLayoutChangeListener);
           view.addOnAttachStateChangeListener(onAttachStateChangeListener);
           if (view instanceof BaseView) {

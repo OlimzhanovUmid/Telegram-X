@@ -117,126 +117,122 @@ public class EGLEditorView extends ViewGroup {
   private int initedType;
 
   public void init (ImageGalleryFile imageFile, Bitmap bitmap, @Nullable FiltersState filtersState, @Nullable PaintState paintState) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      this.currentFile = imageFile;
-      this.sourceBitmap = bitmap;
+    this.currentFile = imageFile;
+    this.sourceBitmap = bitmap;
 
-      final int initType;
+    final int initType;
 
-      if (filtersState != null) {
-        this.currentFiltersState = filtersState;
-        initType = TYPE_FILTERS;
-      } else if (paintState != null) {
-        this.currentPaintState = paintState;
-        initType = TYPE_PAINT;
-      } else {
-        throw new IllegalArgumentException("filtersState == null && paintState == null");
-      }
-
-
-      android.view.TextureView textureView = null;
-
-      switch (initType) {
-        case TYPE_FILTERS: {
-          textureView = new android.view.TextureView(getContext());
-          textureView.setLayoutParams(FrameLayoutFix.newParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-          textureView.setVisibility(textureVisible ? View.VISIBLE : View.INVISIBLE);
-          textureView.setSurfaceTextureListener(new android.view.TextureView.SurfaceTextureListener() {
-            @Override
-            public void onSurfaceTextureAvailable (SurfaceTexture surface, int width, int height) {
-              if (surface != null && editorContext == null && sourceBitmap != null && !sourceBitmap.isRecycled() && currentFiltersState != null) {
-                editorContext = new EGLEditorContext(surface, sourceBitmap, currentFiltersState, width, height);
-                editorContext.requestRender(true, true);
-              }
-            }
-
-            @Override
-            public void onSurfaceTextureSizeChanged (SurfaceTexture surface, int width, int height) {
-              if (editorContext != null) {
-                editorContext.setSurfaceTextureSize(width, height);
-                editorContext.requestRender(false, true);
-                UI.post(() -> editorContext.requestRender(false, true));
-              }
-            }
-
-            @Override
-            public boolean onSurfaceTextureDestroyed (SurfaceTexture surface) {
-              destroy();
-              return true;
-            }
-
-            @Override
-            public void onSurfaceTextureUpdated (SurfaceTexture surface) { }
-          });
-          textureView.setScaleX(-1);
-          contentWrap.addView(textureView);
-          break;
-        }
-        case TYPE_PAINT: {
-          contentWrap.setPaintingGesturesEnabled(true);
-          break;
-        }
-      }
-      paintView = new SimpleDrawingView(getContext());
-      paintView.setLayoutParams(FrameLayoutFix.newParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-      contentWrap.addView(paintView);
-      contentWrap.setPaintingState(paintState);
-      this.textureView = textureView;
-      applyCurrentStyles();
-      initedType = initType;
+    if (filtersState != null) {
+      this.currentFiltersState = filtersState;
+      initType = TYPE_FILTERS;
+    } else if (paintState != null) {
+      this.currentPaintState = paintState;
+      initType = TYPE_PAINT;
+    } else {
+      throw new IllegalArgumentException("filtersState == null && paintState == null");
     }
+
+
+    android.view.TextureView textureView = null;
+
+    switch (initType) {
+      case TYPE_FILTERS: {
+        textureView = new android.view.TextureView(getContext());
+        textureView.setLayoutParams(FrameLayoutFix.newParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        textureView.setVisibility(textureVisible ? View.VISIBLE : View.INVISIBLE);
+        textureView.setSurfaceTextureListener(new android.view.TextureView.SurfaceTextureListener() {
+          @Override
+          public void onSurfaceTextureAvailable (SurfaceTexture surface, int width, int height) {
+            if (surface != null && editorContext == null && sourceBitmap != null && !sourceBitmap.isRecycled() && currentFiltersState != null) {
+              editorContext = new EGLEditorContext(surface, sourceBitmap, currentFiltersState, width, height);
+              editorContext.requestRender(true, true);
+            }
+          }
+
+          @Override
+          public void onSurfaceTextureSizeChanged (SurfaceTexture surface, int width, int height) {
+            if (editorContext != null) {
+              editorContext.setSurfaceTextureSize(width, height);
+              editorContext.requestRender(false, true);
+              UI.post(() -> editorContext.requestRender(false, true));
+            }
+          }
+
+          @Override
+          public boolean onSurfaceTextureDestroyed (SurfaceTexture surface) {
+            destroy();
+            return true;
+          }
+
+          @Override
+          public void onSurfaceTextureUpdated (SurfaceTexture surface) { }
+        });
+        textureView.setScaleX(-1);
+        contentWrap.addView(textureView);
+        break;
+      }
+      case TYPE_PAINT: {
+        contentWrap.setPaintingGesturesEnabled(true);
+        break;
+      }
+    }
+    paintView = new SimpleDrawingView(getContext());
+    paintView.setLayoutParams(FrameLayoutFix.newParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    contentWrap.addView(paintView);
+    contentWrap.setPaintingState(paintState);
+    this.textureView = textureView;
+    applyCurrentStyles();
+    initedType = initType;
   }
 
   private int appliedRotation;
   private CropState sourceCropState;
 
   private void applyCurrentStyles () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      if (appliedRotation != sourceRotation) {
-        boolean wasRotated = U.isRotated(appliedRotation);
-        appliedRotation = sourceRotation;
-        boolean nowRotated = U.isRotated(sourceRotation);
-        if (wasRotated != nowRotated) {
-          contentWrap.requestLayout();
-        }
+    if (appliedRotation != sourceRotation) {
+      boolean wasRotated = U.isRotated(appliedRotation);
+      appliedRotation = sourceRotation;
+      boolean nowRotated = U.isRotated(sourceRotation);
+      if (wasRotated != nowRotated) {
+        contentWrap.requestLayout();
       }
-      if (sourceCropState != null && !sourceCropState.isEmpty()) {
-        float degrees = sourceCropState.getDegreesAroundCenter();
-        contentWrap.setRotation(degrees);
-
-        double rad = Math.toRadians(degrees);
-        float sin = (float) Math.abs(Math.sin(rad));
-        float cos = (float) Math.abs(Math.cos(rad));
-
-        float w = sourceWidth;
-        float h = sourceHeight;
-
-        // W = w·|cos φ| + h·|sin φ|
-        // H = w·|sin φ| + h·|cos φ|
-
-        float W = w * cos + h * sin;
-        float H = w * sin + h * cos;
-
-        float scale = Math.max(W / w, H / h);
-        contentWrap.setScaleX(scale);
-        contentWrap.setScaleY(scale);
-        if (textureView != null) {
-          textureView.setScaleX(sourceCropState.needMirrorHorizontally() ? -1 : 1);
-          textureView.setScaleY(sourceCropState.needMirrorVertically() ? -1 : 1);
-        }
-      } else {
-        contentWrap.setRotation(0);
-        contentWrap.setScaleX(1f);
-        contentWrap.setScaleY(1f);
-        contentWrap.setTranslationX(0f);
-        contentWrap.setTranslationY(0f);
-        if (textureView != null) {
-          textureView.setScaleX(1);
-          textureView.setScaleY(1);
-        }
-      }
-      textureWrap.setRotation(sourceRotation);
     }
+    if (sourceCropState != null && !sourceCropState.isEmpty()) {
+      float degrees = sourceCropState.getDegreesAroundCenter();
+      contentWrap.setRotation(degrees);
+
+      double rad = Math.toRadians(degrees);
+      float sin = (float) Math.abs(Math.sin(rad));
+      float cos = (float) Math.abs(Math.cos(rad));
+
+      float w = sourceWidth;
+      float h = sourceHeight;
+
+      // W = w·|cos φ| + h·|sin φ|
+      // H = w·|sin φ| + h·|cos φ|
+
+      float W = w * cos + h * sin;
+      float H = w * sin + h * cos;
+
+      float scale = Math.max(W / w, H / h);
+      contentWrap.setScaleX(scale);
+      contentWrap.setScaleY(scale);
+      if (textureView != null) {
+        textureView.setScaleX(sourceCropState.needMirrorHorizontally() ? -1 : 1);
+        textureView.setScaleY(sourceCropState.needMirrorVertically() ? -1 : 1);
+      }
+    } else {
+      contentWrap.setRotation(0);
+      contentWrap.setScaleX(1f);
+      contentWrap.setScaleY(1f);
+      contentWrap.setTranslationX(0f);
+      contentWrap.setTranslationY(0f);
+      if (textureView != null) {
+        textureView.setScaleX(1);
+        textureView.setScaleY(1);
+      }
+    }
+    textureWrap.setRotation(sourceRotation);
   }
 
   public void setViewSizes (int width, int height, int croppedWidth, int croppedHeight) {
@@ -421,7 +417,7 @@ public class EGLEditorView extends ViewGroup {
   }
 
   public void getBitmapAsync (BitmapCallback callback) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && isReady()) {
+    if (isReady()) {
       switch (initedType) {
         case TYPE_FILTERS:
           if (editorContext != null) {

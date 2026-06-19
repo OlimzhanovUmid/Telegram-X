@@ -880,11 +880,7 @@ public class Strings {
   public static String systemFormat (String formatPhone) {
     String result;
     try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        result = PhoneNumberUtils.formatNumber(formatPhone, "US");
-      } else {
-        result = PhoneNumberUtils.formatNumber(formatPhone);
-      }
+      result = PhoneNumberUtils.formatNumber(formatPhone, "US");
     } catch (Throwable t) {
       Log.e("Couldn't format the phone number", t);
       result = null;

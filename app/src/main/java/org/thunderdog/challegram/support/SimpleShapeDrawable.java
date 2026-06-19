@@ -26,7 +26,7 @@ import org.thunderdog.challegram.util.ColorChangeAcceptorDelegate;
 import me.vkryl.core.ColorUtils;
 
 public abstract class SimpleShapeDrawable extends Drawable implements ColorChangeAcceptorDelegate {
-  public static final boolean USE_SOFTWARE_SHADOW = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean USE_SOFTWARE_SHADOW = false;
 
   private @ColorId
   int colorId;

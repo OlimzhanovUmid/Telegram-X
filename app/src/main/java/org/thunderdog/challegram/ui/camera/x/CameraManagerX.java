@@ -64,7 +64,6 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class CameraManagerX extends CameraManager<PreviewView> {
   public CameraManagerX (Context context, CameraDelegate delegate) {
     super(context, delegate);

@@ -184,11 +184,7 @@ public class EditText extends android.widget.EditText {
   }
 
   public void setUseIncognitoKeyboard (int imeOptions) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      imeOptions |= EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
-    } else {
-      imeOptions |= 0x1000000;
-    }
+    imeOptions |= EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
     setImeOptions(imeOptions);
   }
 

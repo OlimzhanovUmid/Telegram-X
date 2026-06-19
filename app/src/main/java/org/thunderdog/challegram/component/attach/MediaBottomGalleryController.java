@@ -466,11 +466,9 @@ public class MediaBottomGalleryController extends MediaBottomBaseController<Medi
 
   @Override
   public void onCameraRequested () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (context().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-        context().requestCameraPermission();
-        return;
-      }
+    if (context().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+      context().requestCameraPermission();
+      return;
     }
     mediaLayout.openCamera();
   }

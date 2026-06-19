@@ -527,7 +527,7 @@ public class Lang {
   public static String formatDecimal (double n) {
     Locale locale = Settings.instance().forceArabicNumbers() ? Locale.US : Lang.dateFormatLocale();
     synchronized (Lang.class) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+      if (ALLOW_ICU) {
         android.icu.text.DecimalFormat format = (android.icu.text.DecimalFormat) decimalFormat;
         if (format == null || decimalFormatLocale != locale) {
           android.icu.text.DecimalFormatSymbols symbols = new android.icu.text.DecimalFormatSymbols(decimalFormatLocale = locale);
@@ -593,7 +593,7 @@ public class Lang {
   }
 
   public static String formatNumber (long n) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if (ALLOW_ICU) {
       try {
         return fixNumber(android.icu.text.NumberFormat.getInstance(Lang.dateFormatLocale()).format(n));
       } catch (Throwable ignored) { }
@@ -602,7 +602,7 @@ public class Lang {
   }
 
   public static String compactNumber (long n) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU && n >= 0) {
+    if (ALLOW_ICU && n >= 0) {
       try {
         return android.icu.text.CompactDecimalFormat.getInstance(dateFormatLocale(), android.icu.text.CompactDecimalFormat.CompactStyle.SHORT).format(n);
       } catch (Throwable ignored) { }
@@ -611,7 +611,7 @@ public class Lang {
   }
 
   private static String dateFormat (String pattern, long timeInMillis) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if (ALLOW_ICU) {
       try {
         return new android.icu.text.SimpleDateFormat(pattern, dateFormatLocale()).format(DateUtils.dateInstance(timeInMillis));
       } catch (ExceptionInInitializerError e) {
@@ -716,7 +716,7 @@ public class Lang {
   private static final int STYLE_SHORT = 3;
 
   private static int translateStyle (int style, boolean allowIcu) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU && allowIcu) {
+    if (ALLOW_ICU && allowIcu) {
       switch (style) {
         case STYLE_LONG:
           return android.icu.text.DateFormat.LONG;
@@ -739,7 +739,7 @@ public class Lang {
   }
 
   private static String systemDate (long timeInMillis, int style, String fallbackPattern) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if (ALLOW_ICU) {
       try {
         return android.icu.text.DateFormat.getDateInstance(translateStyle(style, true), dateFormatLocale()).format(DateUtils.dateInstance(timeInMillis));
       } catch (Throwable ignored) { }
@@ -773,7 +773,7 @@ public class Lang {
   }
 
   private static String systemDateTime (long timeInMillis, int dateStyle, int timeStyle, String fallbackPattern) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if (ALLOW_ICU) {
       try {
         return android.icu.text.DateFormat.getDateTimeInstance(translateStyle(dateStyle, true), translateStyle(timeStyle, true), dateFormatLocale()).format(DateUtils.dateInstance(timeInMillis));
       } catch (Throwable ignored) { }
@@ -786,7 +786,7 @@ public class Lang {
   }
 
   private static String systemDateWithoutYear (long timeInMillis, int style, String fallbackPattern) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if (ALLOW_ICU) {
       try {
         String pattern = ((android.icu.text.SimpleDateFormat) android.icu.text.DateFormat.getDateInstance(translateStyle(style, true), dateFormatLocale())).toPattern();
         return dateFormat(patternWithoutYear(pattern), timeInMillis);
@@ -801,7 +801,7 @@ public class Lang {
   }
 
   private static String systemDateWithoutDay (long timeInMillis, int style, String fallbackPattern) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if (ALLOW_ICU) {
       try {
         String pattern = ((android.icu.text.SimpleDateFormat) android.icu.text.DateFormat.getDateInstance(translateStyle(style, true), dateFormatLocale())).toPattern();
         return dateFormat(patternWithoutDay(pattern), timeInMillis);
@@ -2479,11 +2479,9 @@ public class Lang {
   }
 
   public static String[] getMonths (Locale locale) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      try {
-        return android.icu.text.DateFormatSymbols.getInstance(locale).getMonths();
-      } catch (Throwable ignored) { }
-    }
+    try {
+      return android.icu.text.DateFormatSymbols.getInstance(locale).getMonths();
+    } catch (Throwable ignored) { }
     return DateFormatSymbols.getInstance(locale).getMonths();
   }
 
@@ -3447,12 +3445,8 @@ public class Lang {
 
   @SuppressWarnings("deprecation")
   public static Locale getPrimaryLocale (Configuration configuration) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      android.os.LocaleList list = configuration.getLocales();
-      return list.get(0);
-    } else {
-      return configuration.locale;
-    }
+    android.os.LocaleList list = configuration.getLocales();
+    return list.get(0);
   }
 
   public static Locale getSystemLocale () {
@@ -3494,26 +3488,18 @@ public class Lang {
 
   @SuppressWarnings("deprecation")
   private static Locale obtainLocalePreBaklava (String languageTag, String language, String country, String variant) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      try {
-        Locale.Builder b = new Locale.Builder()
-          .setLanguage(language);
-        if (!StringUtils.isEmpty(country)) {
-          b.setRegion(country);
-        }
-        if (!StringUtils.isEmpty(variant)) {
-          b.setVariant(variant);
-        }
-        return b.build();
-      } catch (RuntimeException illformedLocaleException) {
-        return Locale.forLanguageTag(languageTag);
+    try {
+      Locale.Builder b = new Locale.Builder()
+        .setLanguage(language);
+      if (!StringUtils.isEmpty(country)) {
+        b.setRegion(country);
       }
-    } else if (!StringUtils.isEmpty(variant)) {
-      return new Locale(language, country,variant);
-    } else if (!StringUtils.isEmpty(country)) {
-      return new Locale(language, country);
-    } else {
-      return new Locale(language);
+      if (!StringUtils.isEmpty(variant)) {
+        b.setVariant(variant);
+      }
+      return b.build();
+    } catch (RuntimeException illformedLocaleException) {
+      return Locale.forLanguageTag(languageTag);
     }
   }
 

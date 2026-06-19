@@ -209,11 +209,7 @@ public class ProximityManager implements Settings.RaiseToSpeakListener, SensorEv
   private static IntentFilter newIntentFilter (BluetoothAdapter btAdapter) {
     IntentFilter filter = new IntentFilter();
     filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      filter.addAction(AudioManager.ACTION_HEADSET_PLUG);
-    } else {
-      filter.addAction(Intent.ACTION_HEADSET_PLUG);
-    }
+    filter.addAction(AudioManager.ACTION_HEADSET_PLUG);
     if (btAdapter != null) {
       filter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
       filter.addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);

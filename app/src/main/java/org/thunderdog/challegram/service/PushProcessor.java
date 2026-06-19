@@ -99,11 +99,8 @@ public class PushProcessor {
   }
 
   private boolean inIdleMode () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-      return powerManager.isDeviceIdleMode();
-    }
-    return false;
+    PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+    return powerManager.isDeviceIdleMode();
   }
 
   private static BaseThread queue;

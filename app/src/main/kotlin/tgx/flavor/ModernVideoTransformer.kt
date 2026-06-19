@@ -56,7 +56,6 @@ fun getVideoFrameRate(context: Context, sourcePath: String): Int {
   return -1
 }
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 fun legacyConvertVideoComplex(
   videoGen: VideoGen,
   context: Context,

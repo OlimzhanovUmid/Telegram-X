@@ -56,11 +56,7 @@ public class EmojiInputConnection extends InputConnectionWrapper {
     @NonNull final InputConnection inputConnection, @NonNull final Editable editable,
     @IntRange(from = 0) final int beforeLength, @IntRange(from = 0) final int afterLength,
     final boolean inCodePoints) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      return EmojiUtils.handleDeleteSurroundingText(inputConnection, editable,
-        beforeLength, afterLength, inCodePoints);
-    } else {
-      return false;
-    }
+    return EmojiUtils.handleDeleteSurroundingText(inputConnection, editable,
+      beforeLength, afterLength, inCodePoints);
   }
 }

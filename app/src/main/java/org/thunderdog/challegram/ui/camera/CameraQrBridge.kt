@@ -77,7 +77,6 @@ class CameraQrBridge(manager: CameraManager<*>) {
         mlkitFailed = false
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun processImage(proxy: ImageProxy) {
         val mediaImage = proxy.getImage()
 

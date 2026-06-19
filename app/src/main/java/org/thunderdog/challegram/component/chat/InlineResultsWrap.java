@@ -283,21 +283,19 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
   }
 
   public void addLick (ViewGroup parent) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      lickView = new View(getContext()) {
-        @Override
-        protected void onDraw (Canvas c) {
-          int height = getMeasuredHeight();
-          float top = detectRecyclerTopEdge() - lastBottomMargin;
-          if (top < height) {
-            c.drawRect(0, top, getMeasuredWidth(), height, Paints.fillingPaint(ColorUtils.alphaColor(visibleFactor, Theme.getColor(Config.STATUS_BAR_COLOR_ID))));
-          }
+    lickView = new View(getContext()) {
+      @Override
+      protected void onDraw (Canvas c) {
+        int height = getMeasuredHeight();
+        float top = detectRecyclerTopEdge() - lastBottomMargin;
+        if (top < height) {
+          c.drawRect(0, top, getMeasuredWidth(), height, Paints.fillingPaint(ColorUtils.alphaColor(visibleFactor, Theme.getColor(Config.STATUS_BAR_COLOR_ID))));
         }
-      };
-      lickView.setBackgroundColor(0xffff0000);
-      lickView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, HeaderView.getTopOffset(), Gravity.TOP));
-      parent.addView(lickView);
-    }
+      }
+    };
+    lickView.setBackgroundColor(0xffff0000);
+    lickView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, HeaderView.getTopOffset(), Gravity.TOP));
+    parent.addView(lickView);
   }
 
   @Override
@@ -623,9 +621,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
   private void setBackgroundFactor (float factor) {
     if (this.backgroundFactor != factor) {
       this.backgroundFactor = factor;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        UI.setStatusBarColor(ColorUtils.compositeColor(HeaderView.defaultStatusColor(), getBackgroundColor()));
-      }
+      UI.setStatusBarColor(ColorUtils.compositeColor(HeaderView.defaultStatusColor(), getBackgroundColor()));
       if (lickView != null) {
         lickView.invalidate();
       }

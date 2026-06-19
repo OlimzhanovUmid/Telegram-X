@@ -93,8 +93,8 @@ public class Config {
 
   // Fields from default config.
 
-  public static final int STATUS_BAR_COLOR_ID = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? ColorId.statusBar : ColorId.statusBarLegacy;
-  public static final int STATUS_BAR_TEXT_COLOR_ID = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? ColorId.statusBarContent : ColorId.statusBarLegacyContent;
+  public static final int STATUS_BAR_COLOR_ID = ColorId.statusBar;
+  public static final int STATUS_BAR_TEXT_COLOR_ID = ColorId.statusBarContent;
 
   public static final boolean DISABLE_SENDING_MEDIA_CACHE = false; // BuildConfig.DEBUG; // FIXME: TDLib
   public static final boolean WORKAROUND_NEED_MODIFY = true; // FIXME TDLib
@@ -118,12 +118,12 @@ public class Config {
 
   public static final boolean SERVICES_ENABLED = true; // !BuildConfig.DEBUG;
 
-  public static final boolean PIN_BITMAP_ENABLED = Build.VERSION.SDK_INT < Build.VERSION_CODES.M && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+  public static final boolean PIN_BITMAP_ENABLED = false;
   public static final boolean GCM_ENABLED = true;
 
   public static final boolean ALLOW_SYSTEM_EMOJI = BuildConfig.DEBUG;
 
-  public static final boolean USE_VIDEO_COMPRESSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+  public static final boolean USE_VIDEO_COMPRESSION = true;
   public static final boolean MUTE_VIDEO_AVAILABLE = USE_VIDEO_COMPRESSION;
 
   public static final boolean MASKS_TEXTS_AVAILABLE = false;
@@ -142,22 +142,22 @@ public class Config {
   public static final boolean USE_STICKER_VIBRATE = true;
 
 
-  public static final boolean CUSTOM_CAMERA_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+  public static final boolean CUSTOM_CAMERA_AVAILABLE = true;
   public static final boolean CAMERA_ALLOW_FAKE_ROTATION = true;
   public static final boolean CAMERA_AUTO_FLASH_ENABLED = true;
   public static final boolean CAMERA_ALLOW_SNAPSHOTS = false; // true;
-  public static final boolean CAMERA_X_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean CAMERA_X_AVAILABLE = true;
 
   public static final int MAX_COPY_TEXT_LINE_COUNT = 12;
 
   public static final boolean CROP_USE_REGION_READER = true;
   public static final boolean CROP_ENABLED = true;
-  public static final boolean MODERN_VIDEO_TRANSCODING_ENABLED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-  public static final boolean LEGACY_VIDEO_TRANSCODING_ENABLED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && BuildConfig.LEGACY_FLAVOR;
+  public static final boolean MODERN_VIDEO_TRANSCODING_ENABLED = true;
+  public static final boolean LEGACY_VIDEO_TRANSCODING_ENABLED = BuildConfig.LEGACY_FLAVOR;
 
-  public static final boolean IN_APP_BROWSER_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1;
+  public static final boolean IN_APP_BROWSER_AVAILABLE = true;
 
-  public static final boolean VIDEO_PLAYER_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+  public static final boolean VIDEO_PLAYER_AVAILABLE = true;
   public static final boolean HLS_VIDEO_ENABLED = VIDEO_PLAYER_AVAILABLE;
 
   public static final boolean FORCE_TOUCH_ENABLED = true;
@@ -169,15 +169,15 @@ public class Config {
 
   public static final boolean SLOW_VIDEO_SWITCH = Device.IS_SAMSUNG; // TODO make
 
-  public static final boolean ROUND_VIDEOS_PLAYBACK_SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-  public static final boolean ROUND_VIDEOS_RECORD_SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+  public static final boolean ROUND_VIDEOS_PLAYBACK_SUPPORTED = true;
+  public static final boolean ROUND_VIDEOS_RECORD_SUPPORTED = true;
 
   public static final boolean DEBUG_CLIPPING = false;
   public static final boolean USE_CRASHLYTICS = false;
 
   public static final boolean CALL_FROM_PREVIEW = false;
 
-  public static final boolean USE_GROUP_NAMES = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+  public static final boolean USE_GROUP_NAMES = true;
 
   public static final boolean FORCE_SHOW_RECENTS_STICKERS_TITLE = false;
   public static final int DEFAULT_SHOW_RECENT_STICKERS_COUNT = 10;
@@ -193,7 +193,7 @@ public class Config {
 
   public static final boolean USE_NEW_PLAYER = true;
 
-  public static final boolean USE_CLOUD_PLAYER = USE_NEW_PLAYER && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+  public static final boolean USE_CLOUD_PLAYER = USE_NEW_PLAYER;
   public static final float DEFAULT_ICON_SWITCH_SCALE = .4f;
   public static final boolean CUTOUT_ENABLED = true; // Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
   public static final boolean EXPLICIT_DICE_AVAILABLE = false;
@@ -232,7 +232,7 @@ public class Config {
   public static final int ROBOT_DC_ID = 1;
   public static final String ROBOT_PASSWORD = "objection";
 
-  public static boolean VIBRATE_ONLY_IF_SILENT_AVAILABLE = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
+  public static boolean VIBRATE_ONLY_IF_SILENT_AVAILABLE = false;
 
   public static boolean USE_OLD_COVER = false; // Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
 
@@ -241,7 +241,7 @@ public class Config {
   public static final boolean FAVORITE_STICKERS_WITHOUT_SETS = false;
   public static final boolean DEBUG_NAV_ANIM = false; // BuildConfig.DEBUG;
 
-  public static final boolean NEED_NOTIFICATION_CONTENT_PREVIEW = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean NEED_NOTIFICATION_CONTENT_PREVIEW = true;
 
   public static final boolean SHOW_COPY_REPORT_DETAILS_IN_SETTINGS = BuildConfig.EXPERIMENTAL;
 
@@ -249,7 +249,7 @@ public class Config {
 
   public static final int MINIMUM_CALL_CONTACTS_SUGGESTIONS = 3;
 
-  public static final boolean USE_CUSTOM_NAVIGATION_COLOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+  public static final boolean USE_CUSTOM_NAVIGATION_COLOR = true;
   public static final boolean USE_TRANSPARENT_STATUS_BAR = BuildConfig.DEBUG;
 
   public static final boolean EDGE_TO_EDGE_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
@@ -272,7 +272,7 @@ public class Config {
 
   public static final boolean ALLOW_DATE_MODIFIED_RESOLVING = false; // disabling, because android sucks
 
-  public static final boolean REVEAL_ANIMATION_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean REVEAL_ANIMATION_AVAILABLE = true;
 
   public static final boolean REMOVE_INTRO = true;
 

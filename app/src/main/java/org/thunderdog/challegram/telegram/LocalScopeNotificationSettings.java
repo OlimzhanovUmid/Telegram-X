@@ -55,9 +55,7 @@ public class LocalScopeNotificationSettings {
   }
 
   public void resetToDefault (SharedPreferences.Editor editor) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      editor.remove(prefix(TdlibNotificationManager.KEY_PREFIX_CHANNEL_VERSION));
-    }
+    editor.remove(prefix(TdlibNotificationManager.KEY_PREFIX_CHANNEL_VERSION));
     editor
       .remove(suffix(TdlibNotificationManager.KEY_SUFFIX_SOUND_NAME))
       .remove(suffix(TdlibNotificationManager.KEY_SUFFIX_SOUND_NAME))
@@ -96,7 +94,7 @@ public class LocalScopeNotificationSettings {
 
   public long getChannelVersion () {
     if (_channelVersion == null)
-      _channelVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? Settings.instance().getLong(prefix(TdlibNotificationManager.KEY_PREFIX_CHANNEL_VERSION), 0) : 0;
+      _channelVersion = Settings.instance().getLong(prefix(TdlibNotificationManager.KEY_PREFIX_CHANNEL_VERSION), 0);
     return _channelVersion;
   }
 

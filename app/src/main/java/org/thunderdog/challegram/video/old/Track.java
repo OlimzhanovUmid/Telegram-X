@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class Track {
 
   private static class SamplePresentationTime {

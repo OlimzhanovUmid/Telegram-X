@@ -77,10 +77,8 @@ public class Views {
     view.setFocusableInTouchMode(false);
     view.setFocusable(false);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      if (view instanceof ViewGroup) {
-        ((ViewGroup) view).setMotionEventSplittingEnabled(false);
-      }
+    if (view instanceof ViewGroup) {
+      ((ViewGroup) view).setMotionEventSplittingEnabled(false);
     }
   }
 
@@ -221,11 +219,7 @@ public class Views {
 
   @SuppressWarnings("deprecation")
   public static int saveLayerAlpha (Canvas c, float left, float top, float right, float bottom, int alpha, int flags) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return c.saveLayerAlpha(left, top, right, bottom, alpha);
-    } else {
-      return c.saveLayerAlpha(left, top, right, bottom, alpha, flags);
-    }
+    return c.saveLayerAlpha(left, top, right, bottom, alpha);
   }
 
   private static int getParentsTop (View view, int limit, boolean includeTranslation) {
@@ -476,9 +470,9 @@ public class Views {
   }
 
   public static void animateAlpha (final View view, final float toAlpha, final long duration, final long startDelay, final Interpolator interpolator, final Animator.AnimatorListener listener) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1 && DO_NOT_EAT_SHIT) {
+    if (DO_NOT_EAT_SHIT) {
       android.view.ViewPropertyAnimator animator = view.animate().alpha(toAlpha).setDuration(duration).setInterpolator(interpolator).setListener(listener);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && startDelay > 0l) {
+      if (startDelay > 0l) {
         animator.setStartDelay(startDelay);
       }
       return;
@@ -503,9 +497,9 @@ public class Views {
   }
 
   public static void animateY (final View view, final float toY, final long duration, final long startDelay, final Interpolator interpolator, final Animator.AnimatorListener listener) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1 && DO_NOT_EAT_SHIT) {
+    if (DO_NOT_EAT_SHIT) {
       android.view.ViewPropertyAnimator animator = view.animate().translationY(toY).setDuration(duration).setInterpolator(interpolator).setListener(listener);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && startDelay >= 0l) {
+      if (startDelay >= 0l) {
         animator.setStartDelay(startDelay);
       }
       return;
@@ -530,9 +524,9 @@ public class Views {
   }
 
   public static void animate (final View view, final float scaleX, final float scaleY, final float alpha, long duration, long startDelay, Interpolator interpolator, Animator.AnimatorListener listener) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1 && DO_NOT_EAT_SHIT) {
+    if (DO_NOT_EAT_SHIT) {
       android.view.ViewPropertyAnimator animator = view.animate().scaleX(scaleX).scaleY(scaleY).alpha(alpha).setInterpolator(interpolator).setDuration(duration).setListener(listener);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && startDelay >= 0l) {
+      if (startDelay >= 0l) {
         animator.setStartDelay(startDelay);
       }
       return;
@@ -566,7 +560,7 @@ public class Views {
   }
 
   public static void rotateBy (final View view, final float byDegrees, final long duration, Interpolator interpolator, final Animator.AnimatorListener listener) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1 && DO_NOT_EAT_SHIT) {
+    if (DO_NOT_EAT_SHIT) {
       view.animate().rotationBy(byDegrees).setDuration(duration).setInterpolator(interpolator).setListener(listener);
       return;
     }
@@ -582,10 +576,8 @@ public class Views {
   }
 
   public static void clearAnimations (View view) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      // FIXME check what happens on 13 target API
-      view.animate().cancel();
-    }
+    // FIXME check what happens on 13 target API
+    view.animate().cancel();
   }
 
   public static void setCursorDrawable (android.widget.EditText editText, @DrawableRes int res) {
@@ -665,85 +657,77 @@ public class Views {
   }
 
   public static void setSimpleStateListAnimator (final View view) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      android.animation.StateListAnimator animator = new android.animation.StateListAnimator();
+    android.animation.StateListAnimator animator = new android.animation.StateListAnimator();
 
-      final int fromZ = Screen.dp(1.5f);
-      final int toZ = Screen.dp(3f);
-      final int diffZ = toZ - fromZ;
+    final int fromZ = Screen.dp(1.5f);
+    final int toZ = Screen.dp(3f);
+    final int diffZ = toZ - fromZ;
 
-      ValueAnimator obj;
+    ValueAnimator obj;
 
-      obj = AnimatorUtils.simpleValueAnimator();
-      obj.setDuration(180l);
-      obj.setInterpolator(AnimatorUtils.DECELERATE_INTERPOLATOR);
-      obj.addUpdateListener(animation -> {
-        float z = fromZ + (float) diffZ * AnimatorUtils.getFraction(animation);
-        if (z < view.getTranslationZ()) {
-          view.setTranslationZ(z);
-          if (view.getTag() instanceof View) {
-            ((View) view.getTag()).setTranslationZ(z);
-          }
-        } else {
-          if (view.getTag() instanceof View) {
-            ((View) view.getTag()).setTranslationZ(z);
-          }
-          view.setTranslationZ(z);
+    obj = AnimatorUtils.simpleValueAnimator();
+    obj.setDuration(180l);
+    obj.setInterpolator(AnimatorUtils.DECELERATE_INTERPOLATOR);
+    obj.addUpdateListener(animation -> {
+      float z = fromZ + (float) diffZ * AnimatorUtils.getFraction(animation);
+      if (z < view.getTranslationZ()) {
+        view.setTranslationZ(z);
+        if (view.getTag() instanceof View) {
+          ((View) view.getTag()).setTranslationZ(z);
         }
-      });
-      animator.addState(new int[] {android.R.attr.state_pressed}, obj);
-
-      obj = AnimatorUtils.simpleValueAnimator();
-      obj.setDuration(180l);
-      obj.setInterpolator(AnimatorUtils.DECELERATE_INTERPOLATOR);
-      obj.addUpdateListener(animation -> {
-        float z = toZ - (float) diffZ * AnimatorUtils.getFraction(animation);
-        if (z < view.getTranslationZ()) {
-          view.setTranslationZ(z);
-          if (view.getTag() instanceof View) {
-            ((View) view.getTag()).setTranslationZ(z);
-          }
-        } else {
-          if (view.getTag() instanceof View) {
-            ((View) view.getTag()).setTranslationZ(z);
-          }
-          view.setTranslationZ(z);
+      } else {
+        if (view.getTag() instanceof View) {
+          ((View) view.getTag()).setTranslationZ(z);
         }
-      });
+        view.setTranslationZ(z);
+      }
+    });
+    animator.addState(new int[] {android.R.attr.state_pressed}, obj);
 
-      animator.addState(new int[] {}, obj);
+    obj = AnimatorUtils.simpleValueAnimator();
+    obj.setDuration(180l);
+    obj.setInterpolator(AnimatorUtils.DECELERATE_INTERPOLATOR);
+    obj.addUpdateListener(animation -> {
+      float z = toZ - (float) diffZ * AnimatorUtils.getFraction(animation);
+      if (z < view.getTranslationZ()) {
+        view.setTranslationZ(z);
+        if (view.getTag() instanceof View) {
+          ((View) view.getTag()).setTranslationZ(z);
+        }
+      } else {
+        if (view.getTag() instanceof View) {
+          ((View) view.getTag()).setTranslationZ(z);
+        }
+        view.setTranslationZ(z);
+      }
+    });
 
-      view.setStateListAnimator(animator);
-    }
+    animator.addState(new int[] {}, obj);
+
+    view.setStateListAnimator(animator);
   }
 
   public static void initCircleButton (final View view, final float size, final float padding) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setSimpleStateListAnimator(view);
-      view.setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @TargetApi (Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          int p = Screen.dp(padding);
-          int s = Screen.dp(size);
-          outline.setOval(p, p, p + s, p + s);
-        }
-      });
-    }
+    setSimpleStateListAnimator(view);
+    view.setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        int p = Screen.dp(padding);
+        int s = Screen.dp(size);
+        outline.setOval(p, p, p + s, p + s);
+      }
+    });
   }
 
   public static void initRectButton (final View view, final float size, final float padding) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setSimpleStateListAnimator(view);
-      view.setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @TargetApi (Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          int p = Screen.dp(padding);
-          outline.setRoundRect(p, p, view.getMeasuredWidth() - p, view.getMeasuredHeight() - p, Screen.dp(size));
-        }
-      });
-    }
+    setSimpleStateListAnimator(view);
+    view.setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        int p = Screen.dp(padding);
+        outline.setRoundRect(p, p, view.getMeasuredWidth() - p, view.getMeasuredHeight() - p, Screen.dp(size));
+      }
+    });
   }
 
   public static View simpleProgressView (Context context) {
@@ -752,15 +736,9 @@ public class Views {
 
   public static View simpleProgressView (Context context, ViewGroup.LayoutParams params) {
     View view;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      android.widget.ProgressBar bar = new android.widget.ProgressBar(context);
-      bar.setIndeterminate(true);
-      view = bar;
-    } else {
-      org.thunderdog.challegram.widget.SpinnerView spinnerView = new org.thunderdog.challegram.widget.SpinnerView(context);
-      spinnerView.setImageResource(R.drawable.spinner_48_inner);
-      view = spinnerView;
-    }
+    android.widget.ProgressBar bar = new android.widget.ProgressBar(context);
+    bar.setIndeterminate(true);
+    view = bar;
     if (params != null) {
       view.setLayoutParams(params);
     }
@@ -823,11 +801,7 @@ public class Views {
   }
 
   public static void removeRule (RelativeLayout.LayoutParams params, int verb) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      params.removeRule(verb);
-    } else {
-      params.addRule(verb, 0);
-    }
+    params.removeRule(verb);
   }
 
   public static boolean setMargins (View view, int left, int top, int right, int bottom) {

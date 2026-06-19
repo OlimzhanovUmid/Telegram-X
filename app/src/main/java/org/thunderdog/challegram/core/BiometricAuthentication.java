@@ -43,11 +43,7 @@ public class BiometricAuthentication {
   }
 
   private static @Nullable BiometricManager getManager () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return BiometricManager.from(UI.getAppContext());
-    } else {
-      return null;
-    }
+    return BiometricManager.from(UI.getAppContext());
   }
 
   @Retention(RetentionPolicy.SOURCE)

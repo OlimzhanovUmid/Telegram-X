@@ -70,7 +70,7 @@ public abstract class BaseChartView<T extends ChartData, L extends LineViewData>
     int chartActiveLineAlpha;
 
     public final static boolean USE_LINES = Build.VERSION.SDK_INT < Build.VERSION_CODES.P;
-    protected final static boolean ANIMATE_PICKER_SIZES = Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP;
+    protected final static boolean ANIMATE_PICKER_SIZES = true;
     public static FastOutSlowInInterpolator INTERPOLATOR = new FastOutSlowInInterpolator();
 
     int chartBottom;
@@ -1407,7 +1407,6 @@ public abstract class BaseChartView<T extends ChartData, L extends LineViewData>
     }
 
     protected void updatePickerMinMaxHeight() {
-        if (!ANIMATE_PICKER_SIZES) return;
         int max = 0;
         int min = Integer.MAX_VALUE;
         for (LineViewData l : lines) {

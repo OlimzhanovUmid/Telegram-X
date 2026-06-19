@@ -561,7 +561,7 @@ public class EmojiLayoutRecyclerController extends ViewController<EmojiLayoutRec
 
     final int currentSection = getStickerSetSection();
 
-    if (!animated || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || callbacks == null || Math.abs(futureSection - currentSection) > SCROLL_BY_SECTION_LIMIT) {
+    if (!animated || callbacks == null || Math.abs(futureSection - currentSection) > SCROLL_BY_SECTION_LIMIT) {
       if (callbacks != null) {
         callbacks.setIgnoreMovement(true);
         callbacks.setCurrentStickerSectionByPosition(controllerId, futureSection, true, true);

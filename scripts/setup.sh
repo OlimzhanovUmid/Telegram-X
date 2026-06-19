@@ -24,6 +24,9 @@ fi
 # Patch opus
 patch-opus-impl.sh
 
+# Patch flac
+patch-flac-impl.sh
+
 # Patch androidx-media sources
 patch-androidx-media-impl.sh
 

@@ -79,27 +79,8 @@ public class TGCountry {
       if (manager == null) {
         return null;
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        // FIXME
-        return null;
-      }
-      String rawNumber = manager.getLine1Number();
-      if (rawNumber == null || rawNumber.isEmpty()) {
-        return null;
-      }
-      String number = Strings.getNumber(rawNumber);
-      if (number.isEmpty()) {
-        return null;
-      }
-
-      String countryISO = manager.getSimCountryIso();
-      String[] country = find(countryISO);
-
-      if (country == null) {
-        return null;
-      }
-
-      return new String[] { country[0], number.substring(country[0].length())};
+      // FIXME
+      return null;
     } catch (Throwable t) {
       Log.w("Cannot getLine1Number", t);
     }

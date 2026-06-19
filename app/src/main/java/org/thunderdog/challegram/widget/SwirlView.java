@@ -27,7 +27,6 @@ import org.thunderdog.challegram.tool.UI;
 
 import me.vkryl.core.lambda.CancellableRunnable;
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public final class SwirlView extends ImageView {
   // Keep in sync with attrs.
   public enum State {

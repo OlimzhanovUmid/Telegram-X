@@ -302,24 +302,6 @@ public class MediaLayout extends FrameLayoutFix implements
       addView(shadowView);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && false) { // FIXME
-      setElevation(Screen.dp(10f));
-      setTranslationZ(Screen.dp(1f));
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @TargetApi(value = 21)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          int top = currentController.getCurrentHeight() + (int) currentController.getValue().getTranslationY();
-          int bottom = getMeasuredHeight();
-
-          int left = 0;
-          int right = getMeasuredWidth();
-
-          outline.setRect(left, top, right, bottom);
-        }
-      });
-    }
-
     setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
     ThemeManager.instance().addThemeListener(this);
@@ -804,9 +786,7 @@ public class MediaLayout extends FrameLayoutFix implements
   public void onBottomFactorChanged (float factor) {
     fromView.setTranslationY(fromY + Math.round((float) fromHeight * factor));
     toView.setTranslationY(toHeight - Math.round(toHeight * factor));
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      invalidateOutline();
-    }
+    invalidateOutline();
     onCurrentColorChanged();
   }
 
@@ -926,9 +906,7 @@ public class MediaLayout extends FrameLayoutFix implements
   private void prepareRevealAnimation () {
     currentStartHeight = currentController.getStartHeight();
     currentController.getValue().setTranslationY(currentStartHeight);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      invalidateOutline();
-    }
+    invalidateOutline();
     setBottomBarFactor(0f);
   }
 
@@ -941,9 +919,7 @@ public class MediaLayout extends FrameLayoutFix implements
   }
 
   public void onContentHeightChanged () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      invalidateOutline();
-    }
+    invalidateOutline();
   }
 
   // Popup animation
@@ -964,7 +940,7 @@ public class MediaLayout extends FrameLayoutFix implements
         }
       }
     };
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && hideCircular) {
+    if (hideCircular) {
       int cx = getMeasuredWidth() - (int) ((float) sendButton.getMeasuredWidth() * .5f);
       int cy = getMeasuredHeight() - (int) ((float) sendButton.getMeasuredHeight() * .5f);
       if (headerFactor != 0f) {

@@ -28,15 +28,12 @@ public class MessageOverlayView extends View {
 
   public MessageOverlayView (Context context) {
     super(context);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @Override
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setEmpty();
-        }
-      });
-    }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        outline.setEmpty();
+      }
+    });
   }
 
   public MessageOverlayView setBoundView (MessageView boundView) {

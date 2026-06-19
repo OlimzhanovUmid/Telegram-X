@@ -110,9 +110,6 @@ public class Permissions {
   }
 
   public boolean requestPermissions (@Nullable RunnableInt after, String... permissions) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return false;
-    }
     List<String> missingPermissions = null;
     for (String permission : permissions) {
       if (!checkPermission(permission)) {
@@ -146,10 +143,6 @@ public class Permissions {
   }
 
   public boolean requestReadExternalStorage (@ReadType int type, @Nullable RunnableInt after) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      // No permission management before Marshmallow
-      return false;
-    }
     List<String> permissions = new ArrayList<>();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       switch (type) {
@@ -276,11 +269,7 @@ public class Permissions {
   }
 
   private boolean shouldShowPermissionRationale (String permission) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return context.shouldShowRequestPermissionRationale(permission);
-    } else {
-      return false;
-    }
+    return context.shouldShowRequestPermissionRationale(permission);
   }
 
   public boolean requestRecordAudioPermissions (@Nullable RunnableBool after) {

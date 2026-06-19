@@ -328,11 +328,7 @@ public class VideoGen {
   private final ArrayDeque<Runnable> pendingVideoGenerations = new ArrayDeque<>();
 
   private int maxParallelVideoGenerations () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      return MathUtils.clamp(Runtime.getRuntime().availableProcessors(), 1, 8);
-    } else {
-      return 1;
-    }
+    return MathUtils.clamp(Runtime.getRuntime().availableProcessors(), 1, 8);
   }
 
   private void awaitOrConvertVideo (String sourcePath, String destinationPath, VideoGenerationInfo info, Entry entry, ProgressCallback onProgress, Runnable onComplete, RunnableData<String> onCancel, RunnableData<Throwable> onFailure) {
@@ -370,7 +366,6 @@ public class VideoGen {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void convertVideoComplexV2 (String sourcePath, String destinationPath, VideoGenerationInfo info, Entry entry, ProgressCallback onProgress, Runnable onComplete, RunnableData<String> onCancel, RunnableData<Throwable> onFailure, Runnable after) throws FileNotFoundException {
     MediaMetadataRetriever retriever = U.openRetriever(sourcePath);
     if (retriever == null)
@@ -378,12 +373,7 @@ public class VideoGen {
 
     int inputVideoWidth = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
     int inputVideoHeight = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-    int inputVideoRotation;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      inputVideoRotation = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
-    } else {
-      inputVideoRotation = 0;
-    }
+    int inputVideoRotation = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
     long inputVideoBitrate = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
     U.closeRetriever(retriever);
 

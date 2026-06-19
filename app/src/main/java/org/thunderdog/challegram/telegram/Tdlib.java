@@ -8063,18 +8063,16 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
 
     listeners.updateChatTitle(update, chat, chatLists);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      long myUserId = myUserId();
-      if (myUserId != 0) {
-        try {
-          TdlibNotificationChannelGroup.updateChat(this, myUserId, chat);
-        } catch (TdlibNotificationChannelGroup.ChannelCreationFailureException e) {
-          TDLib.Tag.notifications("Unable to update notification channel title for chat %d:\n%s",
-            update.chatId,
-            Log.toString(e)
-          );
-          settings().trackNotificationChannelProblem(e, chat.id);
-        }
+    long myUserId = myUserId();
+    if (myUserId != 0) {
+      try {
+        TdlibNotificationChannelGroup.updateChat(this, myUserId, chat);
+      } catch (TdlibNotificationChannelGroup.ChannelCreationFailureException e) {
+        TDLib.Tag.notifications("Unable to update notification channel title for chat %d:\n%s",
+          update.chatId,
+          Log.toString(e)
+        );
+        settings().trackNotificationChannelProblem(e, chat.id);
       }
     }
   }
@@ -9059,10 +9057,6 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       }
       callback.onApplicationVerificationResult(error);
     };
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      onError.runWithData(new ApplicationVerificationException("PLAYINTEGRITY_FAILED_SDK_TOO_LOW_" + Build.VERSION.SDK_INT));
-      return;
-    }
     long projectId = 0;
     try {
       FirebaseOptions options = FirebaseOptions.fromResource(UI.getAppContext());
@@ -9105,10 +9099,6 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       TDLib.Tag.recaptcha("failure verificationId=%d: %s", verificationId, Log.toString(e));
       callback.onApplicationVerificationResult(e.getMessage());
     };
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      onError.runWithData(new ApplicationVerificationException("RECAPTCHA_FAILED_SDK_TOO_LOW_" + Build.VERSION.SDK_INT));
-      return;
-    }
     RunnableData<RecaptchaTasksClient> actor = client -> {
       client.executeTask(RecaptchaAction.custom(action))
         .addOnSuccessListener(token -> {

@@ -56,22 +56,19 @@ public class RecordButton extends View implements FactorAnimator.Target, ClickHe
 
     FrameLayoutFix.LayoutParams params = FrameLayoutFix.newParams(center * 2, center * 2, Gravity.TOP | Gravity.LEFT);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @TargetApi (Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          if (expand <= 0f) {
-            outline.setEmpty();
-          } else {
-            int radius = (int) (RecordButton.this.radius * expand);
-            outline.setRoundRect(center - radius, center - radius, center + radius, center + radius, radius);
-          }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        if (expand <= 0f) {
+          outline.setEmpty();
+        } else {
+          int radius = (int) (RecordButton.this.radius * expand);
+          outline.setRoundRect(center - radius, center - radius, center + radius, center + radius, radius);
         }
-      });
-      setElevation(Screen.dp(1f));
-      setTranslationZ(Screen.dp(2f));
-    }
+      }
+    });
+    setElevation(Screen.dp(1f));
+    setTranslationZ(Screen.dp(2f));
 
     setLayoutParams(params);
   }
@@ -116,9 +113,7 @@ public class RecordButton extends View implements FactorAnimator.Target, ClickHe
   public void setExpand (float expand) {
     if (this.expand != expand) {
       this.expand = expand;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        invalidateOutline();
-      }
+      invalidateOutline();
       invalidate();
     }
   }

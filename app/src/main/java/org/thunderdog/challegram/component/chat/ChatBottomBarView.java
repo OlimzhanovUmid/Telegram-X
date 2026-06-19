@@ -79,22 +79,19 @@ public class ChatBottomBarView extends BaseView {
       }
     };
     ViewUtils.setBackground(this, this.drawable = Theme.customSelector(drawable, legacyPressedDrawable));
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          RectF rectF = buildRectF();
-          int radius = calculateRadius();
-          if (radius == 0) {
-            outline.setRect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom);
-          } else {
-            outline.setRoundRect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom, radius);
-          }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        RectF rectF = buildRectF();
+        int radius = calculateRadius();
+        if (radius == 0) {
+          outline.setRect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom);
+        } else {
+          outline.setRoundRect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom, radius);
         }
-      });
-      Views.setSimpleStateListAnimator(this);
-    }
+      }
+    });
+    Views.setSimpleStateListAnimator(this);
   }
 
   private int calculateRadius () {
@@ -267,9 +264,7 @@ public class ChatBottomBarView extends BaseView {
   }
 
   public void update () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      invalidateOutline();
-    }
+    invalidateOutline();
     drawable.invalidateSelf();
     invalidate();
   }

@@ -59,7 +59,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class Mp4OutputImpl extends Mp4Output {
 
   private InterleaveChunkMdat mdat = null;

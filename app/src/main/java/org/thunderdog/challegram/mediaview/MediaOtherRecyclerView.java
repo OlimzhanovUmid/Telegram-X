@@ -37,7 +37,7 @@ public class MediaOtherRecyclerView extends RecyclerView {
   private float factor;
 
   public void setFactor (float factor) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null) {
+    if (path != null) {
       if (this.factor != factor) {
         this.factor = factor;
         layoutPath();
@@ -81,7 +81,7 @@ public class MediaOtherRecyclerView extends RecyclerView {
   @Override
   protected void onMeasure (int widthSpec, int heightSpec) {
     super.onMeasure(widthSpec, heightSpec);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null) {
+    if (path != null) {
       layoutPath();
     }
   }

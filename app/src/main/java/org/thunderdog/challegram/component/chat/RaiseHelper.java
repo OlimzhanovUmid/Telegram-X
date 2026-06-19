@@ -407,11 +407,8 @@ public class RaiseHelper implements SensorEventListener {
   }
 
   private boolean hasPermissions () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Context context = UI.getContext();
-      return context != null && context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
-    }
-    return true;
+    Context context = UI.getContext();
+    return context != null && context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
   }
 
   private boolean inRaiseMode;

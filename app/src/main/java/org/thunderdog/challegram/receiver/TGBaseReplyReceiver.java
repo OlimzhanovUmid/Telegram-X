@@ -30,7 +30,6 @@ public abstract class TGBaseReplyReceiver extends BroadcastReceiver {
   // public static final boolean READ_IMMEDIATELY = Build.VERSION.SDK_INT < Build.VERSION_CODES.P || !BuildConfig.DEBUG;
 
   @Override
-  @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
   public void onReceive (Context context, Intent intent) {
     final Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
     if (remoteInput == null) {

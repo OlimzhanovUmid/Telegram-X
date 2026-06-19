@@ -37,11 +37,7 @@ public class WatchDogHelper extends BroadcastReceiver {
     final String action = intent.getAction();
 
     if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        TdlibManager.instance().player().setPauseReason(TGPlayerController.PAUSE_REASON_NOISY, true);
-      } else {
-        TdlibManager.instance().player().pauseWithReason(TGPlayerController.PAUSE_REASON_NOISY);
-      }
+      TdlibManager.instance().player().setPauseReason(TGPlayerController.PAUSE_REASON_NOISY, true);
       return;
     }
 
@@ -50,20 +46,16 @@ public class WatchDogHelper extends BroadcastReceiver {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (android.media.AudioManager.ACTION_HEADSET_PLUG.equals(action)) {
-        if (intent.getIntExtra("state", 0) == 1) {
-          TdlibManager.instance().player().setPauseReason(TGPlayerController.PAUSE_REASON_NOISY, false);
-        }
-        return;
+    if (android.media.AudioManager.ACTION_HEADSET_PLUG.equals(action)) {
+      if (intent.getIntExtra("state", 0) == 1) {
+        TdlibManager.instance().player().setPauseReason(TGPlayerController.PAUSE_REASON_NOISY, false);
       }
+      return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      if (ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED.equals(action)) {
-        watchDog.letsHelpDoge();
-        return;
-      }
+    if (ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED.equals(action)) {
+      watchDog.letsHelpDoge();
+      return;
     }
 
     watchDog.letsHelpDoge();

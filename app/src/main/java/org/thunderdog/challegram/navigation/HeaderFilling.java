@@ -198,11 +198,9 @@ public class HeaderFilling extends Drawable implements TGLegacyAudioManager.Play
   }
 
   public void forceBigOutline (boolean isBig) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (outlineBigForced != isBig) {
-        outlineBigForced = isBig;
-        headerView.invalidateOutline();
-      }
+    if (outlineBigForced != isBig) {
+      outlineBigForced = isBig;
+      headerView.invalidateOutline();
     }
   }
 
@@ -285,21 +283,19 @@ public class HeaderFilling extends Drawable implements TGLegacyAudioManager.Play
       playerTop = playerBottom - Size.getHeaderPlayerSize();
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (isOutlineBig) {
-        if (factor <= .5f) {
-          isOutlineBig = false;
-          headerView.invalidateOutline();
-        } else if (factor == 1f) {
-          headerView.invalidateOutline();
-        }
-      } else {
-        if (factor > .5f) {
-          isOutlineBig = true;
-          headerView.invalidateOutline();
-        } else if (factor == 0f) {
-          headerView.invalidateOutline();
-        }
+    if (isOutlineBig) {
+      if (factor <= .5f) {
+        isOutlineBig = false;
+        headerView.invalidateOutline();
+      } else if (factor == 1f) {
+        headerView.invalidateOutline();
+      }
+    } else {
+      if (factor > .5f) {
+        isOutlineBig = true;
+        headerView.invalidateOutline();
+      } else if (factor == 0f) {
+        headerView.invalidateOutline();
       }
     }
   }

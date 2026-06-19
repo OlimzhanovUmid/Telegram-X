@@ -39,13 +39,12 @@ public class CircleFrameLayout extends FrameLayoutFix {
   public CircleFrameLayout (@NonNull Context context) {
     super(context);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if (!Config.DEBUG_CLIPPING) {
       aspectPaint = null;
 
       path = null;
       setOutlineProvider(new android.view.ViewOutlineProvider() {
         @Override
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         public void getOutline (View view, android.graphics.Outline outline) {
           final int viewWidth = view.getMeasuredWidth();
           outline.setRoundRect(0, 0, viewWidth, view.getMeasuredHeight(), viewWidth / 2);
@@ -64,7 +63,7 @@ public class CircleFrameLayout extends FrameLayoutFix {
   }
 
   public void setTransparentOutline (boolean transparentOutline) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if (!Config.DEBUG_CLIPPING) {
       if (this.transparentOutline != transparentOutline) {
         this.transparentOutline = transparentOutline;
         invalidateOutline();
@@ -82,7 +81,7 @@ public class CircleFrameLayout extends FrameLayoutFix {
     if (lastWidth != newWidth || lastHeight != newHeight) {
       lastWidth = newWidth;
       lastHeight = newHeight;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+      if (!Config.DEBUG_CLIPPING) {
         invalidateOutline();
       } else {
         path.reset();
@@ -94,7 +93,7 @@ public class CircleFrameLayout extends FrameLayoutFix {
 
   @Override
   protected void dispatchDraw(Canvas c) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if (!Config.DEBUG_CLIPPING) {
       super.dispatchDraw(c);
     } else {
       super.dispatchDraw(c);

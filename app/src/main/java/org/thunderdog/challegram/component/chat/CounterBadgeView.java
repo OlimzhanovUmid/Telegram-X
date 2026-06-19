@@ -36,9 +36,7 @@ public class CounterBadgeView extends View {
     @Override
     public void onCounterAppearanceChanged (Counter counter, boolean sizeChanged) {
       if (sizeChanged) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          invalidateOutline();
-        }
+        invalidateOutline();
       }
       invalidate();
     }

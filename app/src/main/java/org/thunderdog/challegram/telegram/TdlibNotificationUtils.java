@@ -72,7 +72,7 @@ public class TdlibNotificationUtils {
     }
   }
 
-  private static final float MAX_DENSITY = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? 1.5f : 2.5f;
+  private static final float MAX_DENSITY = 1.5f;
 
   public static int iconSize () {
     return Screen.dp(52f, MAX_DENSITY);

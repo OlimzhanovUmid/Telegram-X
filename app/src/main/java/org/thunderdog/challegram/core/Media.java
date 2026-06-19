@@ -258,31 +258,29 @@ public class Media {
   }
 
   public Cursor getGalleryCursor (long startDate, boolean allowVideos, int limit) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      BaseActivity context = UI.getUiContext();
+    BaseActivity context = UI.getUiContext();
 
-      if (context == null) {
-        return null;
+    if (context == null) {
+      return null;
+    }
+
+    if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+      boolean fail = true;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (
+          context.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED ||
+          context.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED
+        ) {
+          fail = false;
+        }
       }
-
-      if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-        boolean fail = true;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-          if (
-            context.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED ||
-            context.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED
-          ) {
-            fail = false;
-          }
+      if (fail && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        if (context.checkSelfPermission(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED) {
+          fail = false;
         }
-        if (fail && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-          if (context.checkSelfPermission(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED) {
-            fail = false;
-          }
-        }
-        if (fail) {
-          return null;
-        }
+      }
+      if (fail) {
+        return null;
       }
     }
     Cursor cursor = null;

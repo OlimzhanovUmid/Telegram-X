@@ -60,21 +60,19 @@ public class OverlayView extends View {
   public void setData (int backgroundColor, int mode) {
     barFactor = mode == OVERLAY_MODE_DEFAULT ? (Theme.getPopupOverlayAlpha()) : .6f;
     color = backgroundColor;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ViewController<?> c = UI.getCurrentStackItem();
-      changeBarColor = (c != null && !c.usePopupMode()) && color != 0x00000000 && color != 0x00ffffffff;
-      if (changeBarColor) {
-        window = UI.getWindow();
-        brightnessFactor = 1f;
+    ViewController<?> c = UI.getCurrentStackItem();
+    changeBarColor = (c != null && !c.usePopupMode()) && color != 0x00000000 && color != 0x00ffffffff;
+    if (changeBarColor) {
+      window = UI.getWindow();
+      brightnessFactor = 1f;
 
-        int fromColor = mode == OVERLAY_MODE_DRAWER ? c.getStatusBarColor() : window.getStatusBarColor();
-        int toColor = ColorUtils.compositeColor(fromColor, ColorUtils.color((int) (barFactor * brightnessFactor * 255f), color));
+      int fromColor = mode == OVERLAY_MODE_DRAWER ? c.getStatusBarColor() : window.getStatusBarColor();
+      int toColor = ColorUtils.compositeColor(fromColor, ColorUtils.color((int) (barFactor * brightnessFactor * 255f), color));
 
-        if (statusChanger == null) {
-          statusChanger = new ColorChanger(fromColor, toColor);
-        } else {
-          statusChanger.setFromTo(fromColor, toColor);
-        }
+      if (statusChanger == null) {
+        statusChanger = new ColorChanger(fromColor, toColor);
+      } else {
+        statusChanger.setFromTo(fromColor, toColor);
       }
     }
   }

@@ -1075,7 +1075,7 @@ public class EmojiStatusListController extends ViewController<EmojiLayout> imple
 
     final int currentSection = getStickerSetSection();
 
-    if (!animated || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || getArguments() == null || Math.abs(futureSection - currentSection) > SCROLLBY_SECTION_LIMIT) {
+    if (!animated || getArguments() == null || Math.abs(futureSection - currentSection) > SCROLLBY_SECTION_LIMIT) {
       if (getArguments() != null) {
         getArguments().setIgnoreMovement(true);
       }

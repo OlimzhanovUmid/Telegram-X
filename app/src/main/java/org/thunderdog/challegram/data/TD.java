@@ -4449,18 +4449,16 @@ public class TD {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      BaseActivity context = UI.getUiContext();
-      if (context == null) {
-        return;
+    BaseActivity context = UI.getUiContext();
+    if (context == null) {
+      return;
+    }
+    if (context.permissions().requestWriteExternalStorage(Permissions.WriteType.DOWNLOADS, granted -> {
+      if (granted) {
+        saveToDownloads(file, mimeType);
       }
-      if (context.permissions().requestWriteExternalStorage(Permissions.WriteType.DOWNLOADS, granted -> {
-        if (granted) {
-          saveToDownloads(file, mimeType);
-        }
-      })) {
-        return;
-      }
+    })) {
+      return;
     }
 
     Background.instance().post(() -> saveToDownloadsImpl(file, mimeType));
@@ -6073,17 +6071,15 @@ public class TD {
 
   public static TdApi.InputFile getInputFile (ImageGalleryFile file, boolean asFiles) {
     if (file.isVideo()) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        MediaMetadataRetriever retriever = null;
-        try {
-          retriever = U.openRetriever(file.getFilePath());
-          String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-          if (StringUtils.isNumeric(rotation)) {
-            file.setRotation(StringUtils.parseInt(rotation));
-          }
-        } catch (Throwable ignored) {}
-        U.closeRetriever(retriever);
-      }
+      MediaMetadataRetriever retriever = null;
+      try {
+        retriever = U.openRetriever(file.getFilePath());
+        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        if (StringUtils.isNumeric(rotation)) {
+          file.setRotation(StringUtils.parseInt(rotation));
+        }
+      } catch (Throwable ignored) {}
+      U.closeRetriever(retriever);
 
       return (Config.USE_VIDEO_COMPRESSION && !(asFiles && VideoGenerationInfo.isEmpty(file))) ?
         VideoGenerationInfo.newFile(file.getFilePath(), file, asFiles) :
@@ -6102,25 +6098,23 @@ public class TD {
     TdApi.InputMessageContent content;
     if (file.isVideo()) {
       boolean sendAsAnimation = file.shouldMuteVideo();
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        MediaMetadataRetriever retriever = null;
-        try {
-          retriever = U.openRetriever(file.getFilePath());
-          if (!sendAsAnimation) {
-            String hasAudioStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
-            if (StringUtils.isEmpty(hasAudioStr) || !StringUtils.equalsOrBothEmpty(hasAudioStr.toLowerCase(), "yes")) {
-              sendAsAnimation = true;
-            }
+      MediaMetadataRetriever retriever = null;
+      try {
+        retriever = U.openRetriever(file.getFilePath());
+        if (!sendAsAnimation) {
+          String hasAudioStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
+          if (StringUtils.isEmpty(hasAudioStr) || !StringUtils.equalsOrBothEmpty(hasAudioStr.toLowerCase(), "yes")) {
+            sendAsAnimation = true;
           }
-          String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-          if (StringUtils.isNumeric(rotation)) {
-            file.setRotation(StringUtils.parseInt(rotation));
-          }
-        } catch (Throwable ignored) {
-          // Doing nothing
         }
-        U.closeRetriever(retriever);
+        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        if (StringUtils.isNumeric(rotation)) {
+          file.setRotation(StringUtils.parseInt(rotation));
+        }
+      } catch (Throwable ignored) {
+        // Doing nothing
       }
+      U.closeRetriever(retriever);
 
       int[] size = new int[2];
       file.getOutputSize(size);

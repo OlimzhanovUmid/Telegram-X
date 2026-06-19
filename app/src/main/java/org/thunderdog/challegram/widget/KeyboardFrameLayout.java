@@ -117,7 +117,7 @@ public class KeyboardFrameLayout extends FrameLayoutFix implements ViewTreeObser
 
   public void onKeyboardStateChanged (boolean visible) {
     if (keyboardState == STATE_AWAITING_SHOW && visible) {
-      framesDropped = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? 45 : 55;
+      framesDropped = 45;
     } else if (keyboardState == STATE_AWAITING_HIDE && !visible) {
       keyboardState = STATE_NONE;
     }

@@ -74,9 +74,7 @@ public class WallpaperComponent extends BaseComponent implements ClickHelper.Del
     this.context = context;
     this.fullUrl = linkPreview.url;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      this.placeholderPath = new Path();
-    }
+    this.placeholderPath = new Path();
 
     TdApi.LinkPreviewTypeBackground linkPreviewBackground = (TdApi.LinkPreviewTypeBackground) linkPreview.type;
     updateBackground(linkPreviewBackground.document);
@@ -160,7 +158,7 @@ public class WallpaperComponent extends BaseComponent implements ClickHelper.Del
   private void layoutPath (int startX, int startY, int radius) {
     lastRadius = radius;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && placeholderPath != null) {
+    if (placeholderPath != null) {
       placeholderPath.reset();
       RectF rectF = Paints.getRectF();
       rectF.set(startX, startY, startX + getWidth(), startY + getHeight());
@@ -177,7 +175,7 @@ public class WallpaperComponent extends BaseComponent implements ClickHelper.Del
     placeholderPaint.setColor(Theme.getColor(ColorId.placeholder));
     placeholderRect.set(startX, startY, right, bottom);
 
-    final boolean clipped = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && placeholderPath != null;
+    final boolean clipped = placeholderPath != null;
     final int saveCount;
     
     if (clipped) {

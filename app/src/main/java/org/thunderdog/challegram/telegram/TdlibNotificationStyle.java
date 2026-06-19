@@ -82,7 +82,7 @@ import tgx.td.ChatId;
 import tgx.td.Td;
 
 public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, FileUpdateListener {
-  private static final boolean USE_GROUPS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+  private static final boolean USE_GROUPS = true;
 
   static final long MEDIA_LOAD_TIMEOUT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? 15000 : 7500;
   static final long SUMMARY_MEDIA_LOAD_TIMEOUT = 100;
@@ -217,14 +217,12 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
   }
 
   private static void styleNotification (Tdlib tdlib, NotificationCompat.Builder builder, long chatId, @Nullable TdApi.Chat chat, boolean allowPreview) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      builder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
-      builder.setColor(tdlib.accountColor(chatId));
-      if (allowPreview && chat != null && chat.type.getConstructor() == TdApi.ChatTypePrivate.CONSTRUCTOR) {
-        TdApi.User user = tdlib.chatUser(chat);
-        if (user != null && !StringUtils.isEmpty(user.phoneNumber)) {
-          builder.addPerson("tel:+" + user.phoneNumber);
-        }
+    builder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
+    builder.setColor(tdlib.accountColor(chatId));
+    if (allowPreview && chat != null && chat.type.getConstructor() == TdApi.ChatTypePrivate.CONSTRUCTOR) {
+      TdApi.User user = tdlib.chatUser(chat);
+      if (user != null && !StringUtils.isEmpty(user.phoneNumber)) {
+        builder.addPerson("tel:+" + user.phoneNumber);
       }
     }
   }
@@ -278,26 +276,22 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
 
     String channelId;
     String rShortcutId = null;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      android.app.NotificationChannel channel;
-      try {
-        channel = (android.app.NotificationChannel) tdlib.notifications().getSystemChannel(group);
-      } catch (TdlibNotificationChannelGroup.ChannelCreationFailureException e) {
-        TDLib.Tag.notifications("Unable to get notification channel for group.id %d:\n%s",
-          group.getId(),
-          Log.toString(e)
-        );
-        tdlib.settings().trackNotificationChannelProblem(e, group.getChatId());
-        channel = null;
-      }
-      if (channel == null) {
-        group.markAsHidden(TdlibNotificationGroup.HIDE_REASON_DISABLED_CHANNEL);
-        return DISPLAY_STATE_FAIL;
-      }
-      channelId = channel.getId();
-    } else {
-      channelId = null;
+    android.app.NotificationChannel channel;
+    try {
+      channel = (android.app.NotificationChannel) tdlib.notifications().getSystemChannel(group);
+    } catch (TdlibNotificationChannelGroup.ChannelCreationFailureException e) {
+      TDLib.Tag.notifications("Unable to get notification channel for group.id %d:\n%s",
+        group.getId(),
+        Log.toString(e)
+      );
+      tdlib.settings().trackNotificationChannelProblem(e, group.getChatId());
+      channel = null;
     }
+    if (channel == null) {
+      group.markAsHidden(TdlibNotificationGroup.HIDE_REASON_DISABLED_CHANNEL);
+      return DISPLAY_STATE_FAIL;
+    }
+    channelId = channel.getId();
 
     final TdlibNotification singleNotification = visualSize == 1 ? group.lastNotification() : null;
     //
@@ -332,7 +326,7 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
     // Notification itself
 
     final boolean needPreview = helper.needPreview(group);
-    final boolean needReply = !Passcode.instance().isLocked() && needPreview && (!isSummary || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) && !isChannel && tdlib.canSendBasicMessage(chat) && !group.isOnlyScheduled();
+    final boolean needReply = !Passcode.instance().isLocked() && needPreview && !isChannel && tdlib.canSendBasicMessage(chat) && !group.isOnlyScheduled();
     final boolean needReplyToMessage = needReply && canReplyTo(group) && (!ChatId.isPrivate(chatId) || (singleNotification != null && chat.unreadCount > 1));
     final long[] allMessageIds = group.getAllMessageIds();
     final long[] allUserIds = group.isMention() ? group.getAllUserIds() : null;
@@ -585,22 +579,18 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
     boolean needGroupLogic = true; // !isSummary || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && settings == null);
 
     NotificationCompat.Builder builder;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      builder = new NotificationCompat.Builder(UI.getAppContext(), channelId);
-      boolean needNotification = settings != null;
-      builder.setOnlyAlertOnce(!needNotification);
-      if (needGroupLogic) {
-        int behavior;
-        if (isSummary) {
-          behavior = allowPreview || settings == null ? NotificationCompat.GROUP_ALERT_CHILDREN : NotificationCompat.GROUP_ALERT_SUMMARY;
-        } else {
-          behavior = needNotification ? NotificationCompat.GROUP_ALERT_CHILDREN : NotificationCompat.GROUP_ALERT_SUMMARY;
-        }
-        builder.setGroupAlertBehavior(behavior);
-        TDLib.Tag.notifications("displaying notification with behavior:%d", behavior);
+    builder = new NotificationCompat.Builder(UI.getAppContext(), channelId);
+    boolean needNotification = settings != null;
+    builder.setOnlyAlertOnce(!needNotification);
+    if (needGroupLogic) {
+      int behavior;
+      if (isSummary) {
+        behavior = allowPreview || settings == null ? NotificationCompat.GROUP_ALERT_CHILDREN : NotificationCompat.GROUP_ALERT_SUMMARY;
+      } else {
+        behavior = needNotification ? NotificationCompat.GROUP_ALERT_CHILDREN : NotificationCompat.GROUP_ALERT_SUMMARY;
       }
-    } else {
-      builder = new NotificationCompat.Builder(UI.getAppContext());
+      builder.setGroupAlertBehavior(behavior);
+      TDLib.Tag.notifications("displaying notification with behavior:%d", behavior);
     }
 
     builder
@@ -634,20 +624,16 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
     }
 
     if (!Passcode.instance().isLocked()) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        if (muteAction != null)
-          builder.addInvisibleAction(muteAction);
-        if (unmuteAction != null)
-          builder.addInvisibleAction(unmuteAction);
-      }
+      if (muteAction != null)
+        builder.addInvisibleAction(muteAction);
+      if (unmuteAction != null)
+        builder.addInvisibleAction(unmuteAction);
       if (replyAction != null)
         builder.addAction(replyAction);
       if (readAction != null)
         builder.addAction(readAction);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      builder.extend(new NotificationCompat.CarExtender());
-    }
+    builder.extend(new NotificationCompat.CarExtender());
 
     styleNotification(tdlib, builder, chatId, chat, allowPreview);
 
@@ -1050,12 +1036,10 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
       return null;
     }
     NotificationCompat.Builder b = new NotificationCompat.Builder(context, commonChannelId);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (allowPreview) {
-        b.setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN);
-      } else {
-        b.setOnlyAlertOnce(settings == null);
-      }
+    if (allowPreview) {
+      b.setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN);
+    } else {
+      b.setOnlyAlertOnce(settings == null);
     }
 
     if (category == TdlibNotificationGroup.CATEGORY_SECRET && (Settings.instance().needHideSecretChats() || (singleChatId != 0 && tdlib.notifications().isShowPreviewEnabled(singleChatId, lastNotification.group().isMention())))) {
@@ -1068,13 +1052,11 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
     if (!Device.FLYME) {
       b.setNumber(badgeCount);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-      if (allowPreview) {
-        b.setGroup(makeGroupKey(tdlib, category));
-        b.setGroupSummary(true);
-      }
-      b.setSortKey(makeSortKey(lastNotification, true));
+    if (allowPreview) {
+      b.setGroup(makeGroupKey(tdlib, category));
+      b.setGroupSummary(true);
     }
+    b.setSortKey(makeSortKey(lastNotification, true));
     b.setContentIntent(TdlibNotificationUtils.newIntent(tdlib.id(), tdlib.settings().getLocalChatId(singleChatId), singleTargetMessageId));
 
     styleNotification(tdlib, b, singleChatId, displayingChatsCount == 1 ? chat : null, allowPreview);
@@ -1133,7 +1115,7 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
       b.setTicker(tickerText);
       b.setContentText(commonText);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && displayingChatsCount == 1) {
+      if (displayingChatsCount == 1) {
         if (notifications.size() > 1) {
           NotificationCompat.MessagingStyle style;
           final boolean isMention = lastNotification.group().isMention();
@@ -1155,7 +1137,7 @@ public class TdlibNotificationStyle implements TdlibNotificationStyleDelegate, F
         } else {
           b.setContentText(getTickerText(tdlib, helper, allowPreview, chat, lastNotification, false, singleSender, hasCustomText));
         }
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      } else {
         NotificationCompat.InboxStyle style;
         style = new NotificationCompat.InboxStyle();
         style.setBigContentTitle(contentTitle);

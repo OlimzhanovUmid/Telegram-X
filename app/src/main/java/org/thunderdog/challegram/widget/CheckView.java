@@ -82,15 +82,12 @@ public class CheckView extends View {
     if (mediaRadius == 0) {
       initSizes();
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @TargetApi (Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setOval(padding + getPaddingLeft(), padding + getPaddingTop(), mediaRadius * 2, mediaRadius * 2);
-        }
-      });
-    }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        outline.setOval(padding + getPaddingLeft(), padding + getPaddingTop(), mediaRadius * 2, mediaRadius * 2);
+      }
+    });
   }
 
   @Override
@@ -448,13 +445,6 @@ public class CheckView extends View {
             break;
           }*/
         }
-      }
-
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        /*if (mode == MODE_MEDIA || mode == MODE_USER) {
-          setElevation(elevation * factor);
-          setTranslationZ(2f * factor);
-        }*/
       }
 
       invalidate();

@@ -323,9 +323,7 @@ public class U {
   public static Location newFakeLocation () {
     Location location = new Location("network");
     location.setTime(System.currentTimeMillis());
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
-    }
+    location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
     return location;
   }
 
@@ -345,7 +343,7 @@ public class U {
   public static @Nullable ArrayList<String> getExternalStorageDirectories (@Nullable String ignorePath, boolean cleanupResult) {
     ArrayList<String> results = null;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) { //Method 1 for KitKat & above
+    { //Method 1 for KitKat & above
       File[] externalDirs = UI.getAppContext().getExternalFilesDirs(null);
 
       for (File file : externalDirs) {
@@ -393,19 +391,10 @@ public class U {
 
     if (cleanupResult && results != null) {
       //Below few lines is to remove paths which may not be external memory card, like OTG (feel free to comment them out)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        for (int i = 0; i < results.size(); i++) {
-          if (!results.get(i).toLowerCase().matches(".*[0-9a-f]{4}[-][0-9a-f]{4}")) {
-            // Log.d(LOG_TAG, results.get(i) + " might not be extSDcard");
-            results.remove(i--);
-          }
-        }
-      } else {
-        for (int i = 0; i < results.size(); i++) {
-          if (!results.get(i).toLowerCase().contains("ext") && !results.get(i).toLowerCase().contains("sdcard")) {
-            // Log.d(LOG_TAG, results.get(i)+" might not be extSDcard");
-            results.remove(i--);
-          }
+      for (int i = 0; i < results.size(); i++) {
+        if (!results.get(i).toLowerCase().matches(".*[0-9a-f]{4}[-][0-9a-f]{4}")) {
+          // Log.d(LOG_TAG, results.get(i) + " might not be extSDcard");
+          results.remove(i--);
         }
       }
     }
@@ -459,10 +448,8 @@ public class U {
   public static void startForeground (Service service, int notificationId, Notification notification) {
     if (notification == null)
       throw new IllegalArgumentException();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (StringUtils.isEmpty(notification.getChannelId()))
-        throw new IllegalArgumentException("id == " + notificationId);
-    }
+    if (StringUtils.isEmpty(notification.getChannelId()))
+      throw new IllegalArgumentException("id == " + notificationId);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       switch (notificationId) {
         case TdlibNotificationManager.ID_ONGOING_CALL_NOTIFICATION:
@@ -588,9 +575,6 @@ public class U {
   }
 
   public static void gc () {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      try { System.gc(); } catch (Throwable ignored) { }
-    }
   }
 
   public static String convertStreamToString (InputStream is) throws IOException {
@@ -638,13 +622,11 @@ public class U {
       }
       return System.currentTimeMillis();
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      try {
-        URI uri = new File(path.startsWith("file://") ? path.substring("file://".length()) : path).toURI();
-        return java.nio.file.Files.getLastModifiedTime(java.nio.file.Paths.get(uri)).to(TimeUnit.MILLISECONDS);
-      } catch (Throwable t) {
-        Log.e("Cannot determine last modified time v2", t);
-      }
+    try {
+      URI uri = new File(path.startsWith("file://") ? path.substring("file://".length()) : path).toURI();
+      return java.nio.file.Files.getLastModifiedTime(java.nio.file.Paths.get(uri)).to(TimeUnit.MILLISECONDS);
+    } catch (Throwable t) {
+      Log.e("Cannot determine last modified time v2", t);
     }
     try {
       return new File(path).lastModified();
@@ -834,13 +816,8 @@ public class U {
 
   @SuppressWarnings("deprecation")
   public static boolean isAirplaneModeOn () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      return Settings.Global.getInt(UI.getContext().getContentResolver(),
-        Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
-    } else {
-      return Settings.System.getInt(UI.getContext().getContentResolver(),
-        Settings.System.AIRPLANE_MODE_ON, 0) != 0;
-    }
+    return Settings.Global.getInt(UI.getContext().getContentResolver(),
+      Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
   }
 
   private static long lastTrace;
@@ -882,14 +859,12 @@ public class U {
   }
 
   public static String getNotificationChannel (String id, int stringRes) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      android.app.NotificationChannel channel = new android.app.NotificationChannel(id, Lang.getString(stringRes), NotificationManager.IMPORTANCE_LOW);
-      NotificationManager manager = (NotificationManager) UI.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-      try {
-        manager.createNotificationChannel(channel);
-      } catch (Throwable t) {
-        Log.v("Unable to create notification channel for id: %s", new TdlibNotificationChannelGroup.ChannelCreationFailureException(t), id);
-      }
+    android.app.NotificationChannel channel = new android.app.NotificationChannel(id, Lang.getString(stringRes), NotificationManager.IMPORTANCE_LOW);
+    NotificationManager manager = (NotificationManager) UI.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    try {
+      manager.createNotificationChannel(channel);
+    } catch (Throwable t) {
+      Log.v("Unable to create notification channel for id: %s", new TdlibNotificationChannelGroup.ChannelCreationFailureException(t), id);
     }
     return id;
   }
@@ -906,9 +881,6 @@ public class U {
   }
 
   private static int determineMaxTextureSize () {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1)
-      return 0;
-
     int[] maxTextureSize = new int[1];
     GLES10.glGetIntegerv(GLES10.GL_MAX_TEXTURE_SIZE, maxTextureSize, 0);
     if (maxTextureSize[0] != 0) {
@@ -1091,11 +1063,7 @@ public class U {
   @SuppressWarnings("UnsupportedChromeOsCameraSystemFeature")
   public static boolean deviceHasAnyCamera (Context context) {
     PackageManager pm = context.getPackageManager();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
-    } else {
-      return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA);
-    }
+    return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
   }
 
   public static final String PACKAGE_GOOGLE_MAPS = "com.google.android.apps.maps";
@@ -1149,23 +1117,20 @@ public class U {
   }
 
   public static Uri contentUriFromFile (File file) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      try {
-        return FileProvider.getUriForFile(UI.getAppContext(), Config.FILE_PROVIDER_AUTHORITY, file);
-      } catch (Throwable t) {
-        Log.e("Can't create content uri for path", t);
-        // UI.showToast("Could not open path: " + file.getPath() + ", reason: " + t.getMessage(), Toast.LENGTH_LONG);
-      }
-      return null;
+    try {
+      return FileProvider.getUriForFile(UI.getAppContext(), Config.FILE_PROVIDER_AUTHORITY, file);
+    } catch (Throwable t) {
+      Log.e("Can't create content uri for path", t);
+      // UI.showToast("Could not open path: " + file.getPath() + ", reason: " + t.getMessage(), Toast.LENGTH_LONG);
     }
-    return Uri.fromFile(file);
+    return null;
   }
 
   // Returns either good file path, or content:// stuff
   public static String tryResolveFilePath (final Uri uri) {
     String result = null;
     try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(UI.getContext(), uri)) {
+      if (DocumentsContract.isDocumentUri(UI.getContext(), uri)) {
         if (isExternalStorageDocument(uri)) {
           final String docId = DocumentsContract.getDocumentId(uri);
           final String[] split = docId.split(":", 2);
@@ -1254,11 +1219,9 @@ public class U {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       return ValueAnimator.getDurationScale();
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      try {
-        return Settings.Global.getFloat(context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
-      } catch (Throwable ignored) { }
-    }
+    try {
+      return Settings.Global.getFloat(context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+    } catch (Throwable ignored) { }
     return 1.0f;
   }
   public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
@@ -1387,7 +1350,7 @@ public class U {
       int videoWidth = hasVideo ? StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)) : 0;
       int videoHeight = hasVideo ? StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)) : 0;
       int videoRotation;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && hasVideo) {
+      if (hasVideo) {
         videoRotation = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
       } else {
         videoRotation = 0;
@@ -1662,11 +1625,9 @@ public class U {
     }
     ExifInterface exif = null;
     if (path.startsWith("content://")) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        try (InputStream is = U.openInputStream(path)) {
-          exif = new ExifInterface(is);
-        } catch (Throwable ignored) { }
-      }
+      try (InputStream is = U.openInputStream(path)) {
+        exif = new ExifInterface(is);
+      } catch (Throwable ignored) { }
     } else {
       try {
         exif = new ExifInterface(path);
@@ -2170,7 +2131,7 @@ public class U {
       return 0;
     }
 
-    if (Config.USE_TEXT_ADVANCE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !BiDiUtils.requiresBidi(in, start, end)) {
+    if (Config.USE_TEXT_ADVANCE && !BiDiUtils.requiresBidi(in, start, end)) {
       return p.getRunAdvance(in, start, end, 0, in.length, false, end);
     } else {
       float[] widths = pickWidths(count, true);
@@ -2185,7 +2146,7 @@ public class U {
       return 0;
     }
 
-    if (Config.USE_TEXT_ADVANCE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Config.USE_TEXT_ADVANCE) {
       return p.getRunAdvance(in, 0, count, 0, in.length(), isRtl, count);
     }
 
@@ -2199,7 +2160,7 @@ public class U {
       return 0;
     }
 
-    if (Config.USE_TEXT_ADVANCE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Config.USE_TEXT_ADVANCE) {
       return p.getRunAdvance(in, start, end, 0, in.length(), isRtl, end);
     }
 
@@ -2216,7 +2177,7 @@ public class U {
     if (p == null)
       throw new IllegalArgumentException();
 
-    if (Config.USE_TEXT_ADVANCE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !BiDiUtils.requiresBidi(in, start, end)) {
+    if (Config.USE_TEXT_ADVANCE && !BiDiUtils.requiresBidi(in, start, end)) {
       return p.getRunAdvance(in, start, end, 0, in.length(), false, end);
     } else {
       float[] widths = pickWidths(count, true);
@@ -2308,15 +2269,13 @@ public class U {
 
   public static int getVideoRotation (String path) {
     int rotation = 0;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      MediaMetadataRetriever retriever = null;
-      try {
-        retriever = U.openRetriever(path);
-        String rotationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-        rotation = StringUtils.parseInt(rotationString);
-      } catch (Throwable ignored) { }
-      U.closeRetriever(retriever);
-    }
+    MediaMetadataRetriever retriever = null;
+    try {
+      retriever = U.openRetriever(path);
+      String rotationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+      rotation = StringUtils.parseInt(rotationString);
+    } catch (Throwable ignored) { }
+    U.closeRetriever(retriever);
     return rotation;
   }
 
@@ -2502,9 +2461,7 @@ public class U {
     try {
       retriever = U.openRetriever(path);
       if (rotation != null) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-          rotation[0] = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
-        }
+        rotation[0] = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
         if (Math.min(dstWidth, dstHeight) > 0) {
@@ -2575,11 +2532,6 @@ public class U {
   }
 
   public static Uri makeUriForFile (File file, @Nullable String mimeType, boolean isRetry) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      if (isRetry || "application/vnd.android.package-archive".equals(mimeType)) {
-        return Uri.fromFile(file);
-      }
-    }
     return contentUriFromFile(file);
   }
 
@@ -2613,12 +2565,7 @@ public class U {
 
   public static File sharedPreferencesFile (String name) {
     try {
-      File appDir;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        appDir = UI.getAppContext().getDataDir();
-      } else {
-        appDir = UI.getAppContext().getFilesDir().getParentFile();
-      }
+      File appDir = UI.getAppContext().getDataDir();
       File prefsDir = new File(appDir, "shared_prefs");
       if (prefsDir.exists()) {
         File prefsFile = new File(prefsDir, name + ".xml");
@@ -2634,12 +2581,7 @@ public class U {
 
   public static boolean deleteSharedPreferences (String name) {
     try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        return UI.getAppContext().deleteSharedPreferences(name);
-      } else {
-        File file = sharedPreferencesFile(name);
-        return file != null && file.delete();
-      }
+      return UI.getAppContext().deleteSharedPreferences(name);
     } catch (Throwable t) {
       Log.e("Cannot delete shared preferences, name:%s", name);
       return false;
@@ -2819,44 +2761,7 @@ public class U {
   }
 
   public static String getEGLErrorString (int error) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      return GLUtils.getEGLErrorString(error);
-    } else {
-      switch (error) {
-        case EGL10.EGL_SUCCESS:
-          return "EGL_SUCCESS";
-        case EGL10.EGL_NOT_INITIALIZED:
-          return "EGL_NOT_INITIALIZED";
-        case EGL10.EGL_BAD_ACCESS:
-          return "EGL_BAD_ACCESS";
-        case EGL10.EGL_BAD_ALLOC:
-          return "EGL_BAD_ALLOC";
-        case EGL10.EGL_BAD_ATTRIBUTE:
-          return "EGL_BAD_ATTRIBUTE";
-        case EGL10.EGL_BAD_CONFIG:
-          return "EGL_BAD_CONFIG";
-        case EGL10.EGL_BAD_CONTEXT:
-          return "EGL_BAD_CONTEXT";
-        case EGL10.EGL_BAD_CURRENT_SURFACE:
-          return "EGL_BAD_CURRENT_SURFACE";
-        case EGL10.EGL_BAD_DISPLAY:
-          return "EGL_BAD_DISPLAY";
-        case EGL10.EGL_BAD_MATCH:
-          return "EGL_BAD_MATCH";
-        case EGL10.EGL_BAD_NATIVE_PIXMAP:
-          return "EGL_BAD_NATIVE_PIXMAP";
-        case EGL10.EGL_BAD_NATIVE_WINDOW:
-          return "EGL_BAD_NATIVE_WINDOW";
-        case EGL10.EGL_BAD_PARAMETER:
-          return "EGL_BAD_PARAMETER";
-        case EGL10.EGL_BAD_SURFACE:
-          return "EGL_BAD_SURFACE";
-        case EGL11.EGL_CONTEXT_LOST:
-          return "EGL_CONTEXT_LOST";
-        default:
-          return "0x" + Integer.toHexString(error);
-      }
-    }
+    return GLUtils.getEGLErrorString(error);
   }
 
   public static boolean isValidBitmap (Bitmap bitmap) {
@@ -2925,11 +2830,9 @@ public class U {
     if (transparent) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         return Bitmap.CompressFormat.WEBP_LOSSY;
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+      } else {
         //noinspection deprecation
         return Bitmap.CompressFormat.WEBP;
-      } else {
-        return Bitmap.CompressFormat.PNG;
       }
     }
     return Bitmap.CompressFormat.JPEG;
@@ -3170,24 +3073,20 @@ public class U {
   }
 
   public static boolean isWiredHeadsetOn (AudioManager am) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      android.media.AudioDeviceInfo[] infos = am.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
-      if (infos == null)
-        return false;
-      for (android.media.AudioDeviceInfo info : infos) {
-        switch (info.getType()) {
-          case android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES:
-          case android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET:
-          case android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
-          case android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
-          case android.media.AudioDeviceInfo.TYPE_USB_HEADSET:
-            return true;
-        }
-      }
+    android.media.AudioDeviceInfo[] infos = am.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+    if (infos == null)
       return false;
-    } else {
-      return am.isWiredHeadsetOn() || am.isBluetoothA2dpOn();
+    for (android.media.AudioDeviceInfo info : infos) {
+      switch (info.getType()) {
+        case android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES:
+        case android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET:
+        case android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
+        case android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
+        case android.media.AudioDeviceInfo.TYPE_USB_HEADSET:
+          return true;
+      }
     }
+    return false;
   }
 
   // Emulator detection
@@ -3242,13 +3141,8 @@ public class U {
     File path = Environment.getDataDirectory();
     StatFs stat = new StatFs(path.getPath());
     long blockSize, availableBlocks;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      blockSize = stat.getBlockSizeLong();
-      availableBlocks = stat.getAvailableBlocksLong();
-    } else {
-      blockSize = stat.getBlockSize();
-      availableBlocks = stat.getAvailableBlocks();
-    }
+    blockSize = stat.getBlockSizeLong();
+    availableBlocks = stat.getAvailableBlocksLong();
     return availableBlocks * blockSize;
   }
 
@@ -3256,13 +3150,8 @@ public class U {
     File path = Environment.getDataDirectory();
     StatFs stat = new StatFs(path.getPath());
     long blockSize, totalBlocks;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      blockSize = stat.getBlockSizeLong();
-      totalBlocks = stat.getBlockCountLong();
-    } else {
-      blockSize = stat.getBlockSize();
-      totalBlocks = stat.getBlockCount();
-    }
+    blockSize = stat.getBlockSizeLong();
+    totalBlocks = stat.getBlockCountLong();
     return totalBlocks * blockSize;
   }
 
@@ -3271,13 +3160,8 @@ public class U {
       File path = Environment.getExternalStorageDirectory();
       StatFs stat = new StatFs(path.getPath());
       long blockSize, availableBlocks;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        blockSize = stat.getBlockSizeLong();
-        availableBlocks = stat.getAvailableBlocksLong();
-      } else {
-        blockSize = stat.getBlockSize();
-        availableBlocks = stat.getAvailableBlocks();
-      }
+      blockSize = stat.getBlockSizeLong();
+      availableBlocks = stat.getAvailableBlocksLong();
       return availableBlocks * blockSize;
     } else {
       return -1;
@@ -3289,13 +3173,8 @@ public class U {
       File path = Environment.getExternalStorageDirectory();
       StatFs stat = new StatFs(path.getPath());
       long blockSize, totalBlocks;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        blockSize = stat.getBlockSizeLong();
-        totalBlocks = stat.getBlockCountLong();
-      } else {
-        blockSize = stat.getBlockSize();
-        totalBlocks = stat.getBlockCount();
-      }
+      blockSize = stat.getBlockSizeLong();
+      totalBlocks = stat.getBlockCountLong();
       return totalBlocks * blockSize;
     } else {
       return -1;
@@ -3337,24 +3216,19 @@ public class U {
   }
 
   public static void copyText (CharSequence text) {
-    //noinspection ObsoleteSdkInt
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      android.content.ClipboardManager clipboard = (android.content.ClipboardManager) UI.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-      if (clipboard != null) {
-        android.content.ClipData clip = null;
-        if (text instanceof Spanned) {
-          String htmlText = TD.toHtmlCopyText((Spanned) text);
-          if (!StringUtils.isEmpty(htmlText)) {
-            clip = android.content.ClipData.newHtmlText(BuildConfig.PROJECT_NAME, text, htmlText);
-          }
+    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) UI.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+    if (clipboard != null) {
+      android.content.ClipData clip = null;
+      if (text instanceof Spanned) {
+        String htmlText = TD.toHtmlCopyText((Spanned) text);
+        if (!StringUtils.isEmpty(htmlText)) {
+          clip = android.content.ClipData.newHtmlText(BuildConfig.PROJECT_NAME, text, htmlText);
         }
-        if (clip == null) {
-          clip = android.content.ClipData.newPlainText(BuildConfig.PROJECT_NAME, text);
-        }
-        clipboard.setPrimaryClip(clip);
       }
-    } else {
-      copyTextLegacy(text);
+      if (clip == null) {
+        clip = android.content.ClipData.newPlainText(BuildConfig.PROJECT_NAME, text);
+      }
+      clipboard.setPrimaryClip(clip);
     }
   }
 
@@ -3367,25 +3241,20 @@ public class U {
   }
 
   public static CharSequence getPasteText (Context context) {
-    //noinspection ObsoleteSdkInt
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      android.content.ClipboardManager clipboard = (android.content.ClipboardManager) UI.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-      if (clipboard != null) {
-        android.content.ClipData clipData = clipboard.getPrimaryClip();
-        if (clipData == null || clipData.getItemCount() != 1) {
-          return null;
-        }
-        android.content.ClipData.Item clipItem = clipData.getItemAt(0);
-        if (clipData.getDescription().hasMimeType("text/html")) {
-          String htmlText = clipItem.getHtmlText();
-          return TD.htmlToCharSequence(htmlText);
-        } else if (clipData.getDescription().hasMimeType("text/plain")) {
-          return clipItem.getText();
-        }
+    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) UI.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+    if (clipboard != null) {
+      android.content.ClipData clipData = clipboard.getPrimaryClip();
+      if (clipData == null || clipData.getItemCount() != 1) {
         return null;
       }
-    } else {
-      return getCopyTextLegacy();
+      android.content.ClipData.Item clipItem = clipData.getItemAt(0);
+      if (clipData.getDescription().hasMimeType("text/html")) {
+        String htmlText = clipItem.getHtmlText();
+        return TD.htmlToCharSequence(htmlText);
+      } else if (clipData.getDescription().hasMimeType("text/plain")) {
+        return clipItem.getText();
+      }
+      return null;
     }
     return null;
   }
@@ -3434,18 +3303,11 @@ public class U {
     }
     if (inputLanguages.isEmpty()) {
       try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          LocaleList locales = Resources.getSystem().getConfiguration().getLocales();
-          for (int i = 0; i < locales.size(); i++) {
-            String code = LocaleUtils.toBcp47Language(locales.get(i));
-            if (!StringUtils.isEmpty(code) && !inputLanguages.contains(code))
-              inputLanguages.add(code);
-          }
-        } else {
-          String code = LocaleUtils.toBcp47Language(Lang.getPrimaryLocale(Resources.getSystem().getConfiguration()));
-          if (!StringUtils.isEmpty(code)) {
+        LocaleList locales = Resources.getSystem().getConfiguration().getLocales();
+        for (int i = 0; i < locales.size(); i++) {
+          String code = LocaleUtils.toBcp47Language(locales.get(i));
+          if (!StringUtils.isEmpty(code) && !inputLanguages.contains(code))
             inputLanguages.add(code);
-          }
         }
       } catch (Throwable ignored) { }
     }
@@ -3458,11 +3320,9 @@ public class U {
 
   private static String toLanguageCode (InputMethodSubtype ims) {
     if (ims != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        String languageTag = ims.getLanguageTag();
-        if (!StringUtils.isEmpty(languageTag)) {
-          return languageTag;
-        }
+      String languageTag = ims.getLanguageTag();
+      if (!StringUtils.isEmpty(languageTag)) {
+        return languageTag;
       }
       return toLanguageCodePreNougat(ims);
     }
@@ -3537,13 +3397,8 @@ public class U {
     return result;
   }
 
-  @SuppressWarnings("deprecation")
   public static String getCpuAbi () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return Build.SUPPORTED_ABIS[0];
-    } else {
-      return Build.CPU_ABI;
-    }
+    return Build.SUPPORTED_ABIS[0];
   }
 
   public static String getPreferredAbiFlavor () {

@@ -80,12 +80,7 @@ public class AudioController extends BasePlaybackController implements TGAudio.P
   private static final int PLAYBACK_MODE_EXOPLAYER_LIST = 3;
 
   private int determineBestPlaybackMode (boolean voiceMessages) {
-    int maxSupportedMode;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      maxSupportedMode = PLAYBACK_MODE_EXOPLAYER_LIST;
-    } else {
-      maxSupportedMode = PLAYBACK_MODE_LEGACY;
-    }
+    int maxSupportedMode = PLAYBACK_MODE_EXOPLAYER_LIST;
     int preferredMode = Settings.instance().getPreferredAudioPlaybackMode();
     if (preferredMode > PLAYBACK_MODE_UNSET && preferredMode <= maxSupportedMode) {
       return preferredMode;

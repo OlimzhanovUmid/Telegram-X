@@ -759,7 +759,7 @@ public class TdlibAccount implements Comparable<TdlibAccount>, TdlibProvider {
       return "@" + username;
     }
     if (context.hasAccountWithFirstName(firstName, id) == TdlibAccount.NO_ID) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && firstName.length() < 12 && !StringUtils.isEmpty(lastName)) {
+      if (firstName.length() < 12 && !StringUtils.isEmpty(lastName)) {
         return TD.getUserName(firstName, lastName);
       } else {
         return firstName;

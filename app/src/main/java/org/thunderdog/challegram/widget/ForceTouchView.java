@@ -133,7 +133,7 @@ public class ForceTouchView extends FrameLayoutFix implements
   private final RectF drawingRect = new RectF();
   private final RectF targetRect = new RectF();
   private final RectF sourceRect = new RectF();
-  private final @Nullable Path path = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? new Path() : null;
+  private final @Nullable Path path = new Path();
 
   public ForceTouchView (Context context) {
     super(context);
@@ -201,17 +201,14 @@ public class ForceTouchView extends FrameLayoutFix implements
         }
       }
     };
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      contentWrap.setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @Override
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setRoundRect(Math.round(drawingRect.left), Math.round(drawingRect.top), Math.round(drawingRect.right), Math.round(drawingRect.bottom), Screen.dp(RADIUS));
-        }
-      });
-      contentWrap.setElevation(Screen.dp(1f));
-      contentWrap.setTranslationZ(Screen.dp(1f));
-    }
+    contentWrap.setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        outline.setRoundRect(Math.round(drawingRect.left), Math.round(drawingRect.top), Math.round(drawingRect.right), Math.round(drawingRect.bottom), Screen.dp(RADIUS));
+      }
+    });
+    contentWrap.setElevation(Screen.dp(1f));
+    contentWrap.setTranslationZ(Screen.dp(1f));
     ViewUtils.setBackground(contentWrap, new Drawable() {
       @Override
       public void draw (@NonNull Canvas c) {
@@ -718,9 +715,7 @@ public class ForceTouchView extends FrameLayoutFix implements
           footerShadowView.setTranslationY(drawingRect.bottom - targetRect.bottom);
         }
         contentWrap.invalidate();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          contentWrap.invalidateOutline();
-        }
+        contentWrap.invalidateOutline();
       }
 
       if (isMaximizing) {
@@ -953,7 +948,7 @@ public class ForceTouchView extends FrameLayoutFix implements
       listener.onPrepareToEnterForceTouch(forceTouchContext);
     }
     // UI.getContext(getContext()).setLowProfile(true, false);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && forceTouchContext.isMatchParent) {
+    if (forceTouchContext.isMatchParent) {
       revealAnimator.setStartDelay(68l);
     }
     revealAnimator.animateTo(1f);

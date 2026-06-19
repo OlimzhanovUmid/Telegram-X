@@ -189,10 +189,8 @@ public class StickerSetWrap extends FrameLayoutFix implements StickersListContro
     topShadow.setSimpleTopShadow(true);
     themeListener.addThemeInvalidateListener(topShadow);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      topLick = new LickView(context);
-      themeListener.addThemeInvalidateListener(topLick);
-    }
+    topLick = new LickView(context);
+    themeListener.addThemeInvalidateListener(topLick);
     themeListener.addThemeInvalidateListener(this);
     updateHeader();
   }
@@ -303,10 +301,8 @@ public class StickerSetWrap extends FrameLayoutFix implements StickersListContro
     top -= topOffset;
     float factor = top > topOffset ? 0f : 1f - ((float) top / (float) topOffset);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (topLick != null) {
-        topLick.setFactor(factor);
-      }
+    if (topLick != null) {
+      topLick.setFactor(factor);
     }
 
     if (headerView.getFilling() != null) {
@@ -587,19 +583,17 @@ public class StickerSetWrap extends FrameLayoutFix implements StickersListContro
 
   @Override
   public void onScrollFinished () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (isScrollByHeader) {
-        isScrollByHeader = false;
-        return;
-      }
+    if (isScrollByHeader) {
+      isScrollByHeader = false;
+      return;
+    }
 
-      if (topLick != null) {
-        if (topLick.factor >= .4f) {
-          stickersController.scrollBy((int) ((float) HeaderView.getTopOffset() * (1f - topLick.factor)));
-          isScrollByHeader = true;
-        } else {
-          stickersController.scrollBy(-(int) ((float) HeaderView.getTopOffset() * topLick.factor));
-        }
+    if (topLick != null) {
+      if (topLick.factor >= .4f) {
+        stickersController.scrollBy((int) ((float) HeaderView.getTopOffset() * (1f - topLick.factor)));
+        isScrollByHeader = true;
+      } else {
+        stickersController.scrollBy(-(int) ((float) HeaderView.getTopOffset() * topLick.factor));
       }
     }
   }

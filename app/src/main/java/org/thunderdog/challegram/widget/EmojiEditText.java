@@ -71,7 +71,7 @@ public class EmojiEditText extends EditText implements Destroyable {
   @Override
   public final InputConnection onCreateInputConnection (EditorInfo editorInfo) {
     InputConnection ic = createInputConnection(editorInfo);
-    if (ic != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !(ic instanceof EmojiInputConnection)) {
+    if (ic != null && !(ic instanceof EmojiInputConnection)) {
       return new EmojiInputConnection(this, ic);
     } else {
       return ic;

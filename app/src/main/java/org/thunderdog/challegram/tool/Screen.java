@@ -143,10 +143,8 @@ public class Screen {
   public static int currentHeight () {
     BaseActivity context = UI.getUiContext();
     if (context != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        if (context.isInMultiWindowMode()) {
-          return context.getWindow().getDecorView().getMeasuredHeight();
-        }
+      if (context.isInMultiWindowMode()) {
+        return context.getWindow().getDecorView().getMeasuredHeight();
       }
       return context.getContentView().getMeasuredHeight();
     }
@@ -154,11 +152,7 @@ public class Screen {
   }
 
   public static int currentActualHeight () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP || true) {
-      return UI.getContext().getResources().getDisplayMetrics().heightPixels - getStatusBarHeight();
-    } else {
-      return UI.getContext().getResources().getDisplayMetrics().heightPixels;
-    }
+    return UI.getContext().getResources().getDisplayMetrics().heightPixels - getStatusBarHeight();
   }
 
   public static float currentAspectRatio () {
@@ -177,9 +171,6 @@ public class Screen {
   }
 
   public static int widestActualSide () {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      return smallestSide();
-    }
     DisplayMetrics m = UI.getContext().getResources().getDisplayMetrics();
     int status = getStatusBarHeight();
     return Math.max(m.widthPixels, m.heightPixels - status);
@@ -191,9 +182,6 @@ public class Screen {
   }
 
   public static int smallestActualSide () {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      return smallestSide();
-    }
     DisplayMetrics m = UI.getContext().getResources().getDisplayMetrics();
     int status = getStatusBarHeight();
     return Math.min(m.widthPixels, m.heightPixels - status);
@@ -226,14 +214,10 @@ public class Screen {
     }
 
     Display display = windowManager.getDefaultDisplay();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-      if (point == null)
-        point = new Point();
-      display.getSize(point);
-      return point.y;
-    } else {
-      return display.getHeight();
-    }
+    if (point == null)
+      point = new Point();
+    display.getSize(point);
+    return point.y;
   }
 
   public static int getOrientation () {

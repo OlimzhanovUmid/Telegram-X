@@ -87,9 +87,6 @@ public class HeaderEditText extends EmojiEditText implements ActionMode.Callback
     setTypeface(Fonts.getRobotoRegular());
     setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
     setHighlightColor(Theme.fillingTextSelectionColor());
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      setCustomSelectionActionModeCallback(this);
-    }
     setFilters(new InputFilter[] {
       new CharacterStyleFilter()
     });

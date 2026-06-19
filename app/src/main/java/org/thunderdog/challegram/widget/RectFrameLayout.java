@@ -33,10 +33,9 @@ public class RectFrameLayout extends FrameLayoutFix {
   public RectFrameLayout (@NonNull Context context) {
     super(context);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if (!Config.DEBUG_CLIPPING) {
       setOutlineProvider(new android.view.ViewOutlineProvider() {
         @Override
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         public void getOutline (View view, android.graphics.Outline outline) {
           outline.setRect(0, top, view.getMeasuredWidth(), view.getMeasuredHeight() - bottom);
         }
@@ -52,7 +51,7 @@ public class RectFrameLayout extends FrameLayoutFix {
   }
 
   private void checkOutline () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if (!Config.DEBUG_CLIPPING) {
       invalidateOutline();
     }
   }
@@ -67,7 +66,7 @@ public class RectFrameLayout extends FrameLayoutFix {
 
   @Override
   protected void dispatchDraw(Canvas c) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if (!Config.DEBUG_CLIPPING) {
       super.dispatchDraw(c);
     } else {
       final int saveCount = Views.save(c);

@@ -53,9 +53,7 @@ public class TogglerView extends View implements FactorAnimator.Target, TooltipO
   private final BoolAnimator isEnabled = new BoolAnimator(0, (id, factor, fraction, callee) -> {
     updateOrigX();
     invalidate();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      invalidateOutline();
-    }
+    invalidateOutline();
   }, AnimatorUtils.DECELERATE_INTERPOLATOR, 180l);
   private BoolAnimator isDisabled;
 
@@ -68,51 +66,46 @@ public class TogglerView extends View implements FactorAnimator.Target, TooltipO
   public void init (boolean isEnabled) {
     setRadioEnabled(isEnabled, false);
     initDrawingItems();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @Override
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setRoundRect((int) (origX - origRadius), (int) (origY - origRadius), (int) (origX + origRadius), (int) (origY + origRadius), origRadius);
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        outline.setRoundRect((int) (origX - origRadius), (int) (origY - origRadius), (int) (origX + origRadius), (int) (origY + origRadius), origRadius);
+      }
+    });
+    setElevation(Math.max(1, Screen.dp(.5f)));
+    setTranslationZ(Math.max(1, Screen.dp(.5f)));
+    ViewUtils.setBackground(this, new Drawable() {
+      @Override
+      public void draw (@NonNull Canvas c) {
+        final int fromBackgroundColor;
+        final int toBackgroundColor;
+        if (useNegativeState) {
+          fromBackgroundColor = Theme.getColor(ColorId.togglerNegativeBackground);
+          toBackgroundColor = Theme.getColor(ColorId.togglerPositiveBackground);
+        } else {
+          fromBackgroundColor = Theme.togglerInactiveFillingColor();
+          toBackgroundColor = Theme.togglerActiveFillingColor();
         }
-      });
-      setElevation(Math.max(1, Screen.dp(.5f)));
-      setTranslationZ(Math.max(1, Screen.dp(.5f)));
-      ViewUtils.setBackground(this, new Drawable() {
-        @Override
-        public void draw (@NonNull Canvas c) {
-          final int fromBackgroundColor;
-          final int toBackgroundColor;
-          if (useNegativeState) {
-            fromBackgroundColor = Theme.getColor(ColorId.togglerNegativeBackground);
-            toBackgroundColor = Theme.getColor(ColorId.togglerPositiveBackground);
-          } else {
-            fromBackgroundColor = Theme.togglerInactiveFillingColor();
-            toBackgroundColor = Theme.togglerActiveFillingColor();
-          }
-          final boolean isDisabled = !useNegativeState && TogglerView.this.isDisabled();
-          c.drawRoundRect(fillingRect, fillRadius, fillRadius, Paints.fillingPaint(ColorUtils.fromToArgb(fromBackgroundColor, toBackgroundColor, isDisabled ? 0f : TogglerView.this.isEnabled.getFloatValue())));
-        }
+        final boolean isDisabled = !useNegativeState && TogglerView.this.isDisabled();
+        c.drawRoundRect(fillingRect, fillRadius, fillRadius, Paints.fillingPaint(ColorUtils.fromToArgb(fromBackgroundColor, toBackgroundColor, isDisabled ? 0f : TogglerView.this.isEnabled.getFloatValue())));
+      }
 
-        @Override
-        public void setAlpha (@IntRange(from = 0, to = 255) int i) {
+      @Override
+      public void setAlpha (@IntRange(from = 0, to = 255) int i) {
 
-        }
+      }
 
-        @Override
-        public void setColorFilter (@Nullable ColorFilter colorFilter) {
+      @Override
+      public void setColorFilter (@Nullable ColorFilter colorFilter) {
 
-        }
+      }
 
-        @Override
-        @SuppressWarnings("deprecation")
-        public int getOpacity () {
-          return PixelFormat.UNKNOWN;
-        }
-      });
-    } else {
-      setLayerType(LAYER_TYPE_SOFTWARE, circlePaint);
-    }
+      @Override
+      @SuppressWarnings("deprecation")
+      public int getOpacity () {
+        return PixelFormat.UNKNOWN;
+      }
+    });
     buildLayout();
   }
 
@@ -127,10 +120,6 @@ public class TogglerView extends View implements FactorAnimator.Target, TooltipO
   private void initDrawingItems () {
     circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG);
     circlePaint.setStyle(Paint.Style.FILL);
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      float radius = Math.max(1, Screen.dpf(.5f));
-      circlePaint.setShadowLayer(radius, 0f, radius, 0x7a000000);
-    }
   }
 
   private boolean isDisabled () {
@@ -281,9 +270,6 @@ public class TogglerView extends View implements FactorAnimator.Target, TooltipO
 
     final float disableFactor = !useNegativeState && this.isDisabled != null ? this.isDisabled.getFloatValue() : 0f;
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      c.drawRoundRect(fillingRect, fillRadius, fillRadius, Paints.fillingPaint(ColorUtils.fromToArgb(fromBackgroundColor, toBackgroundColor, factor * (1f - disableFactor))));
-    }
     circlePaint.setColor(ColorUtils.fromToArgb(fromColor, toColor, factor * (1f - disableFactor)));
     c.drawCircle(origX, origY, origRadius, circlePaint);
 

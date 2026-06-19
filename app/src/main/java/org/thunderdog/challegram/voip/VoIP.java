@@ -99,8 +99,6 @@ public class VoIP {
   public static boolean isForceDisabled (String version) {
     if (forceDisabledVersions != null) {
       return forceDisabledVersions.contains(version);
-    } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      return !version.equals(VoIPController.getVersion());
     } else {
       return false;
     }
@@ -343,7 +341,7 @@ public class VoIP {
 
   private static int getNativeBufferSize (Context context) {
     AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && am.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER) != null) {
+    if (am.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER) != null) {
       int outFramesPerBuffer = StringUtils.parseInt(am.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER));
       if (outFramesPerBuffer != 0) {
         return outFramesPerBuffer;

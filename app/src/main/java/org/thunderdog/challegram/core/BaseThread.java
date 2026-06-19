@@ -57,7 +57,7 @@ public class BaseThread extends Thread {
   public void quitLooper (boolean safely) {
     Looper looper = Looper.myLooper();
     if (looper != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && safely) {
+      if (safely) {
         looper.quitSafely();
       } else {
         looper.quit();

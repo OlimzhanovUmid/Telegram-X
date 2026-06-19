@@ -152,7 +152,7 @@ public class MediaCellView extends ViewGroup implements
     this.imageView = new CellImageView(context);
     this.imageView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Config.USE_HARDWARE_PHOTO_VIEWER_CONFIG) {
+    if (Config.USE_HARDWARE_PHOTO_VIEWER_CONFIG) {
       SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.HARDWARE);
     } else {
       SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);

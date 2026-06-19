@@ -1023,7 +1023,7 @@ public class Emoji {
         } else if (startIndex == -1) {
           startLength = 0;
         }
-        if (abort || (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && emojiCount >= 1000)) {
+        if (abort) {
           break;
         }
       }

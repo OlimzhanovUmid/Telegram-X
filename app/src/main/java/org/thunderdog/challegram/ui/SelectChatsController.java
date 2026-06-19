@@ -1127,13 +1127,8 @@ class Chip extends Drawable implements FlowListAnimator.Measurable, Drawable.Cal
   private void initCrossDrawable () {
     crossIcon = drawableProvider.getSparseDrawable(R.drawable.baseline_close_18, ColorId.NONE);
     ShapeDrawable mask = new ShapeDrawable(new OvalShape());
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      mask.setTint(Color.WHITE);
-      crossIconRipple = new RippleDrawable(ColorStateList.valueOf(Theme.RIPPLE_COLOR), /* content */ null, mask);
-    } else {
-      mask.getPaint().setColor(Theme.RIPPLE_COLOR);
-      crossIconRipple = Drawables.getColorSelector(null, mask);
-    }
+    mask.setTint(Color.WHITE);
+    crossIconRipple = new RippleDrawable(ColorStateList.valueOf(Theme.RIPPLE_COLOR), /* content */ null, mask);
     crossIconRipple.setCallback(this);
     crossIconRipple.setState(STATE_DEFAULT);
   }

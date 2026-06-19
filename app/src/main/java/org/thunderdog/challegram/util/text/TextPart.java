@@ -406,7 +406,7 @@ public class TextPart {
         c.drawRect(x, textY - Screen.dp(16), x + width, textY, Paints.strokeSmallPaint(0xFF000000));
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && BiDiUtils.isValid(bidiEntity)) {
+      if (BiDiUtils.isValid(bidiEntity)) {
         c.drawTextRun(line, start, end, 0, line.length(), x, textY, BiDiUtils.isRtl(bidiEntity), textPaint);
       } else {
         c.drawText(line, start, end, x, textY, textPaint);

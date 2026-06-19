@@ -286,31 +286,29 @@ debugCall id:long debug:string = Ok;
   }
 
   public boolean checkRecordPermissions (final Context context, final Tdlib tdlib, final @Nullable TdApi.Call call, final long userId, final @Nullable ViewController<?> makeCallContext) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (UI.getAppContext().checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-        BaseActivity activity = UI.getUiContext();
-        if (activity != null) {
-          activity.requestMicPermissionForCall((code, permissions, grantResults, grantCount) -> {
-            if (grantCount == permissions.length) {
-              if (makeCallContext != null) {
-                makeCall(makeCallContext, userId, null, false);
-              } else {
-                if (call != null) {
-                  TdApi.Call updatedCall = tdlib.cache().getCall(call.id);
-                  if (updatedCall != null && updatedCall.state.getConstructor() == TdApi.CallStatePending.CONSTRUCTOR) {
-                    acceptCall(context, tdlib, call.id);
-                  }
+    if (UI.getAppContext().checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+      BaseActivity activity = UI.getUiContext();
+      if (activity != null) {
+        activity.requestMicPermissionForCall((code, permissions, grantResults, grantCount) -> {
+          if (grantCount == permissions.length) {
+            if (makeCallContext != null) {
+              makeCall(makeCallContext, userId, null, false);
+            } else {
+              if (call != null) {
+                TdApi.Call updatedCall = tdlib.cache().getCall(call.id);
+                if (updatedCall != null && updatedCall.state.getConstructor() == TdApi.CallStatePending.CONSTRUCTOR) {
+                  acceptCall(context, tdlib, call.id);
                 }
               }
-            } else {
-              showNeedMicAlert(false);
             }
-          });
-        } else {
-          // context.startActivity(new Intent(context, VoIPPermissionActivity.class));
-        }
-        return false;
+          } else {
+            showNeedMicAlert(false);
+          }
+        });
+      } else {
+        // context.startActivity(new Intent(context, VoIPPermissionActivity.class));
       }
+      return false;
     }
     return true;
   }
@@ -407,13 +405,9 @@ debugCall id:long debug:string = Ok;
       } else if (U.isAirplaneModeOn()) {
         b.setTitle(Lang.getString(R.string.VoipOfflineAirplaneTitle));
         b.setMessage(Lang.getString(R.string.VoipOfflineAirplane));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-          b.setNeutralButton(Lang.getString(R.string.Settings), (dialog, which) -> {
-            Intents.openAirplaneSettings();
-          });
-        } else {
-          b.setNeutralButton(Lang.getString(R.string.AirplaneModeDisable), (dialog, which) -> android.provider.Settings.System.putInt(context.context().getContentResolver(), android.provider.Settings.System.AIRPLANE_MODE_ON, 0));
-        }
+        b.setNeutralButton(Lang.getString(R.string.Settings), (dialog, which) -> {
+          Intents.openAirplaneSettings();
+        });
       } else {
         b.setTitle(Lang.getString(R.string.VoipOfflineTitle));
         b.setMessage(Lang.getString(R.string.VoipOffline));
@@ -463,15 +457,11 @@ debugCall id:long debug:string = Ok;
         b = new AlertDialog.Builder(context, Theme.dialogTheme());
         b.setTitle(Lang.getString(R.string.VoipOfflineAirplaneTitle));
         b.setMessage(Lang.getString(R.string.VoipOfflineAirplane));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-          b.setNeutralButton(Lang.getString(R.string.Settings), (dialog, which) -> {
-            Intent i = new Intent(android.provider.Settings.ACTION_AIRPLANE_MODE_SETTINGS);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(i);
-          });
-        } else {
-          b.setNeutralButton(Lang.getString(R.string.AirplaneModeDisable), (dialog, which) -> android.provider.Settings.System.putInt(context.getContentResolver(), android.provider.Settings.System.AIRPLANE_MODE_ON, 0));
-        }
+        b.setNeutralButton(Lang.getString(R.string.Settings), (dialog, which) -> {
+          Intent i = new Intent(android.provider.Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+          i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          context.startActivity(i);
+        });
       } else {
         b = new AlertDialog.Builder(context, Theme.dialogTheme());
         b.setTitle(Lang.getString(R.string.VoipOfflineTitle));

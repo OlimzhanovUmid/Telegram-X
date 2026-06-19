@@ -40,10 +40,6 @@ public class RectDrawable extends SimpleShapeDrawable {
     rectF.set(rect.left + padding, rect.top + padding, rect.right - padding, rect.bottom - padding);
     int radius = Screen.dp(size);
     final int color = getDrawColor();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      c.drawRoundRect(rectF, radius, radius, Paints.fillingPaint(color));
-    } else {
-      c.drawRoundRect(rectF, radius, radius, Paints.shadowFillingPaint(color));
-    }
+    c.drawRoundRect(rectF, radius, radius, Paints.fillingPaint(color));
   }
 }

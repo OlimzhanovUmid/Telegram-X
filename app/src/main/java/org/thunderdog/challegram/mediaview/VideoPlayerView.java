@@ -506,7 +506,7 @@ public class VideoPlayerView implements Player.Listener, CallManager.CurrentCall
     this.callback = callback;
   }
 
-  private static final int SEEK_UPDATE_MS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 24 : 42;
+  private static final int SEEK_UPDATE_MS = 24;
   private long lastPosition;
 
   private void updateTimes () {

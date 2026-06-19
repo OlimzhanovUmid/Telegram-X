@@ -79,23 +79,21 @@ public class RootDrawable extends Drawable {
         c.drawRect(width - rect.right, 0, width, height, paint);
       }
     } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        int height = Screen.getNavigationBarHeight();
-        if (height > 0 && state.context.hadSoftwareKeysOnActivityLaunch()) {
-          int rotation = state.context.getWindowRotationDegrees();
-          Rect bounds = getBounds();
-          switch (rotation) {
-            case 0:
-            case 180:
-              c.drawRect(bounds.left, bounds.bottom - height, bounds.right, bounds.bottom, Paints.fillingPaint(UI.NAVIGATION_BAR_COLOR));
-              break;
-            case 90:
-              c.drawRect(bounds.right - height, bounds.top, bounds.right, bounds.bottom, Paints.fillingPaint(UI.NAVIGATION_BAR_COLOR));
-              break;
-            case 270:
-              c.drawRect(bounds.left, bounds.top, bounds.left + height, bounds.bottom, Paints.fillingPaint(UI.NAVIGATION_BAR_COLOR));
-              break;
-          }
+      int height = Screen.getNavigationBarHeight();
+      if (height > 0 && state.context.hadSoftwareKeysOnActivityLaunch()) {
+        int rotation = state.context.getWindowRotationDegrees();
+        Rect bounds = getBounds();
+        switch (rotation) {
+          case 0:
+          case 180:
+            c.drawRect(bounds.left, bounds.bottom - height, bounds.right, bounds.bottom, Paints.fillingPaint(UI.NAVIGATION_BAR_COLOR));
+            break;
+          case 90:
+            c.drawRect(bounds.right - height, bounds.top, bounds.right, bounds.bottom, Paints.fillingPaint(UI.NAVIGATION_BAR_COLOR));
+            break;
+          case 270:
+            c.drawRect(bounds.left, bounds.top, bounds.left + height, bounds.bottom, Paints.fillingPaint(UI.NAVIGATION_BAR_COLOR));
+            break;
         }
       }
     }

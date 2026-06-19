@@ -6541,7 +6541,7 @@ public class Settings {
 
   public long getPeriodicSyncFrequencySeconds () {
     // TODO
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? TimeUnit.MINUTES.toSeconds(30) : TimeUnit.HOURS.toSeconds(1);
+    return TimeUnit.MINUTES.toSeconds(30);
   }
 
   // Push token

@@ -242,12 +242,10 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
   private void setMode (int mode) {
     if (this.mode == mode) return;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (mode == Passcode.MODE_BIOMETRICS && BiometricAuthentication.isMissingEnrolledData(needStrongBiometrics())) {
-        UI.showToast(BiometricAuthentication.ONLY_FINGERPRINT ? R.string.fingerprint_hint3 : R.string.biometrics_hint3, Toast.LENGTH_SHORT);
-        if (controllerMode == MODE_SETUP) {
-          return;
-        }
+    if (mode == Passcode.MODE_BIOMETRICS && BiometricAuthentication.isMissingEnrolledData(needStrongBiometrics())) {
+      UI.showToast(BiometricAuthentication.ONLY_FINGERPRINT ? R.string.fingerprint_hint3 : R.string.biometrics_hint3, Toast.LENGTH_SHORT);
+      if (controllerMode == MODE_SETUP) {
+        return;
       }
     }
 

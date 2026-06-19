@@ -1017,10 +1017,8 @@ public class TdlibFilesManager implements GlobalConnectionListener {
   }
 
   private boolean isDataSaverEventuallyEnabled (int connectionState) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      if (tdlib.context().watchDog().isSystemDataSaverEnabled()) {
-        return true;
-      }
+    if (tdlib.context().watchDog().isSystemDataSaverEnabled()) {
+      return true;
     }
     switch (connectionState) {
       case WatchDog.CONNECTION_TYPE_ROAMING: {

@@ -1914,7 +1914,7 @@ public class MainController extends ViewPagerController<Void> implements Menu, M
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
       if (context().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
         context().requestCustomPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, (code, permissions, grantResults, grantCount) -> {
           if (grantCount == permissions.length) {
@@ -2214,14 +2214,12 @@ public class MainController extends ViewPagerController<Void> implements Menu, M
           String rawHeight = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
           int height = StringUtils.isNumeric(rawHeight) ? StringUtils.parseInt(rawHeight) : 0;
 
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            String rawRotation = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-            int rotation = StringUtils.isNumeric(rawRotation) ? StringUtils.parseInt(rawRotation) : 0;
-            if (rotation == 90 || rotation == 270) {
-              int temp = height;
-              height = width;
-              width = temp;
-            }
+          String rawRotation = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+          int rotation = StringUtils.isNumeric(rawRotation) ? StringUtils.parseInt(rawRotation) : 0;
+          if (rotation == 90 || rotation == 270) {
+            int temp = height;
+            height = width;
+            width = temp;
           }
 
 

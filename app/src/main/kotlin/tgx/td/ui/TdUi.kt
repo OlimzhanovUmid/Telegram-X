@@ -64,11 +64,7 @@ fun <T> ViewController<T>.reportChatSponsoredMessage (
             val info = ViewController.Options.Builder().apply {
               info(title)
               result.options.forEachIndexed { index, option ->
-                val id = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                  View.generateViewId()
-                } else {
-                  index + 1
-                }
+                val id = View.generateViewId()
                 item(ViewController.OptionItem(id, option.text, OptionColor.NORMAL, 0))
                 idToOptionId.put(id, option.id)
               }

@@ -944,33 +944,29 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   }
 
   private void setLowProfile (boolean isLowProfile) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      if (isLowProfile) {
-        if (mode == MODE_SECRET && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Config.CUTOUT_ENABLED) {
-          context().setWindowDecorSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LOW_PROFILE, true);
-        } else {
-          context().setWindowDecorSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE, true);
-        }
+    if (isLowProfile) {
+      if (mode == MODE_SECRET && Config.CUTOUT_ENABLED) {
+        context().setWindowDecorSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LOW_PROFILE, true);
       } else {
-        context().setWindowDecorSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE, true);
+        context().setWindowDecorSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE, true);
       }
+    } else {
+      context().setWindowDecorSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE, true);
     }
   }
 
   private void setFullScreen (boolean isFullscreen) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (mode != MODE_GALLERY && Config.CUTOUT_ENABLED) {
-        if (isFullscreen && (mode == MODE_MESSAGES || mode == MODE_SIMPLE)) {
-          ViewController<?> c = context.navigation().getCurrentStackItem();
-          if (c != null) {
-            c.hideSoftwareKeyboard();
-          }
+    if (mode != MODE_GALLERY && Config.CUTOUT_ENABLED) {
+      if (isFullscreen && (mode == MODE_MESSAGES || mode == MODE_SIMPLE)) {
+        ViewController<?> c = context.navigation().getCurrentStackItem();
+        if (c != null) {
+          c.hideSoftwareKeyboard();
         }
-        if (isFullscreen) {
-          context().addFullScreenView(this, true);
-        } else {
-          context().removeFullScreenView(this, true);
-        }
+      }
+      if (isFullscreen) {
+        context().addFullScreenView(this, true);
+      } else {
+        context().removeFullScreenView(this, true);
       }
     }
   }
@@ -1023,7 +1019,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
       mediaView.setTarget(location, 1f);
     }
 
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && revealAnimationType != ANIMATION_TYPE_PIP_CLOSE && !Config.DISABLE_VIEWER_ELEVATION) {
+    if (revealAnimationType != ANIMATION_TYPE_PIP_CLOSE && !Config.DISABLE_VIEWER_ELEVATION) {
       mediaView.setTranslationZ(0);
       mediaView.invalidateOutline();
     }
@@ -1069,7 +1065,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   private Path path = new Path();
 
   private void layoutPath () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null && currentThumb != null && commonFactor > 0f && commonFactor < 1f) {
+    if (path != null && currentThumb != null && commonFactor > 0f && commonFactor < 1f) {
 
       // v1
       float factor = Math.max(0f, Math.min(1f, commonFactor));
@@ -1116,7 +1112,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
         throw new IllegalArgumentException();
       this.commonFactor = factor;
       updatePhotoRevealFactor();
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null && currentThumb != null && commonFactor > 0f && commonFactor < 1f) {
+      if (path != null && currentThumb != null && commonFactor > 0f && commonFactor < 1f) {
         layoutPath();
       }
       contentView.setWillNotDraw(factor == 0f);
@@ -2584,7 +2580,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
       if (in) {
         // remember in onFactorChangeFinished
         context().pretendYouDontKnowThisWindow(popupView);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DISABLE_VIEWER_ELEVATION) {
+        if (!Config.DISABLE_VIEWER_ELEVATION) {
           mediaView.invalidateOutline();
         }
       } else {
@@ -2700,9 +2696,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     pipControlsWrap.setTranslationX(viewWidth / 2 + x - currentWidth / 2);
     pipControlsWrap.setTranslationY(viewHeight / 2 + y - currentHeight / 2 + addY);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      mediaView.invalidateOutline();
-    }
+    mediaView.invalidateOutline();
 
     // inline controls check
 
@@ -2731,16 +2725,14 @@ public class MediaViewController extends ViewController<MediaViewController.Args
 
       updatePipLayout(mediaView.getMeasuredWidth(), mediaView.getMeasuredHeight(), false, false);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DISABLE_VIEWER_ELEVATION) {
+      if (!Config.DISABLE_VIEWER_ELEVATION) {
         mediaView.setTranslationZ(factor * (float) Screen.dp(1f));
       }
 
       pipItem.setComponentsAlpha(1f - factor);
 
       if (mediaView.getBaseCell().getDetector().setPositionFactor(fraction)) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          mediaView.invalidateOutline();
-        }
+        mediaView.invalidateOutline();
       }
       mediaView.setDisableTouch(factor != 0f);
 
@@ -2798,16 +2790,14 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   private FactorAnimator pipUpAnimator;
 
   private void animatePipUpFactor (boolean isUp) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (pipUpAnimator == null) {
-        pipUpAnimator = new FactorAnimator(ANIMATOR_PIP_UP, this, AnimatorUtils.DECELERATE_INTERPOLATOR, 180l);
-      }
-      pipUpAnimator.animateTo(isUp ? 1f : 0f);
+    if (pipUpAnimator == null) {
+      pipUpAnimator = new FactorAnimator(ANIMATOR_PIP_UP, this, AnimatorUtils.DECELERATE_INTERPOLATOR, 180l);
     }
+    pipUpAnimator.animateTo(isUp ? 1f : 0f);
   }
 
   private void setPipUpFactor (float factor) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DISABLE_VIEWER_ELEVATION) {
+    if (!Config.DISABLE_VIEWER_ELEVATION) {
       mediaView.setTranslationZ(Screen.dp(1f) + (float) Screen.dp(2f) * factor);
     }
   }
@@ -3271,7 +3261,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   private boolean videoVisible;
 
   private boolean needTrim () {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mode == MODE_GALLERY;
+    return mode == MODE_GALLERY;
   }
 
   private void setVideoVisible (boolean isVisible, boolean isLoaded, long duration, TimeUnit unit, boolean animated) {
@@ -3477,10 +3467,10 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     if (useEdgeToEdge()) {
       return true;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Config.CUTOUT_ENABLED && mode == MODE_MESSAGES) {
+    if (Config.CUTOUT_ENABLED && mode == MODE_MESSAGES) {
       return true;
     }
-    return mode == MODE_SECRET && Build.VERSION.SDK_INT < Build.VERSION_CODES.O && Config.CUTOUT_ENABLED; // mode != MODE_GALLERY && mode != MODE_MESSAGES; // mode == MODE_PROFILE || mode == MODE_CHAT_PROFILE;
+    return false; // mode != MODE_GALLERY && mode != MODE_MESSAGES; // mode == MODE_PROFILE || mode == MODE_CHAT_PROFILE;
   }
 
   @Override
@@ -4093,7 +4083,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     thumbsRecyclerView.setAlpha(0f);
     thumbsRecyclerView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
     Views.setBottomMargin(thumbsRecyclerView, controlsMargin);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DISABLE_VIEWER_ELEVATION) {
+    if (!Config.DISABLE_VIEWER_ELEVATION) {
       thumbsRecyclerView.setElevation(Screen.dp(3f));
     }
 
@@ -5114,7 +5104,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
         }
         float alpha = Math.max(0f, Math.min(1f, commonFactor));
 
-        final boolean saved = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null && !inSlideMode && lastSlideX == 0f && lastSlideY == 0f && currentThumb != null && commonFactor > 0f && commonFactor < 1f && !currentThumb.noBounce();
+        final boolean saved = path != null && !inSlideMode && lastSlideX == 0f && lastSlideY == 0f && currentThumb != null && commonFactor > 0f && commonFactor < 1f && !currentThumb.noBounce();
         final int saveCount = saved ? ViewSupport.clipPath(c, path) : Integer.MIN_VALUE;
 
         if (currentThumb != null && commonFactor < 1f && !inSlideMode && lastSlideX == 0f && lastSlideY == 0f) {
@@ -5165,7 +5155,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
       onMediaStackChanged(false);
 
       headerView = new HeaderView(context);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (mode == MODE_MESSAGES || mode == MODE_SIMPLE) && !Config.DISABLE_VIEWER_ELEVATION) {
+      if ((mode == MODE_MESSAGES || mode == MODE_SIMPLE) && !Config.DISABLE_VIEWER_ELEVATION) {
         headerView.setElevation(Screen.dp(3f));
       }
       attachHeaderViewWithoutNavigation(headerView);
@@ -5222,7 +5212,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
             return super.onTouchEvent(e);
           }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DISABLE_VIEWER_ELEVATION) {
+        if (!Config.DISABLE_VIEWER_ELEVATION) {
           pipControlsWrap.setTranslationZ(Screen.dp(10f));
         }
         pipControlsWrap.setAlpha(0f);
@@ -5275,7 +5265,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
         bottomWrap = new FrameLayoutFix(context);
         bottomWrap.setLayoutParams(fp);
         checkBottomWrapY();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DISABLE_VIEWER_ELEVATION) {
+        if (!Config.DISABLE_VIEWER_ELEVATION) {
           bottomWrap.setElevation(Screen.dp(3f));
         }
 
@@ -5347,7 +5337,7 @@ public class MediaViewController extends ViewController<MediaViewController.Args
     bottomSpace.setAlpha(0f);
     bottomSpace.setLayoutHeight(bottomInnerMargin, false);
     bottomSpace.setVisibility(bottomInnerMargin > 0 ? View.VISIBLE : View.GONE);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DISABLE_VIEWER_ELEVATION) {
+    if (!Config.DISABLE_VIEWER_ELEVATION) {
       bottomSpace.setElevation(Screen.dp(3f));
     }
     contentView.addView(bottomSpace);
@@ -7796,12 +7786,8 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   // Filters stuff
 
   private void openFilters () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      if (currentSection != SECTION_FILTERS) {
-        changeSection(SECTION_FILTERS, MODE_OK);
-      }
-    } else {
-      UI.showToast("Sorry, this feature is available only on Android 4.0+", Toast.LENGTH_SHORT);
+    if (currentSection != SECTION_FILTERS) {
+      changeSection(SECTION_FILTERS, MODE_OK);
     }
   }
 
@@ -8495,10 +8481,6 @@ public class MediaViewController extends ViewController<MediaViewController.Args
           break;
         }
         case TdApi.MessageVideo.CONSTRUCTOR: {
-          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            TdApi.Video video = ((TdApi.MessageVideo) msg.content).video;
-            UI.openFile(messageContainer.controller(), null, new File(video.video.local.path), "video/mp4", TD.getViewCount(msg.interactionInfo));
-          }
           filter = new TdApi.SearchMessagesFilterPhotoAndVideo();
           break;
         }
@@ -8867,14 +8849,13 @@ public class MediaViewController extends ViewController<MediaViewController.Args
   /* * */
 
   private void updateMediaView () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DISABLE_VIEWER_ELEVATION) {
+    if (!Config.DISABLE_VIEWER_ELEVATION) {
       if (mode == MODE_MESSAGES || mode == MODE_SIMPLE) {
         mediaView.setElevation(Screen.dp(2f));
         mediaView.setOutlineProvider(new android.view.ViewOutlineProvider() {
           private final int[] size = new int[2];
 
           @Override
-          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
           public void getOutline (View view, android.graphics.Outline outline) {
             if (getPipSize(size)) {
               // size[0] /= view.getScaleX();

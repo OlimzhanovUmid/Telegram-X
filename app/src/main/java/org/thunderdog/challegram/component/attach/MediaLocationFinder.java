@@ -60,7 +60,7 @@ public class MediaLocationFinder {
     if (manager == null) {
       return null;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && UI.getAppContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    if (UI.getAppContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
       return null;
     }
     List<String> providers = manager.getProviders(true);

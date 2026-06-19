@@ -136,9 +136,7 @@ public class GameController extends WebkitController<GameController.Args> implem
       headerCell.setTitle(getArguments().game.title);
       headerCell.setSubtitle(getArguments().username);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      webView.addJavascriptInterface(new WebViewProxy(this), "TelegramWebviewProxy");
-    }
+    webView.addJavascriptInterface(new WebViewProxy(this), "TelegramWebviewProxy");
     if (getArguments() != null) {
       webView.loadUrl(getArguments().gameUrl);
     }

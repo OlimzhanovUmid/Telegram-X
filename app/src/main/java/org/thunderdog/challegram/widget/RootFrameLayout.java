@@ -94,7 +94,7 @@ public class RootFrameLayout extends FrameLayoutFix {
 
   private static boolean updateInsets (Rect rect, Object insetsRaw, @InsetsType int insetsType) {
     final int left, top, right, bottom;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && insetsRaw != null) {
+    if (insetsRaw != null) {
       android.view.WindowInsets windowInsets = (android.view.WindowInsets) insetsRaw;
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         int typeMask;
@@ -140,19 +140,16 @@ public class RootFrameLayout extends FrameLayoutFix {
   }
 
   private static Object newWindowInsets (Object originalInsetsRaw, int left, int top, int right, int bottom) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      android.view.WindowInsets originalWindowInsets = (android.view.WindowInsets) originalInsetsRaw;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        return new android.view.WindowInsets.Builder(originalWindowInsets)
-          .setSystemWindowInsets(android.graphics.Insets.of(left, top, right, bottom))
-          .build();
-      } else {
-        return originalWindowInsets.replaceSystemWindowInsets(
-          left, top, right, bottom
-        );
-      }
+    android.view.WindowInsets originalWindowInsets = (android.view.WindowInsets) originalInsetsRaw;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      return new android.view.WindowInsets.Builder(originalWindowInsets)
+        .setSystemWindowInsets(android.graphics.Insets.of(left, top, right, bottom))
+        .build();
+    } else {
+      return originalWindowInsets.replaceSystemWindowInsets(
+        left, top, right, bottom
+      );
     }
-    throw new IllegalStateException("Unsupported: " + Build.VERSION.SDK_INT);
   }
 
   public void setIgnoreSystemNavigationBar (boolean ignoreSystemNavigationBar) {
@@ -166,13 +163,11 @@ public class RootFrameLayout extends FrameLayoutFix {
   public void init (final boolean ignoreBottom) {
     this.ignoreBottom = ignoreBottom;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      UI.setFullscreenIfNeeded(this);
-      setOnApplyWindowInsetsListener((v, insets) -> {
-        processWindowInsets(insets, false);
-        return insets.consumeSystemWindowInsets();
-      });
-    }
+    UI.setFullscreenIfNeeded(this);
+    setOnApplyWindowInsetsListener((v, insets) -> {
+      processWindowInsets(insets, false);
+      return insets.consumeSystemWindowInsets();
+    });
   }
 
   private boolean isKeyboardVisible;
@@ -189,31 +184,17 @@ public class RootFrameLayout extends FrameLayoutFix {
         ViewTreeObserver observer = getViewTreeObserver();
         observer.removeOnPreDrawListener(onPreDrawListener);
         observer.addOnPreDrawListener(onPreDrawListener);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          keyboardListener.onKeyboardStateChanged(isVisible);
-          UI.post(lastAction = new CancellableRunnable() {
-            @Override
-            public void act () {
-              observer.removeOnPreDrawListener(onPreDrawListener);
-              invalidate();
-              if (lastAction == this) {
-                lastAction = null;
-              }
+        keyboardListener.onKeyboardStateChanged(isVisible);
+        UI.post(lastAction = new CancellableRunnable() {
+          @Override
+          public void act () {
+            observer.removeOnPreDrawListener(onPreDrawListener);
+            invalidate();
+            if (lastAction == this) {
+              lastAction = null;
             }
-          }.removeOnCancel(UI.getAppHandler()), 20);
-        } else {
-          UI.post(lastAction = new CancellableRunnable() {
-            @Override
-            public void act () {
-              keyboardListener.onKeyboardStateChanged(isVisible);
-              observer.removeOnPreDrawListener(onPreDrawListener);
-              invalidate();
-              if (lastAction == this) {
-                lastAction = null;
-              }
-            }
-          }.removeOnCancel(UI.getAppHandler()), 2);
-        }
+          }
+        }.removeOnCancel(UI.getAppHandler()), 20);
       }
     }
   }
@@ -356,7 +337,7 @@ public class RootFrameLayout extends FrameLayoutFix {
       }
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !ignoreChanges) {
+    if (!ignoreChanges) {
       if (this instanceof BaseRootLayout) {
         if (!Settings.instance().useEdgeToEdge() || !UI.getContext(getContext()).isInFullScreen()) {
           Screen.setStatusBarHeight(effectiveInsets.top);
@@ -426,7 +407,6 @@ public class RootFrameLayout extends FrameLayoutFix {
     return ignoreBottom || ignoreAll || (ignoreSystemNavigationBar && bottom <= Screen.getNavigationBarHeight());
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void dispatchChildInsets (View child, Object windowInsetsRaw, int gravity) {
     legacyInsets.set(
       ignoreAll || ignoreHorizontal || gravity == Gravity.RIGHT ? 0 : systemInsets.left,
@@ -601,7 +581,7 @@ public class RootFrameLayout extends FrameLayoutFix {
 
   @Override
   protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && hasInsets) {
+    if (hasInsets) {
       for (int i = 0; i < getChildCount(); i++) {
         View view = getChildAt(i);
         if (view != null) {

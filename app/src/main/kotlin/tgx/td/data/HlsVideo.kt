@@ -83,7 +83,7 @@ data class HlsVideo(
     when (this.codec) {
       // https://developer.android.com/media/platform/supported-formats
       "av1", "av01" -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q // TODO: bundle av1?
-      "h264" -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+      "h264" -> true
       else -> if (failOnUnknownCodec) {
         error("Unexpected codec: $codec")
       } else {

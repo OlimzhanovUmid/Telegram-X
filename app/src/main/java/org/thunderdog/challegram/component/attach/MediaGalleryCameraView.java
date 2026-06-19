@@ -44,12 +44,10 @@ public class MediaGalleryCameraView extends FrameLayoutFix implements Destroyabl
     params.topMargin = Screen.dp(6f);
     params.rightMargin = Screen.dp(6f);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      textureView = new TextureView(context);
-      textureView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-      textureView.setSurfaceTextureListener(this);
-      addView(textureView);
-    }
+    textureView = new TextureView(context);
+    textureView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    textureView.setSurfaceTextureListener(this);
+    addView(textureView);
 
     ImageView imageView = new ImageView(context);
     imageView.setScaleType(ImageView.ScaleType.CENTER);
@@ -61,7 +59,6 @@ public class MediaGalleryCameraView extends FrameLayoutFix implements Destroyabl
 
   // Texture stuff
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void openCamera () {
 
   }

@@ -303,10 +303,8 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   }
 
   public void onNotificationChannelGroupReset (long accountUserId) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (tdlib.notifications().resetChannelCache(accountUserId)) {
-        rebuild();
-      }
+    if (tdlib.notifications().resetChannelCache(accountUserId)) {
+      rebuild();
     }
   }
 
@@ -329,23 +327,21 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   }
 
   public boolean isEmpty () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      long accountUserId = tdlib.myUserId(true);
-      if (accountUserId != 0) {
-        try {
-          TdlibNotificationChannelGroup channelGroup = tdlib.notifications().getChannelCache();
-          for (TdlibNotificationGroup group : this) {
-            if (channelGroup.getChannel(group, false) != null)
-              return false;
-          }
-          return true;
-        } catch (TdlibNotificationChannelGroup.ChannelCreationFailureException e) {
-          TDLib.Tag.notifications("Unable to create some notification channels for userId %d:\n%s",
-            accountUserId,
-            Log.toString(e)
-          );
-          tdlib.settings().trackNotificationChannelProblem(e, 0);
+    long accountUserId = tdlib.myUserId(true);
+    if (accountUserId != 0) {
+      try {
+        TdlibNotificationChannelGroup channelGroup = tdlib.notifications().getChannelCache();
+        for (TdlibNotificationGroup group : this) {
+          if (channelGroup.getChannel(group, false) != null)
+            return false;
         }
+        return true;
+      } catch (TdlibNotificationChannelGroup.ChannelCreationFailureException e) {
+        TDLib.Tag.notifications("Unable to create some notification channels for userId %d:\n%s",
+          accountUserId,
+          Log.toString(e)
+        );
+        tdlib.settings().trackNotificationChannelProblem(e, 0);
       }
     }
     return !iterator().hasNext();
@@ -359,35 +355,31 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
     return group != null && !group.isEmpty() && !group.isHidden() ? group : null;
   }
 
-  @TargetApi(Build.VERSION_CODES.O)
   public String findCommonChannelId (int category) throws TdlibNotificationChannelGroup.ChannelCreationFailureException {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      TdlibNotificationChannelGroup channelGroup = tdlib.notifications().getChannelCache();
-      android.app.NotificationChannel channel = null;
-      List<TdlibNotification> notifications = lastNotifications(category, true);
+    TdlibNotificationChannelGroup channelGroup = tdlib.notifications().getChannelCache();
+    android.app.NotificationChannel channel = null;
+    List<TdlibNotification> notifications = lastNotifications(category, true);
+    if (notifications != null && !notifications.isEmpty()) {
+      for (int i = notifications.size() - 1; i >= 0; i--) {
+        channel = (android.app.NotificationChannel) channelGroup.getChannel(notifications.get(i).group(), false);
+        if (channel != null)
+          break;
+      }
+    }
+    if (channel == null) {
+      notifications = lastNotifications(category, false);
       if (notifications != null && !notifications.isEmpty()) {
         for (int i = notifications.size() - 1; i >= 0; i--) {
           channel = (android.app.NotificationChannel) channelGroup.getChannel(notifications.get(i).group(), false);
           if (channel != null)
             break;
         }
-      }
-      if (channel == null) {
-        notifications = lastNotifications(category, false);
-        if (notifications != null && !notifications.isEmpty()) {
-          for (int i = notifications.size() - 1; i >= 0; i--) {
-            channel = (android.app.NotificationChannel) channelGroup.getChannel(notifications.get(i).group(), false);
-            if (channel != null)
-              break;
-          }
-          if (channel == null) {
-            channel = (android.app.NotificationChannel) channelGroup.getChannel(notifications.get(notifications.size() - 1).group(), true);
-          }
+        if (channel == null) {
+          channel = (android.app.NotificationChannel) channelGroup.getChannel(notifications.get(notifications.size() - 1).group(), true);
         }
       }
-      return channel != null ? channel.getId() : null;
     }
-    return null;
+    return channel != null ? channel.getId() : null;
   }
 
   public List<TdlibNotification> lastNotifications (int category, boolean onlyVisible) {

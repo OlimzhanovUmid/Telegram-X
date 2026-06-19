@@ -334,7 +334,7 @@ public class MessageView extends SparseDrawableView implements Destroyable, Draw
 
     if (this.msg != null) {
       msg.onAttachedToView(this);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && manager.useBubbles()) {
+      if (manager.useBubbles()) {
         invalidateOutline();
       }
     }

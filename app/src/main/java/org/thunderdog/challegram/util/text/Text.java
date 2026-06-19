@@ -3398,9 +3398,6 @@ public class Text implements Runnable, Emoji.CountLimiter, CounterTextPart, List
       boolean replaceWithNeutralDirectionChar = false;
       if (neutralizeEmoji) {
         int ltrEmojiCharCount = EmojiBidUtil.ltrEmojiCharCount(codePoint, count, in, a, end);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && ltrEmojiCharCount == 0) {
-          ltrEmojiCharCount = EmojiBidUtilLegacy.ltrEmojiCharCountLegacy(codePoint, count);
-        }
         if (ltrEmojiCharCount > 0) {
           count = ltrEmojiCharCount;
           replaceWithNeutralDirectionChar = true;

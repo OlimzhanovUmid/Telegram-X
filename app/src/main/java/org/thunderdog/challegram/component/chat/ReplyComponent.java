@@ -443,13 +443,8 @@ public class ReplyComponent implements Client.ResultHandler, Destroyable {
       } else {
         receiver.setBounds(imageX, startY, imageX + height, startY + height);
       }
-      final int restoreToCount;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        layoutPath(receiver.getLeft(), receiver.getTop(), receiver.getRight(), receiver.getBottom());
-        restoreToCount = ViewSupport.clipPath(c, path);
-      } else {
-        restoreToCount = Integer.MIN_VALUE;
-      }
+      layoutPath(receiver.getLeft(), receiver.getTop(), receiver.getRight(), receiver.getBottom());
+      final int restoreToCount = ViewSupport.clipPath(c, path);
       if (receiver.needPlaceholder() && mediaPreview != null) {
         receiver.drawPlaceholderContour(c, mediaPreview.contour);
       }

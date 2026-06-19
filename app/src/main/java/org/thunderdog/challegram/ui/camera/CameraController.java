@@ -86,7 +86,7 @@ import me.vkryl.core.StringUtils;
 import me.vkryl.core.lambda.CancellableRunnable;
 
 public class CameraController extends ViewController<Void> implements CameraDelegate, SensorEventListener, FactorAnimator.Target, View.OnClickListener, CameraButton.RecordListener, CameraOverlayView.FlashListener, Settings.SettingsChangeListener {
-  public static final String[] VIDEO_PERMISSIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ? new String[] {
+  public static final String[] VIDEO_PERMISSIONS = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ? new String[] {
     Manifest.permission.CAMERA,
     Manifest.permission.RECORD_AUDIO,
     Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -106,7 +106,7 @@ public class CameraController extends ViewController<Void> implements CameraDele
     Manifest.permission.READ_EXTERNAL_STORAGE
   };
 
-  private static final boolean ALLOW_EARLY_INITIALIZATION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+  private static final boolean ALLOW_EARLY_INITIALIZATION = true;
 
   public interface ReadyListener {
     void onCameraCompletelyReady (CameraController camera);
@@ -1285,9 +1285,6 @@ public class CameraController extends ViewController<Void> implements CameraDele
   public void onFactorChangeFinished (int id, float finalFactor, FactorAnimator callee) {
     switch (id) {
       case ANIMATOR_ROTATION:
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 && finalFactor % 90.0f == 0.0f) {
-          applyFakeRotation();
-        }
         break;
     }
   }

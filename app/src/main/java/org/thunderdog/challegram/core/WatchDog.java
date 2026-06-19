@@ -242,21 +242,17 @@ public class WatchDog {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private boolean hasRouteChanged (ConnectivityManager manager, Object rawNetwork) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && manager != null && rawNetwork != null) {
+    if (manager != null && rawNetwork != null) {
       android.net.Network network = (android.net.Network) rawNetwork;
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        return network.getNetworkHandle() != lastNetworkHandle;
-      }
+      return network.getNetworkHandle() != lastNetworkHandle;
     }
     return false;
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void saveRoute (ConnectivityManager manager, Object rawNetwork) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && manager != null && rawNetwork != null) {
+    if (manager != null && rawNetwork != null) {
       android.net.Network network = (android.net.Network) rawNetwork;
       if (Log.isEnabled(Log.TAG_NETWORK_STATE)) {
         // try/catch for https://issuetracker.google.com/issues/175055271?pli=1
@@ -267,13 +263,10 @@ public class WatchDog {
           Log.i(Log.TAG_NETWORK_STATE, "Unable to get network capabilities: %s", t, network);
         }
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        lastNetworkHandle = network.getNetworkHandle();
-      }
+      lastNetworkHandle = network.getNetworkHandle();
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private static boolean filter (NetworkInfo info) {
     return info.isConnectedOrConnecting() && info.getType() != ConnectivityManager.TYPE_VPN;
   }
@@ -285,41 +278,26 @@ public class WatchDog {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      int restrictBackgroundStatus;
-      try {
-        restrictBackgroundStatus = manager.getRestrictBackgroundStatus();
-      } catch (SecurityException e) {
-        Log.w("Unable to fetch background network status", e);
-        restrictBackgroundStatus = ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
-      }
-      boolean dataSaverEnabled = manager.isActiveNetworkMetered() && restrictBackgroundStatus != ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED;
-      setSystemDataSaverEnabled(dataSaverEnabled);
-      if (dataSaverOnly) {
-        return;
-      }
+    int restrictBackgroundStatus;
+    try {
+      restrictBackgroundStatus = manager.getRestrictBackgroundStatus();
+    } catch (SecurityException e) {
+      Log.w("Unable to fetch background network status", e);
+      restrictBackgroundStatus = ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
+    }
+    boolean dataSaverEnabled = manager.isActiveNetworkMetered() && restrictBackgroundStatus != ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED;
+    setSystemDataSaverEnabled(dataSaverEnabled);
+    if (dataSaverOnly) {
+      return;
     }
 
     NetworkInfo activeNetworkInfo = null; // manager.getActiveNetworkInfo();
     Object activeNetwork = null;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      android.net.Network foundActiveNetwork = manager.getActiveNetwork();
-      if (foundActiveNetwork != null) {
-        activeNetwork = foundActiveNetwork;
-        activeNetworkInfo = manager.getNetworkInfo(foundActiveNetwork);
-      }
-    }/* else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // commented out because of possible incorrect detection
-      android.net.Network[] networks = manager.getAllNetworks();
-      for (android.net.Network network : networks) {
-        NetworkInfo info = manager.getNetworkInfo(network);
-        if (info.isConnectedOrConnecting()) {
-          activeNetwork = network;
-          activeNetworkInfo = manager.getNetworkInfo(network);
-        }
-      }
-    }*/ else {
-      activeNetworkInfo = manager.getActiveNetworkInfo();
+    android.net.Network foundActiveNetwork = manager.getActiveNetwork();
+    if (foundActiveNetwork != null) {
+      activeNetwork = foundActiveNetwork;
+      activeNetworkInfo = manager.getNetworkInfo(foundActiveNetwork);
     }
 
     boolean isOnline = false;
@@ -342,40 +320,21 @@ public class WatchDog {
       connectionType = getConnectionType(activeNetworkInfo);
     } else {
       // Trying to find active network manually
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        android.net.Network[] networks = manager.getAllNetworks();
-        for (android.net.Network network : networks) {
-          NetworkInfo info = manager.getNetworkInfo(network);
-          if (info != null) {
-            if (filter(info)) {
-              isOnline = true;
-              int type = getConnectionType(info);
-              chosenNetworkInfo = info;
-              chosenNetwork = network;
-              if (connectionType == CONNECTION_TYPE_NONE || type != CONNECTION_TYPE_WIFI) {
-                connectionType = type;
-              }
-            } else if (availableNetworkInfo == null && info.isAvailable() && info.getType() != ConnectivityManager.TYPE_VPN) {
-              availableNetworkInfo = info;
-              availableNetwork = network;
+      android.net.Network[] networks = manager.getAllNetworks();
+      for (android.net.Network network : networks) {
+        NetworkInfo info = manager.getNetworkInfo(network);
+        if (info != null) {
+          if (filter(info)) {
+            isOnline = true;
+            int type = getConnectionType(info);
+            chosenNetworkInfo = info;
+            chosenNetwork = network;
+            if (connectionType == CONNECTION_TYPE_NONE || type != CONNECTION_TYPE_WIFI) {
+              connectionType = type;
             }
-          }
-        }
-      } else {
-        NetworkInfo[] networkInfos = manager.getAllNetworkInfo();
-        for (NetworkInfo info : networkInfos) {
-          if (info != null) {
-            // TODO what happens if we are on VPN on pre-lollipop device?
-            if (info.isConnectedOrConnecting()) {
-              isOnline = true;
-              int type = getConnectionType(info);
-              chosenNetworkInfo = info;
-              if (connectionType == CONNECTION_TYPE_NONE || type != CONNECTION_TYPE_WIFI) {
-                connectionType = type;
-              }
-            } else if (availableNetworkInfo == null && info.isAvailable()) {
-              availableNetworkInfo = info;
-            }
+          } else if (availableNetworkInfo == null && info.isAvailable() && info.getType() != ConnectivityManager.TYPE_VPN) {
+            availableNetworkInfo = info;
+            availableNetwork = network;
           }
         }
       }
@@ -400,12 +359,10 @@ public class WatchDog {
     if (isOnline) {
       final int previousConnectionType = this.connectionType;
       setConnectionType(connectionType);
-      if (previousConnectionType != CONNECTION_TYPE_NONE && (previousConnectionType != connectionType || hasRouteStateChanged(chosenNetworkInfo) || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && hasRouteChanged(manager, chosenNetwork)))) {
+      if (previousConnectionType != CONNECTION_TYPE_NONE && (previousConnectionType != connectionType || hasRouteStateChanged(chosenNetworkInfo) || hasRouteChanged(manager, chosenNetwork))) {
         onNetworkRouteChanged();
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        saveRoute(manager, chosenNetwork);
-      }
+      saveRoute(manager, chosenNetwork);
       saveConnectionRouteInfo(chosenNetworkInfo);
     }
     if (!setIsOnline(isOnline)) {

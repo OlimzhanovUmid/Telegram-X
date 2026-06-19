@@ -80,7 +80,6 @@ import me.vkryl.android.widget.FrameLayoutFix;
 import me.vkryl.core.MathUtils;
 import tgx.td.Td;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class RoundVideoController extends BasePlaybackController implements
   BaseActivity.ActivityListener,
   TdlibFilesManager.FileListener,
@@ -432,10 +431,8 @@ public class RoundVideoController extends BasePlaybackController implements
   }
 
   private static void setCircleShadow (View view) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      view.setElevation(Screen.dp(1f));
-      view.setTranslationZ(Screen.dp(1f));
-    }
+    view.setElevation(Screen.dp(1f));
+    view.setTranslationZ(Screen.dp(1f));
   }
 
   private static final float SWITCH_SCALE = .1f;

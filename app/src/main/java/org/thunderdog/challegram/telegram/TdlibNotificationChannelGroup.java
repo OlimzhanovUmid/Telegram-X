@@ -45,7 +45,6 @@ import me.vkryl.core.collection.SparseLongArray;
 import tgx.td.ChatId;
 import tgx.td.Td;
 
-@TargetApi(Build.VERSION_CODES.O)
 public class TdlibNotificationChannelGroup {
   private final Tdlib tdlib;
 
@@ -230,12 +229,10 @@ public class TdlibNotificationChannelGroup {
     return accountUserId;
   }
 
-  @TargetApi(Build.VERSION_CODES.O)
   public Object getChannel (TdlibNotificationGroup group, boolean allowDisabled) throws ChannelCreationFailureException {
     return getChannel(group.getChatId(), group.isMention(), group.singleSenderId(), allowDisabled);
   }
 
-  @TargetApi(Build.VERSION_CODES.O)
   private Object getChannel (long chatId, boolean areMentions, long singleSenderId, boolean allowDisabled) throws ChannelCreationFailureException {
     android.app.NotificationChannel channel = (android.app.NotificationChannel) getChannelImpl(chatId, areMentions, singleSenderId);
     if (channel == null) {
@@ -247,7 +244,6 @@ public class TdlibNotificationChannelGroup {
     return null;
   }
 
-  @TargetApi(Build.VERSION_CODES.O)
   @NonNull
   private Object getChannelImpl (long chatId, boolean areMentions, long singleAuthorChatId) throws ChannelCreationFailureException {
     // android.app.NotificationChannel channel;
@@ -332,7 +328,6 @@ public class TdlibNotificationChannelGroup {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.O)
   public static int importanceToPriority (int importance) {
     switch (importance) {
       case NotificationManager.IMPORTANCE_MAX:
@@ -349,7 +344,6 @@ public class TdlibNotificationChannelGroup {
     return Notification.PRIORITY_DEFAULT;
   }
 
-  @TargetApi(Build.VERSION_CODES.O)
   public static int priorityToImportance (int priority) {
     switch (priority) {
       case Notification.PRIORITY_MAX:
@@ -404,90 +398,84 @@ public class TdlibNotificationChannelGroup {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.O)
   public static void cleanupChannels (Tdlib tdlib) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      NotificationManager m = (NotificationManager) UI.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-      if (m == null)
-        return;
-      long accountUserId = tdlib.myUserId(true);
-      if (accountUserId == 0)
-        return;
-      List<android.app.NotificationChannel> channels = m.getNotificationChannels();
-      if (channels != null && !channels.isEmpty()) {
-        String prefix = makePrefix(accountUserId, tdlib.notifications().getChannelsGlobalVersion());
-        String groupPrefix = tdlib.account().isDebug() ? ACCOUNT_PREFIX_DEBUG : ACCOUNT_PREFIX;
-        List<String> removedChannels = null;
-        for (int i = channels.size() - 1; i >= 0; i--) {
-          android.app.NotificationChannel channel = channels.get(i);
-          String groupId = channel.getGroup();
-          if (StringUtils.isEmpty(groupId) || !groupId.startsWith(groupPrefix))
-            continue;
-          long userId = StringUtils.parseLong(groupId.substring(groupPrefix.length()));
-          if (userId != accountUserId)
-            continue;
-          String id = channel.getId();
-          boolean ok = false;
-          if (!StringUtils.isEmpty(id) && id.startsWith(prefix)) {
-            String data = id.substring(prefix.length());
-            if (data.startsWith(PRIVATE_SUFFIX)) {
-              int versionIndex = data.indexOf('_', PRIVATE_SUFFIX.length());
-              long version = versionIndex != -1 ? StringUtils.parseLong(data.substring(versionIndex + 1)) : 0;
-              long currentVersion = tdlib.notifications().getChannelVersion(tdlib.notifications().scopePrivate(), 0);
-              ok = version == currentVersion;
-            } else if (data.startsWith(GROUP_SUFFIX)) {
-              int versionIndex = data.indexOf('_', GROUP_SUFFIX.length());
-              long version = versionIndex != -1 ? StringUtils.parseInt(data.substring(versionIndex + 1)) : 0;
-              long currentVersion = tdlib.notifications().getChannelVersion(tdlib.notifications().scopeGroup(), 0);
-              ok = version == currentVersion;
-            } else if (data.startsWith(CHANNEL_SUFFIX)) {
-              int versionIndex = data.indexOf('_', CHANNEL_SUFFIX.length());
-              long version = versionIndex != -1 ? StringUtils.parseInt(data.substring(versionIndex + 1)) : 0;
-              long currentVersion = tdlib.notifications().getChannelVersion(tdlib.notifications().scopeChannel(), 0);
-              ok = version == currentVersion;
-            } else if (data.startsWith(CUSTOM_SUFFIX)) {
-              int versionIndex = data.indexOf('_', CUSTOM_SUFFIX.length());
-              long version = versionIndex != -1 ? StringUtils.parseInt(data.substring(versionIndex + 1)) : 0;
-              long customChatId = StringUtils.parseLong(data.substring(CUSTOM_SUFFIX.length(), versionIndex != -1 ? versionIndex : data.length()));
-              long currentVersion = tdlib.notifications().getChannelVersion(null, customChatId);
-              ok = version == currentVersion;
-            }
-          }
-          if (!ok) {
-            if (removedChannels == null)
-              removedChannels = new ArrayList<>();
-            removedChannels.add(id);
-            m.deleteNotificationChannel(id);
+    NotificationManager m = (NotificationManager) UI.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    if (m == null)
+      return;
+    long accountUserId = tdlib.myUserId(true);
+    if (accountUserId == 0)
+      return;
+    List<android.app.NotificationChannel> channels = m.getNotificationChannels();
+    if (channels != null && !channels.isEmpty()) {
+      String prefix = makePrefix(accountUserId, tdlib.notifications().getChannelsGlobalVersion());
+      String groupPrefix = tdlib.account().isDebug() ? ACCOUNT_PREFIX_DEBUG : ACCOUNT_PREFIX;
+      List<String> removedChannels = null;
+      for (int i = channels.size() - 1; i >= 0; i--) {
+        android.app.NotificationChannel channel = channels.get(i);
+        String groupId = channel.getGroup();
+        if (StringUtils.isEmpty(groupId) || !groupId.startsWith(groupPrefix))
+          continue;
+        long userId = StringUtils.parseLong(groupId.substring(groupPrefix.length()));
+        if (userId != accountUserId)
+          continue;
+        String id = channel.getId();
+        boolean ok = false;
+        if (!StringUtils.isEmpty(id) && id.startsWith(prefix)) {
+          String data = id.substring(prefix.length());
+          if (data.startsWith(PRIVATE_SUFFIX)) {
+            int versionIndex = data.indexOf('_', PRIVATE_SUFFIX.length());
+            long version = versionIndex != -1 ? StringUtils.parseLong(data.substring(versionIndex + 1)) : 0;
+            long currentVersion = tdlib.notifications().getChannelVersion(tdlib.notifications().scopePrivate(), 0);
+            ok = version == currentVersion;
+          } else if (data.startsWith(GROUP_SUFFIX)) {
+            int versionIndex = data.indexOf('_', GROUP_SUFFIX.length());
+            long version = versionIndex != -1 ? StringUtils.parseInt(data.substring(versionIndex + 1)) : 0;
+            long currentVersion = tdlib.notifications().getChannelVersion(tdlib.notifications().scopeGroup(), 0);
+            ok = version == currentVersion;
+          } else if (data.startsWith(CHANNEL_SUFFIX)) {
+            int versionIndex = data.indexOf('_', CHANNEL_SUFFIX.length());
+            long version = versionIndex != -1 ? StringUtils.parseInt(data.substring(versionIndex + 1)) : 0;
+            long currentVersion = tdlib.notifications().getChannelVersion(tdlib.notifications().scopeChannel(), 0);
+            ok = version == currentVersion;
+          } else if (data.startsWith(CUSTOM_SUFFIX)) {
+            int versionIndex = data.indexOf('_', CUSTOM_SUFFIX.length());
+            long version = versionIndex != -1 ? StringUtils.parseInt(data.substring(versionIndex + 1)) : 0;
+            long customChatId = StringUtils.parseLong(data.substring(CUSTOM_SUFFIX.length(), versionIndex != -1 ? versionIndex : data.length()));
+            long currentVersion = tdlib.notifications().getChannelVersion(null, customChatId);
+            ok = version == currentVersion;
           }
         }
-        if (removedChannels != null) {
-          TDLib.Tag.notifications( "Removed deprecated channels: %s", Strings.join(", ", removedChannels));
+        if (!ok) {
+          if (removedChannels == null)
+            removedChannels = new ArrayList<>();
+          removedChannels.add(id);
+          m.deleteNotificationChannel(id);
         }
+      }
+      if (removedChannels != null) {
+        TDLib.Tag.notifications( "Removed deprecated channels: %s", Strings.join(", ", removedChannels));
       }
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.O)
   public static void cleanupChannelGroups (TdlibManager context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      NotificationManager m = (NotificationManager) UI.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-      if (m == null)
-        return;
-      List<android.app.NotificationChannelGroup> groups = m.getNotificationChannelGroups();
-      if (groups != null && !groups.isEmpty()) {
+    NotificationManager m = (NotificationManager) UI.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    if (m == null)
+      return;
+    List<android.app.NotificationChannelGroup> groups = m.getNotificationChannelGroups();
+    if (groups != null && !groups.isEmpty()) {
 
-        for (int j = 0; j < 2; j++) {
-          boolean isDebug = j == 1;
-          Set<Long> userIds = context.availableUserIdsSet(isDebug);
-          String prefix = isDebug ? ACCOUNT_PREFIX_DEBUG : ACCOUNT_PREFIX;
-          for (int i = groups.size() - 1; i >= 0; i--) {
-            android.app.NotificationChannelGroup group = groups.get(i);
-            String groupId = group.getId();
-            if (!StringUtils.isEmpty(groupId) && groupId.startsWith(prefix)) {
-              long userId = StringUtils.parseLong(groupId.substring(prefix.length()));
-              if (userId == 0 || !userIds.contains(userId)) {
-                m.deleteNotificationChannelGroup(groupId);
-              }
+      for (int j = 0; j < 2; j++) {
+        boolean isDebug = j == 1;
+        Set<Long> userIds = context.availableUserIdsSet(isDebug);
+        String prefix = isDebug ? ACCOUNT_PREFIX_DEBUG : ACCOUNT_PREFIX;
+        for (int i = groups.size() - 1; i >= 0; i--) {
+          android.app.NotificationChannelGroup group = groups.get(i);
+          String groupId = group.getId();
+          if (!StringUtils.isEmpty(groupId) && groupId.startsWith(prefix)) {
+            long userId = StringUtils.parseLong(groupId.substring(prefix.length()));
+            if (userId == 0 || !userIds.contains(userId)) {
+              m.deleteNotificationChannelGroup(groupId);
             }
           }
         }

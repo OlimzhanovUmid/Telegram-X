@@ -42,7 +42,7 @@ public class CounterView extends CounterHeaderView {
     return true;
   }
 
-  private Path path = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? new Path() : null;
+  private Path path = new Path();
   private float lastLeft, lastRight;
 
   @Override
@@ -67,7 +67,7 @@ public class CounterView extends CounterHeaderView {
     c.drawRoundRect(rectF, radius, radius, Paints.fillingPaint(0xa0000000));
     c.drawRoundRect(rectF, radius, radius, Paints.getProgressPaint(0xffffffff, strokeWidth));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null) {
+    if (path != null) {
       if (lastLeft != left || lastRight != right) {
         lastLeft = left;
         lastRight = right;

@@ -108,7 +108,6 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
   private void showSystemPicker (boolean forceDownloads) {
     RunnableData<Set<Uri>> callback = uris -> {
       if (uris != null && !uris.isEmpty()) {

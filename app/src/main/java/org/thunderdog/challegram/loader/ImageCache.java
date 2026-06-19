@@ -60,13 +60,7 @@ public class ImageCache {
     protected int sizeOf (String key, Bitmap value) {
       if (value == null || value.isRecycled())
         return 1;
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1) {
-        return value.getRowBytes() * value.getHeight();
-      } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-        return value.getByteCount();
-      } else {
-        return value.getAllocationByteCount();
-      }
+      return value.getAllocationByteCount();
     }
 
     @Override
@@ -96,12 +90,8 @@ public class ImageCache {
   }
 
   private int getMemcacheSize () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      int mib = Math.min(15, ((ActivityManager) UI.getAppContext().getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass() / 7);
-      return (int) ByteUnit.MIB.toBytes(mib);
-    } else {
-      return (int) ByteUnit.MIB.toBytes(3);
-    }
+    int mib = Math.min(15, ((ActivityManager) UI.getAppContext().getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass() / 7);
+    return (int) ByteUnit.MIB.toBytes(mib);
   }
 
   public HashMap<String, AtomicInteger> getCounters () {

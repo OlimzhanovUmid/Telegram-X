@@ -3257,10 +3257,7 @@ public abstract class ViewController<T> implements Future<View>, ThemeChangeList
   }
 
   public final boolean inMultiWindowMode () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      return context.isInMultiWindowMode();
-    }
-    return false;
+    return context.isInMultiWindowMode();
   }
 
   @CallSuper

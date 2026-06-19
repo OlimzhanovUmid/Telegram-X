@@ -543,7 +543,7 @@ public abstract class CameraManager <T extends View> {
     }
     Bitmap oldBitmap = outputBitmap;
     boolean reused = false;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && oldBitmap != null && !outputInUse) {
+    if (oldBitmap != null && !outputInUse) {
       try {
         oldBitmap.reconfigure(width, height, Bitmap.Config.ARGB_8888);
         reused = true;

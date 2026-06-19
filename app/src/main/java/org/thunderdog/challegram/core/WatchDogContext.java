@@ -31,13 +31,9 @@ public class WatchDogContext {
     INTENT_FILTER.addAction(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     // INTENT_FILTER.addAction(Airplane mode?);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      INTENT_FILTER.addAction(android.media.AudioManager.ACTION_HEADSET_PLUG);
-    }
+    INTENT_FILTER.addAction(android.media.AudioManager.ACTION_HEADSET_PLUG);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      INTENT_FILTER.addAction(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED);
-    }
+    INTENT_FILTER.addAction(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED);
   }
 
   private final Context context;

@@ -466,9 +466,7 @@ public class TdlibCache implements LiveLocationManager.OutputDelegate, CleanupSt
     }
 
     if (isMe) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        TdlibNotificationChannelGroup.updateGroup(newUser, tdlib.account().isDebug());
-      }
+      TdlibNotificationChannelGroup.updateGroup(newUser, tdlib.account().isDebug());
       tdlib.context().onUpdateAccountProfile(tdlib.id(), newUser, !hadUser);
     } else {
       if (isContactChanged) {
@@ -599,7 +597,7 @@ public class TdlibCache implements LiveLocationManager.OutputDelegate, CleanupSt
       notifyListeners(supergroupsGlobalListeners.iterator(), supergroup);
       notifyListeners(supergroupListeners.iterator(supergroup.id), supergroup);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && updateMode == UPDATE_MODE_IMPORTANT) {
+    if (updateMode == UPDATE_MODE_IMPORTANT) {
       if (chat != null) {
         try {
           TdlibNotificationChannelGroup.updateChat(tdlib, myUserId, chat);
@@ -1828,11 +1826,7 @@ public class TdlibCache implements LiveLocationManager.OutputDelegate, CleanupSt
   private int putSupergroup (TdApi.Supergroup supergroup) {
     TdApi.Supergroup oldSupergroup = supergroups.get(supergroup.id);
     final int mode;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      mode = oldSupergroup == null ? UPDATE_MODE_NONE : oldSupergroup.isChannel != supergroup.isChannel || !Td.equalsTo(oldSupergroup.usernames, supergroup.usernames) ? UPDATE_MODE_IMPORTANT : UPDATE_MODE_UPDATE;
-    } else {
-      mode = oldSupergroup == null ? UPDATE_MODE_NONE : UPDATE_MODE_UPDATE;
-    }
+    mode = oldSupergroup == null ? UPDATE_MODE_NONE : oldSupergroup.isChannel != supergroup.isChannel || !Td.equalsTo(oldSupergroup.usernames, supergroup.usernames) ? UPDATE_MODE_IMPORTANT : UPDATE_MODE_UPDATE;
     supergroups.put(supergroup.id, supergroup);
     return mode;
   }

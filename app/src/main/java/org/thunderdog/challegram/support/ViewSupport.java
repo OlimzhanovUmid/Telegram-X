@@ -73,7 +73,7 @@ public class ViewSupport {
   }
 
   public static int clipPath (Canvas c, Path path) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null) {
+    if (path != null) {
       int result = c.save();
       try {
         c.clipPath(path);
@@ -93,54 +93,52 @@ public class ViewSupport {
   }
 
   public static void showDatePicker (final DatePickerDialog dialog) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      dialog.setOnShowListener(ignored -> {
-        final DatePicker datePicker = dialog.getDatePicker();
-        try {
-          Field mDatePickerField;
-          mDatePickerField = DatePickerDialog.class.getDeclaredField("mDatePicker");
-          mDatePickerField.setAccessible(true);
-          final DatePicker mDatePicker = (DatePicker) mDatePickerField.get(dialog);
+    dialog.setOnShowListener(ignored -> {
+      final DatePicker datePicker = dialog.getDatePicker();
+      try {
+        Field mDatePickerField;
+        mDatePickerField = DatePickerDialog.class.getDeclaredField("mDatePicker");
+        mDatePickerField.setAccessible(true);
+        final DatePicker mDatePicker = (DatePicker) mDatePickerField.get(dialog);
 
-          int viewId = Resources.getSystem().getIdentifier("day_picker_selector_layout", "id", "android");
-          if (viewId == 0) {
-            viewId = Resources.getSystem().getIdentifier("date_picker_header", "id", "android");
+        int viewId = Resources.getSystem().getIdentifier("day_picker_selector_layout", "id", "android");
+        if (viewId == 0) {
+          viewId = Resources.getSystem().getIdentifier("date_picker_header", "id", "android");
+        }
+        ThemeDelegate theme = ThemeManager.instance().currentTheme(false);
+        final View header = mDatePicker.findViewById(viewId);
+        if (header != null) {
+          final int bgColor = ColorUtils.compositeColor(theme.getColor(ColorId.headerBackground), theme.getColor(ColorId.headerPickerBackground));
+          final int textColor = ColorUtils.compositeColor(theme.getColor(ColorId.headerText), theme.getColor(ColorId.headerPickerText));
+          header.setBackgroundColor(bgColor);
+          viewId = Resources.getSystem().getIdentifier("date_picker_header_year", "id", "android");
+          if (viewId != 0) {
+            View view = header.findViewById(viewId);
+            if (view instanceof TextView)
+              ((TextView) view).setTextColor(textColor);
           }
-          ThemeDelegate theme = ThemeManager.instance().currentTheme(false);
-          final View header = mDatePicker.findViewById(viewId);
-          if (header != null) {
-            final int bgColor = ColorUtils.compositeColor(theme.getColor(ColorId.headerBackground), theme.getColor(ColorId.headerPickerBackground));
-            final int textColor = ColorUtils.compositeColor(theme.getColor(ColorId.headerText), theme.getColor(ColorId.headerPickerText));
-            header.setBackgroundColor(bgColor);
-            viewId = Resources.getSystem().getIdentifier("date_picker_header_year", "id", "android");
-            if (viewId != 0) {
-              View view = header.findViewById(viewId);
-              if (view instanceof TextView)
-                ((TextView) view).setTextColor(textColor);
-            }
-            viewId = Resources.getSystem().getIdentifier("date_picker_header_date", "id", "android");
-            if (viewId != 0) {
-              View view = header.findViewById(viewId);
-              if (view instanceof TextView)
-                ((TextView) view).setTextColor(textColor);
-            }
+          viewId = Resources.getSystem().getIdentifier("date_picker_header_date", "id", "android");
+          if (viewId != 0) {
+            View view = header.findViewById(viewId);
+            if (view instanceof TextView)
+              ((TextView) view).setTextColor(textColor);
           }
+        }
 
-        } catch (Throwable t) {
-          Log.i(t);
+      } catch (Throwable t) {
+        Log.i(t);
+      }
+      try {
+        View view = Views.tryFindAndroidView(dialog.getContext(), dialog, "date_picker_day_picker");
+        if (view != null && view.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+          FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+          params.gravity = Gravity.CENTER_HORIZONTAL;
+          view.setLayoutParams(params);
         }
-        try {
-          View view = Views.tryFindAndroidView(dialog.getContext(), dialog, "date_picker_day_picker");
-          if (view != null && view.getLayoutParams() instanceof FrameLayout.LayoutParams) {
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-            params.gravity = Gravity.CENTER_HORIZONTAL;
-            view.setLayoutParams(params);
-          }
-        } catch (Throwable t) {
-          Log.i(t);
-        }
-      });
-    }
+      } catch (Throwable t) {
+        Log.i(t);
+      }
+    });
     dialog.setButton(DialogInterface.BUTTON_POSITIVE, Lang.getString(R.string.OK), dialog);
     dialog.setButton(DialogInterface.BUTTON_NEGATIVE, Lang.getString(R.string.Cancel), dialog);
     dialog.show();
@@ -158,11 +156,7 @@ public class ViewSupport {
 
   @SuppressWarnings("deprecation")
   public static Drawable getDrawable (final Context context, final @DrawableRes int resource) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return context.getDrawable(resource);
-    } else {
-      return context.getResources().getDrawable(resource);
-    }
+    return context.getDrawable(resource);
   }
 
   public static Drawable getDrawableFilter (final Context context, final @DrawableRes int resource, final ColorFilter filter) {
@@ -172,17 +166,13 @@ public class ViewSupport {
   }
 
   public static void setHigherElevation(View higher, View lower, boolean needElevation) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (needElevation) {
-        higher.setElevation(lower.getElevation() + 1);
-      }
-      higher.setTranslationZ(lower.getTranslationZ() + 1);
+    if (needElevation) {
+      higher.setElevation(lower.getElevation() + 1);
     }
+    higher.setTranslationZ(lower.getTranslationZ() + 1);
   }
 
   public static void setHigherElevation (View lower) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      lower.setTranslationZ(Screen.dp(4f));
-    }
+    lower.setTranslationZ(Screen.dp(4f));
   }
 }

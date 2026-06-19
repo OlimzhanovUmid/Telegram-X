@@ -79,11 +79,9 @@ public class RippleSupport {
   }
 
   public static void invalidateRipple (Drawable drawable) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (drawable instanceof android.graphics.drawable.RippleDrawable) {
-        android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
-        ripple.invalidateSelf();
-      }
+    if (drawable instanceof android.graphics.drawable.RippleDrawable) {
+      android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
+      ripple.invalidateSelf();
     }
   }
 

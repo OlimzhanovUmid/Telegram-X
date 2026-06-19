@@ -285,7 +285,7 @@ public class VideoData {
   }
 
   public boolean editMovie (String outPath, boolean mute, int rotateBy, double startTime, double endTime, @Nullable RunnableLong onProgress, @Nullable AtomicBoolean isCancelled) {
-    if (extractor != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (extractor != null) {
       boolean success = false;
       MediaMuxer muxer = null;
       try {
@@ -306,14 +306,14 @@ public class VideoData {
           }
           if (muxer == null) {
             int outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && ("video/x-vnd.on2.vp8".equals(mimeType) || "video/x-vnd.on2.vp9".equals(mimeType))) {
+            if ("video/x-vnd.on2.vp8".equals(mimeType) || "video/x-vnd.on2.vp9".equals(mimeType)) {
               outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_WEBM;
             }
             muxer = new MediaMuxer(outPath, outputFormat);
           }
           boolean isVideo = mimeType.startsWith("video/");
           if (rotateBy != 0 && isVideo) {
-            final String rotationKey = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? MediaFormat.KEY_ROTATION : "rotation-degrees";
+            final String rotationKey = MediaFormat.KEY_ROTATION;
             int currentRotation = 0;
             try {
               currentRotation = format.getInteger(rotationKey);

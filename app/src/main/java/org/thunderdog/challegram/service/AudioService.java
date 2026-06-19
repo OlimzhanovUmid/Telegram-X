@@ -379,15 +379,11 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
 
     this.currentTdlib = tdlib;
     this.currentTrack = track;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (currentCover != null) {
-        this.oldCover = recycleBitmap(oldCover);
-        this.oldCover = currentCover;
-      }
-      this.currentCover = null;
-    } else {
-      this.currentCover = recycleBitmap(currentCover);
+    if (currentCover != null) {
+      this.oldCover = recycleBitmap(oldCover);
+      this.oldCover = currentCover;
     }
+    this.currentCover = null;
     this.playDuration = this.playPosition = -1;
 
     if (!hasTrack) {
@@ -492,65 +488,62 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
   }
 
   private void initResources () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      android.media.session.MediaSession session = new android.media.session.MediaSession(this, "MusicService");
-      session.setCallback(new android.media.session.MediaSession.Callback() {
-        @Override
-        public void onPlay () {
-          TdlibManager.instance().player().playPauseCurrent(true);
-        }
+    android.media.session.MediaSession session = new android.media.session.MediaSession(this, "MusicService");
+    session.setCallback(new android.media.session.MediaSession.Callback() {
+      @Override
+      public void onPlay () {
+        TdlibManager.instance().player().playPauseCurrent(true);
+      }
 
-        @Override
-        public void onPause () {
-          TdlibManager.instance().player().playPauseCurrent(false);
-        }
+      @Override
+      public void onPause () {
+        TdlibManager.instance().player().playPauseCurrent(false);
+      }
 
-        @Override
-        public void onStop () {
-          TdlibManager.instance().player().stopPlayback(true);
-        }
+      @Override
+      public void onStop () {
+        TdlibManager.instance().player().stopPlayback(true);
+      }
 
-        @Override
-        public void onSkipToNext () {
-          TdlibManager.instance().player().skip(true);
-        }
+      @Override
+      public void onSkipToNext () {
+        TdlibManager.instance().player().skip(true);
+      }
 
-        @Override
-        public void onSkipToPrevious () {
-          TdlibManager.instance().player().skip(false);
-        }
+      @Override
+      public void onSkipToPrevious () {
+        TdlibManager.instance().player().skip(false);
+      }
 
-        @Override
-        public void onSeekTo (long pos) {
-          TdlibManager.instance().audio().seekTo(pos, -1);
-        }
+      @Override
+      public void onSeekTo (long pos) {
+        TdlibManager.instance().audio().seekTo(pos, -1);
+      }
 
-        @Override
-        public boolean onMediaButtonEvent (@NonNull Intent mediaButtonIntent) {
-          if (!Intent.ACTION_MEDIA_BUTTON.equals(mediaButtonIntent.getAction())) {
-            return super.onMediaButtonEvent(mediaButtonIntent);
-          }
-          KeyEvent ke = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-          if (ke == null || ke.getAction() != MotionEvent.ACTION_DOWN || ke.getKeyCode() != KeyEvent.KEYCODE_HEADSETHOOK) {
-            return super.onMediaButtonEvent(mediaButtonIntent);
-          }
-          processHookTap();
-          return true;
+      @Override
+      public boolean onMediaButtonEvent (@NonNull Intent mediaButtonIntent) {
+        if (!Intent.ACTION_MEDIA_BUTTON.equals(mediaButtonIntent.getAction())) {
+          return super.onMediaButtonEvent(mediaButtonIntent);
         }
-      });
-      session.setFlags(android.media.session.MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | android.media.session.MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
-      session.setActive(true);
-      session.setSessionActivity(valueOfPlayer(currentTdlib.id()));
-      session.setExtras(new Bundle());
-      this.mediaSession = session;
-    }
+        KeyEvent ke = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+        if (ke == null || ke.getAction() != MotionEvent.ACTION_DOWN || ke.getKeyCode() != KeyEvent.KEYCODE_HEADSETHOOK) {
+          return super.onMediaButtonEvent(mediaButtonIntent);
+        }
+        processHookTap();
+        return true;
+      }
+    });
+    session.setFlags(android.media.session.MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | android.media.session.MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
+    session.setActive(true);
+    session.setSessionActivity(valueOfPlayer(currentTdlib.id()));
+    session.setExtras(new Bundle());
+    this.mediaSession = session;
     requestAudioFocus();
     emptyCover = tryCreatePlaceholder();
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void setSessionMetadata () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaSession != null) {
+    if (mediaSession != null) {
       TdApi.Audio audio = ((TdApi.MessageAudio) currentTrack.content).audio;
       android.media.session.MediaSession session = (android.media.session.MediaSession) mediaSession;
       MediaMetadata.Builder b = new MediaMetadata.Builder();
@@ -568,9 +561,8 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void setSessionPlayState () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaSession != null) {
+    if (mediaSession != null) {
       android.media.session.MediaSession session = (android.media.session.MediaSession) mediaSession;
 
       android.media.session.PlaybackState.Builder stateBuilder = new android.media.session.PlaybackState.Builder();
@@ -599,7 +591,7 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
   private void destroyResources () {
     TdlibManager.instance().player().setReduceVolume(false);
     emptyCover = recycleBitmap(emptyCover);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaSession != null) {
+    if (mediaSession != null) {
       android.media.session.MediaSession session = (android.media.session.MediaSession) mediaSession;
       session.setActive(false);
       session.release();
@@ -636,11 +628,7 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
   private Notification buildNotification () {
     Notification.Builder b;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      b = new Notification.Builder(this, Intents.newSimpleChannel(Intents.CHANNEL_ID_PLAYBACK, R.string.NotificationChannelPlayback));
-    } else {
-      b = new Notification.Builder(this);
-    }
+    b = new Notification.Builder(this, Intents.newSimpleChannel(Intents.CHANNEL_ID_PLAYBACK, R.string.NotificationChannelPlayback));
 
     b.setContentIntent(valueOfPlayer(currentTdlib.id()));
 
@@ -662,25 +650,19 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
       b.addAction(R.drawable.baseline_stop_24_white, Lang.getString(R.string.PlayStop), stopIntent);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      b.setColor(currentTdlib.accountPlayerColor());
-      int[] indexes = new int[] {0,1,2};
-      b.setStyle(new Notification.MediaStyle().setShowActionsInCompactView(indexes).setMediaSession(((android.media.session.MediaSession) mediaSession).getSessionToken()));
-    }
+    b.setColor(currentTdlib.accountPlayerColor());
+    int[] indexes = new int[] {0,1,2};
+    b.setStyle(new Notification.MediaStyle().setShowActionsInCompactView(indexes).setMediaSession(((android.media.session.MediaSession) mediaSession).getSessionToken()));
     b.setSmallIcon(R.drawable.baseline_play_circle_filled_24_white);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      b.setVisibility(Notification.VISIBILITY_PUBLIC);
-    }
+    b.setVisibility(Notification.VISIBILITY_PUBLIC);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      boolean isPlaying = playState == TGPlayerController.STATE_PLAYING && !playBuffering && playDuration != C.TIME_UNSET && playPosition != C.TIME_UNSET && trackIndex != -1;
-      if (isPlaying) {
-        b.setUsesChronometer(true).setWhen(System.currentTimeMillis() - playPosition);
-      } else {
-        b.setUsesChronometer(false).setWhen(0);
-      }
-      b.setShowWhen(isPlaying);
+    boolean isPlaying = playState == TGPlayerController.STATE_PLAYING && !playBuffering && playDuration != C.TIME_UNSET && playPosition != C.TIME_UNSET && trackIndex != -1;
+    if (isPlaying) {
+      b.setUsesChronometer(true).setWhen(System.currentTimeMillis() - playPosition);
+    } else {
+      b.setUsesChronometer(false).setWhen(0);
     }
+    b.setShowWhen(isPlaying);
 
     TdApi.Audio audio = ((TdApi.MessageAudio) currentTrack.content).audio;
 
@@ -701,7 +683,7 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
   // Apic
 
   private static int getCoverSize (boolean isEmpty) {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !isEmpty ? Math.max(1024, Screen.smallestSide()) : Screen.dp(64f);
+    return !isEmpty ? Math.max(1024, Screen.smallestSide()) : Screen.dp(64f);
   }
 
   private void setApic (Tdlib tdlib, TdApi.Message message, Bitmap bitmap) {

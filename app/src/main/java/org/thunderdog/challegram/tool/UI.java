@@ -189,9 +189,7 @@ public class UI {
           Log.e("Cannot start foreground service, because activity not found.");
         }
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        return startServiceImpl(getContext(), intent, true);
-      }
+      return startServiceImpl(getContext(), intent, true);
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && forcePermissionRequest) {
       BaseActivity activity = getUiContext();
@@ -347,10 +345,8 @@ public class UI {
       if (activity.getActivityState() == State.DESTROYED) {
         return false;
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        if (activity.isDestroyed()) {
-          return false;
-        }
+      if (activity.isDestroyed()) {
+        return false;
       }
       return true;
     }
@@ -639,29 +635,23 @@ public class UI {
         w.setNavigationBarContrastEnforced(false);
       }
     }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      w.setBackgroundDrawableResource(R.drawable.transparent);
+    if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
+      setNavigationBarColor(w, Theme.backgroundColor(), Screen.isGesturalNavigationEnabled(getResources()));
     } else {
-      if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
-        setNavigationBarColor(w, Theme.backgroundColor(), Screen.isGesturalNavigationEnabled(getResources()));
-      } else {
-        w.setNavigationBarColor(NAVIGATION_BAR_COLOR);
-      }
-      setLightSystemBars(w, !Theme.isDark(), Theme.needLightStatusBar(), 0, false);
-      RootDrawable d = new RootDrawable(a);
-      w.setBackgroundDrawable(d);
-      a.setRootDrawable(d);
-      w.setStatusBarColor(0);
+      w.setNavigationBarColor(NAVIGATION_BAR_COLOR);
     }
+    setLightSystemBars(w, !Theme.isDark(), Theme.needLightStatusBar(), 0, false);
+    RootDrawable d = new RootDrawable(a);
+    w.setBackgroundDrawable(d);
+    a.setRootDrawable(d);
+    w.setStatusBarColor(0);
   }
 
   @SuppressWarnings("deprecation")
   public static void setFullscreenIfNeeded (View view) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      view.setFitsSystemWindows(true);
-      // TODO: rework to WindowInsetsController
-      view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
+    view.setFitsSystemWindows(true);
+    // TODO: rework to WindowInsetsController
+    view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
   }
 
   public static void setStatusBarColor (int color) {
@@ -675,12 +665,10 @@ public class UI {
 
   @SuppressWarnings("deprecation")
   public static int getStatusBarColor () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      final BaseActivity context = getUiContext();
-      final Window window = context != null ? context.getWindow() : null;
-      if (window != null) {
-        return window.getStatusBarColor();
-      }
+    final BaseActivity context = getUiContext();
+    final Window window = context != null ? context.getWindow() : null;
+    if (window != null) {
+      return window.getStatusBarColor();
     }
     return 0;
   }
@@ -795,11 +783,9 @@ public class UI {
   @SuppressWarnings("deprecation")
   private static String toLanguageCode (InputMethodSubtype ims) {
     if (ims != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        String languageTag = ims.getLanguageTag();
-        if (!StringUtils.isEmpty(languageTag)) {
-          return languageTag;
-        }
+      String languageTag = ims.getLanguageTag();
+      if (!StringUtils.isEmpty(languageTag)) {
+        return languageTag;
       }
       String locale = ims.getLocale();
       if (!StringUtils.isEmpty(locale)) {
@@ -854,7 +840,7 @@ public class UI {
           }
         } catch (Throwable ignored) { }
       }
-      if (Strings.isEmpty(inputLanguageCode) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      if (Strings.isEmpty(inputLanguageCode)) {
         try {
           LocaleList localeList = ((InputView) callback).getImeHintLocales();
           if (localeList != null) {
@@ -870,18 +856,11 @@ public class UI {
     if (inputLanguages.isEmpty()) {
       try {
         Configuration configuration = Resources.getSystem().getConfiguration();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          LocaleList locales = configuration.getLocales();
-          for (int i = 0; i < locales.size(); i++) {
-            String code = LocaleUtils.toBcp47Language(locales.get(i));
-            if (!StringUtils.isEmpty(code))
-              inputLanguages.add(code);
-          }
-        } else {
-          String code = LocaleUtils.toBcp47Language(Lang.getSystemLocale());
-          if (!StringUtils.isEmpty(code)) {
+        LocaleList locales = configuration.getLocales();
+        for (int i = 0; i < locales.size(); i++) {
+          String code = LocaleUtils.toBcp47Language(locales.get(i));
+          if (!StringUtils.isEmpty(code))
             inputLanguages.add(code);
-          }
         }
       } catch (Throwable ignored) { }
     }

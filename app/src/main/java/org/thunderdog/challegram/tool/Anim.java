@@ -19,7 +19,7 @@ import android.os.Build;
 import me.vkryl.core.MathUtils;
 
 public class Anim {
-  public static final boolean ANIMATORS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
+  public static final boolean ANIMATORS = true;
 
   /*public static final Interpolator QUINTIC_INTERPOLATOR = new Interpolator() {
     @Override

@@ -59,18 +59,10 @@ public class ProgressWrap extends FrameLayoutFix {
     FrameLayoutFix.LayoutParams params = FrameLayoutFix.newParams(Screen.dp(36f), Screen.dp(36f), Gravity.LEFT | Gravity.CENTER_VERTICAL);
     params.setMargins(Screen.dp(12f), 0, 0, 0);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      progressBar = new ProgressBar(getContext());
-      progressBar.setIndeterminate(true);
-      progressBar.setLayoutParams(params);
-      addView(progressBar);
-    } else {
-      SpinnerView spinnerView = new SpinnerView(getContext());
-      spinnerView.setImageResource(R.drawable.spinner_48_inner);
-      spinnerView.setLayoutParams(params);
-
-      addView(spinnerView);
-    }
+    progressBar = new ProgressBar(getContext());
+    progressBar.setIndeterminate(true);
+    progressBar.setLayoutParams(params);
+    addView(progressBar);
 
     params = FrameLayoutFix.newParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.LEFT | Gravity.CENTER_VERTICAL);
     params.setMargins(Screen.dp(60f), Screen.dp(1f), 0, 0);

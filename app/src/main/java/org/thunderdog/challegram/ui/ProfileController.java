@@ -927,7 +927,7 @@ public class ProfileController extends ViewController<ProfileController.Args> im
   @Override
   public void onActivityResume () {
     super.onActivityResume();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && baseAdapter != null) {
+    if (baseAdapter != null) {
       makeChannelChecks();
     }
   }

@@ -63,40 +63,21 @@ public class RecordDurationView extends View {
   public void start (long startTimeMs, long additionalDuration) {
     this.additionalDuration = additionalDuration;
     if (animator == null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-        final android.animation.TimeAnimator animator;
-        animator = new android.animation.TimeAnimator();
-        animator.setTimeListener((animation, totalTime, deltaTime) -> {
-          elapsedDeltaTime += deltaTime;
-          if (elapsedDeltaTime >= 15) {
-            elapsedDeltaTime = 0;
-            if (processMillis(totalTime + this.additionalDuration)) {
-              invalidate();
-              if (timerCallback != null) {
-                timerCallback.onTimerTick();
-              }
+      final android.animation.TimeAnimator animator;
+      animator = new android.animation.TimeAnimator();
+      animator.setTimeListener((animation, totalTime, deltaTime) -> {
+        elapsedDeltaTime += deltaTime;
+        if (elapsedDeltaTime >= 15) {
+          elapsedDeltaTime = 0;
+          if (processMillis(totalTime + this.additionalDuration)) {
+            invalidate();
+            if (timerCallback != null) {
+              timerCallback.onTimerTick();
             }
           }
-        });
-        this.animator = animator;
-      } else {
-        animator = AnimatorUtils.simpleValueAnimator();
-        animator.setDuration(1000l);
-        animator.setInterpolator(AnimatorUtils.LINEAR_INTERPOLATOR);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.addUpdateListener(animation -> {
-          long totalTime = SystemClock.uptimeMillis() - animationStart;
-          if (elapsedDeltaTime == 0l || totalTime - elapsedDeltaTime >= 15l) {
-            elapsedDeltaTime = totalTime;
-            if (processMillis(totalTime + this.additionalDuration)) {
-              invalidate();
-              if (timerCallback != null) {
-                timerCallback.onTimerTick();
-              }
-            }
-          }
-        });
-      }
+        }
+      });
+      this.animator = animator;
     }
     elapsedDeltaTime = 0l;
     this.animationStart = startTimeMs;

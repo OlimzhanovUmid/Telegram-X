@@ -44,7 +44,7 @@ public class SpinnerView extends ImageView implements Runnable {
     if (!started && getVisibility() != View.GONE) {
       started = true;
 
-      if (Anim.ANIMATORS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      if (Anim.ANIMATORS) {
         startAnimator();
       } else {
         startSimpleAnimation();
@@ -78,7 +78,7 @@ public class SpinnerView extends ImageView implements Runnable {
   public void stop () {
     if (started) {
       started = false;
-      if (Anim.ANIMATORS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      if (Anim.ANIMATORS) {
         stopAnimator();
       } else {
         stopSimpleAnimation();

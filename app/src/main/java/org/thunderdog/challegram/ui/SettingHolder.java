@@ -2256,9 +2256,7 @@ public class SettingHolder extends RecyclerView.ViewHolder {
             editText.setId(id);
             int imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI;
             if (id == R.id.color_default) {
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                editText.getEditText().setShowSoftInputOnFocus(false);
-              }
+              editText.getEditText().setShowSoftInputOnFocus(false);
               editText.setTextColorId(ColorId.textPlaceholder);
             } else if (id == R.id.color_hex) {
               editText.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);

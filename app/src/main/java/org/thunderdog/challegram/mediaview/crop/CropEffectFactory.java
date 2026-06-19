@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.media3.effect.Crop;
 import androidx.media3.effect.ScaleAndRotateTransformation;
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public final class CropEffectFactory {
   private CropEffectFactory () { }
 

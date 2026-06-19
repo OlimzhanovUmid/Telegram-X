@@ -43,7 +43,6 @@ import me.vkryl.android.ViewUtils;
 import me.vkryl.android.widget.FrameLayoutFix;
 import me.vkryl.core.lambda.Destroyable;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MessageViewGroup extends ViewGroup implements Destroyable, AttachDelegate, MessagesManager.MessageProvider {
   private static class MessageBackground extends Drawable {
     private final MessageView context;

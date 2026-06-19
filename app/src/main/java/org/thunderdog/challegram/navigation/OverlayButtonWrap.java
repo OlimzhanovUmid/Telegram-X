@@ -240,9 +240,7 @@ public class OverlayButtonWrap extends FrameLayoutFix implements View.OnClickLis
     }
     // text.setTranslationY(margin * (1f - factor));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      text.setTranslationZ(Screen.dp(2f));
-    }
+    text.setTranslationZ(Screen.dp(2f));
 
     addView(text, index * 2 + 1);
   }

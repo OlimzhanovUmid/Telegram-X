@@ -1552,9 +1552,7 @@ public class NavigationController implements Future<View>, ThemeChangeListener, 
   private Object actionMode;
 
   public void setActionMode (Object mode) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-      actionMode = mode;
-    }
+    actionMode = mode;
   }
 
   /*// Instance state

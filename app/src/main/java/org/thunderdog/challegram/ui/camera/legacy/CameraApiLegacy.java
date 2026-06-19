@@ -52,7 +52,6 @@ import okio.BufferedSink;
 import okio.Okio;
 
 @SuppressWarnings("deprecation")
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class CameraApiLegacy extends CameraApi implements Camera.PreviewCallback, Camera.AutoFocusMoveCallback, Camera.AutoFocusCallback, Camera.ShutterCallback, Camera.PictureCallback, MediaRecorder.OnInfoListener {
   // === UI ===
 
@@ -434,9 +433,7 @@ public class CameraApiLegacy extends CameraApi implements Camera.PreviewCallback
 
   private static void getCameraInfo (int id, Camera.CameraInfo info) {
     info.facing = 0;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      info.canDisableShutterSound = false;
-    }
+    info.canDisableShutterSound = false;
     info.orientation = 0;
     Camera.getCameraInfo(id, info);
   }

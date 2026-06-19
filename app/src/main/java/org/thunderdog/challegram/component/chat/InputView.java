@@ -225,33 +225,31 @@ public class InputView extends NoClipEditText implements InlineSearchContext.Cal
       public void afterTextChanged (Editable s) { }
     });
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      setCustomInsertionActionModeCallback(new ActionMode.Callback() {
-        @Override
-        public boolean onCreateActionMode (ActionMode actionMode, Menu menu) {
-          currentActionMode = actionMode;
-          return true;
-        }
+    setCustomInsertionActionModeCallback(new ActionMode.Callback() {
+      @Override
+      public boolean onCreateActionMode (ActionMode actionMode, Menu menu) {
+        currentActionMode = actionMode;
+        return true;
+      }
 
-        @Override
-        public boolean onPrepareActionMode (ActionMode actionMode, Menu menu) {
-          updateMenuVisibility(menu);
-          return true;
-        }
+      @Override
+      public boolean onPrepareActionMode (ActionMode actionMode, Menu menu) {
+        updateMenuVisibility(menu);
+        return true;
+      }
 
-        @Override
-        public boolean onActionItemClicked (ActionMode actionMode, MenuItem menuItem) {
-          return false;
-        }
+      @Override
+      public boolean onActionItemClicked (ActionMode actionMode, MenuItem menuItem) {
+        return false;
+      }
 
-        @Override
-        public void onDestroyActionMode (ActionMode actionMode) {
-          if (currentActionMode == actionMode) {
-            currentActionMode = null;
-          }
+      @Override
+      public void onDestroyActionMode (ActionMode actionMode) {
+        if (currentActionMode == actionMode) {
+          currentActionMode = null;
         }
-      });
-    }
+      }
+    });
 
     setCustomSelectionActionModeCallback(new ActionMode.Callback() {
       @Override
@@ -308,9 +306,7 @@ public class InputView extends NoClipEditText implements InlineSearchContext.Cal
             item.setTitle(type != null ? Lang.wrap(Lang.getString(overrideResId), Lang.entityCreator(type)) : Lang.getString(overrideResId));
           }
         } catch (Throwable ignored) { }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          menu.removeItem(android.R.id.shareText);
-        }
+        menu.removeItem(android.R.id.shareText);
         if (!canClearTextFormat()) {
           menu.removeItem(R.id.btn_plain);
         }
@@ -335,11 +331,9 @@ public class InputView extends NoClipEditText implements InlineSearchContext.Cal
         }
       }
     });
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-        ((BaseActivity) getContext()).updateEmojiSuggestionsPosition(false);
-      });
-    }
+    setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+      ((BaseActivity) getContext()).updateEmojiSuggestionsPosition(false);
+    });
 
     showPlaceholder.setValue(true, false);
   }
@@ -828,9 +822,7 @@ public class InputView extends NoClipEditText implements InlineSearchContext.Cal
 
   public void setActionModeVisibility (boolean actionModeVisibility) {
     this.actionModeVisibility = actionModeVisibility;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setShowSoftInputOnFocus(actionModeVisibility);
-    }
+    setShowSoftInputOnFocus(actionModeVisibility);
 
     if (currentActionMode != null) {
       currentActionMode.invalidate();
@@ -1524,7 +1516,7 @@ public class InputView extends NoClipEditText implements InlineSearchContext.Cal
         }
 
         // read and display inputContentInfo asynchronously
-        boolean needPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && (flags &
+        boolean needPermission = (flags &
           InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0;
         if (needPermission) {
           try {
@@ -1654,12 +1646,7 @@ public class InputView extends NoClipEditText implements InlineSearchContext.Cal
   }
 
   public final void setNoPersonalizedLearning (boolean noPersonalizedLearning) {
-    final int secrecyFlag;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      secrecyFlag = EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
-    } else {
-      secrecyFlag = 0x1000000;
-    }
+    final int secrecyFlag = EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
     final int imeOptions = getImeOptions();
     final int newImeOptions = BitwiseUtils.setFlag(imeOptions, secrecyFlag, noPersonalizedLearning);
     if (imeOptions != newImeOptions) {

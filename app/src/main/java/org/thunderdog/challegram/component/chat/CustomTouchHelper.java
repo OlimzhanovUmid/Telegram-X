@@ -1240,26 +1240,7 @@ public class CustomTouchHelper extends RecyclerView.ItemDecoration
   }
 
   private void addChildDrawingOrderCallback() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return;// we use elevation on Lollipop
-    }
-    if (mChildDrawingOrderCallback == null) {
-      mChildDrawingOrderCallback = (childCount, i) -> {
-        if (mOverdrawChild == null) {
-          return i;
-        }
-        int childPosition = mOverdrawChildPosition;
-        if (childPosition == -1) {
-          childPosition = mRecyclerView.indexOfChild(mOverdrawChild);
-          mOverdrawChildPosition = childPosition;
-        }
-        if (i == childCount - 1) {
-          return childPosition;
-        }
-        return i < childPosition ? i : i + 1;
-      };
-    }
-    mRecyclerView.setChildDrawingOrderCallback(mChildDrawingOrderCallback);
+    // we use elevation on Lollipop
   }
 
   private void removeChildDrawingOrderCallbackIfNecessary(View view) {

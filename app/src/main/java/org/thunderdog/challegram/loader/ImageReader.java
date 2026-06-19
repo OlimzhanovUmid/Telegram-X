@@ -234,7 +234,7 @@ public class ImageReader {
     BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inSampleSize = 1;
 
-    if (!file.isWebp() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.useBundledWebp())) {
+    if (!file.isWebp() || !Config.useBundledWebp()) {
       opts.inJustDecodeBounds = true;
       decodeFile(path, opts);
       int limitSize = file.getSize(); // != 0 ? file.getSize() : ;
@@ -511,17 +511,15 @@ public class ImageReader {
     Bitmap bitmap;
 
     if (file.isVideo()) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        MediaMetadataRetriever retriever = null;
-        try {
-          retriever = U.openRetriever(file.getFilePath());
-          String metadata = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-          if (metadata != null && !metadata.isEmpty() && StringUtils.isNumeric(metadata)) {
-            file.setRotation(StringUtils.parseInt(metadata));
-          }
-        } catch (Throwable ignored) { }
-        U.closeRetriever(retriever);
-      }
+      MediaMetadataRetriever retriever = null;
+      try {
+        retriever = U.openRetriever(file.getFilePath());
+        String metadata = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        if (metadata != null && !metadata.isEmpty() && StringUtils.isNumeric(metadata)) {
+          file.setRotation(StringUtils.parseInt(metadata));
+        }
+      } catch (Throwable ignored) { }
+      U.closeRetriever(retriever);
 
       bitmap = null;
       if (file.getStartTimeUs() > 0) {
@@ -621,7 +619,7 @@ public class ImageReader {
     opts.inSampleSize = 1;
     opts.inJustDecodeBounds = true;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && path.startsWith("content://")) {
+    if (path.startsWith("content://")) {
       boolean done = false;
       // Trying to resolve additional information
       try (Cursor c = UI.getContext().getContentResolver().query(Uri.parse(path), new String[] {

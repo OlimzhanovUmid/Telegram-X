@@ -9197,11 +9197,7 @@ public abstract class TGMessage implements InvalidateContentProvider, TdlibDeleg
           offsetProvider.getOffset(p);
           context().replaceReactionPreviewCords(finishX + p.x, finishY + p.y);
           context().closeStickerPreview();
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            onQuickReactionAnimationFinish(view.isAttachedToWindow());
-          } else {
-            onQuickReactionAnimationFinish();
-          }
+          onQuickReactionAnimationFinish(view.isAttachedToWindow());
         };
         final CancellableRunnable finishAnimation = new CancellableRunnable() {
           @Override
