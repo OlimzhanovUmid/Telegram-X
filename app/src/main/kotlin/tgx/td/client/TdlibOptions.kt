@@ -16,8 +16,8 @@ package tgx.td.client
 
 import android.os.SystemClock
 import androidx.annotation.IntDef
-import me.vkryl.core.BitwiseUtils
 import me.vkryl.core.clamp
+import me.vkryl.core.setFlag
 import org.drinkless.tdlib.TdApi.*
 import org.thunderdog.challegram.Log
 import tgx.td.*
@@ -306,9 +306,9 @@ data class TdlibOptions(
         isPremiumAvailable = value.boolValue()
 
       "gift_premium_from_attachment_menu" ->
-        giftPremiumFrom = BitwiseUtils.setFlag(giftPremiumFrom, GiftPremiumFrom.ATTACHMENT_MENU, value.boolValue())
+        giftPremiumFrom = setFlag(giftPremiumFrom, GiftPremiumFrom.ATTACHMENT_MENU, value.boolValue())
       "gift_premium_from_input_field" ->
-        giftPremiumFrom = BitwiseUtils.setFlag(giftPremiumFrom, GiftPremiumFrom.INPUT_FIELD, value.boolValue())
+        giftPremiumFrom = setFlag(giftPremiumFrom, GiftPremiumFrom.INPUT_FIELD, value.boolValue())
       "premium_upload_speedup" ->
         premiumUploadSpeedup = value.intValue()
       "premium_download_speedup" ->
