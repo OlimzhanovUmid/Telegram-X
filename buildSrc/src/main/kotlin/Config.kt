@@ -20,8 +20,7 @@ import tgx.gradle.plugin.Keystore
 import java.util.*
 
 object Config {
-  const val MIN_SDK_VERSION = 16
-  const val MIN_SDK_VERSION_HUAWEI = 17
+  const val MIN_SDK_VERSION = 26
   val JAVA_VERSION = org.gradle.api.JavaVersion.VERSION_21
   val ANDROIDX_MEDIA_EXTENSIONS = arrayOf(
     "decoder_ffmpeg",
@@ -112,13 +111,6 @@ class AbiVariant (val flavor: String, vararg val filters: String = arrayOf(), va
       }
       return true
     }
-
-  val minSdk: Int
-    get() = if (is64Bit) {
-      21
-    } else {
-      16
-    }
 }
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -135,37 +127,6 @@ object Abi {
     Pair(ARM64_V8A, AbiVariant("arm64", "arm64-v8a")),
     Pair(X86, AbiVariant("x86", "x86")),
     Pair(X64, AbiVariant("x64", "x86_64", displayName = "x64"))
-  )
-}
-
-data class SdkVariant(
-  val minSdk: Int = Config.MIN_SDK_VERSION,
-  val maxSdk: Int? = null,
-  val flavor: String,
-  val displayName: String? = flavor
-)
-
-object Sdk {
-  const val LEGACY = 0
-  const val LOLLIPOP = 1
-  const val LATEST = 2
-
-  val VARIANTS = mapOf(
-    Pair(LEGACY, SdkVariant(
-      flavor = "legacy",
-      minSdk = 16,
-      maxSdk = 20
-    )),
-    Pair(LOLLIPOP, SdkVariant(
-      flavor = "lollipop",
-      minSdk = 21,
-      maxSdk = 22
-    )),
-    Pair(LATEST, SdkVariant(
-      flavor = "latest",
-      minSdk = 23,
-      displayName = null
-    ))
   )
 }
 

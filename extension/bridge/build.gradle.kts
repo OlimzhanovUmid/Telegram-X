@@ -1,16 +1,10 @@
-import tgx.gradle.flavorImplementation
-
 plugins {
   id(libs.plugins.android.library.get().pluginId)
   id("tgx-module")
 }
 
 dependencies {
-  flavorImplementation(
-    libs.androidx.core.ktx.legacy,
-    libs.androidx.core.ktx.lollipop,
-    libs.androidx.core.ktx.latest
-  )
+  implementation(libs.androidx.core.ktx)
   api(libs.kotlinx.coroutines.core)
   implementation(project(":tdlib"))
 }

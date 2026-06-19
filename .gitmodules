@@ -63,7 +63,7 @@
 	branch = main
 [submodule "vkryl/core"]
 	path = vkryl/core
-	url = https://github.com/TGX-Android/X-Core
+	url = https://github.com/OlimzhanovUmid/X-Core
 	shallow = true
 	branch = main
 [submodule "rlottie"]
@@ -78,7 +78,7 @@
 	branch = main
 [submodule "vkryl/android"]
 	path = vkryl/android
-	url = https://github.com/TGX-Android/X-Android
+	url = https://github.com/OlimzhanovUmid/X-Android
 	shallow = true
 	branch = main
 [submodule "usrsctp"]

@@ -39,7 +39,7 @@ dependencies {
 
   compileOnly(gradleApi())
   implementation(libs.android.gradle.plugin)
-  implementation(libs.okhttp.latest)
+  implementation(libs.okhttp)
   implementation(libs.kotlinx.serialization.json)
 }
 

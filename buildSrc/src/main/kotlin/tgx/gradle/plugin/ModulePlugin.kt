@@ -2,7 +2,6 @@ package tgx.gradle.plugin
 
 import ApplicationConfig
 import Config
-import Sdk
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.ProguardFiles
@@ -102,17 +101,10 @@ open class ModulePlugin : Plugin<Project> {
           defaultConfig {
             minSdk = Config.MIN_SDK_VERSION
             multiDexEnabled = true
-          }
-          flavorDimensions += "SDK"
-          productFlavors {
-            Sdk.VARIANTS.forEach { (_, variant) ->
-              register(variant.flavor) {
-                externalNativeBuild.cmake.arguments(
-                  "-DANDROID_PLATFORM=android-${variant.minSdk}",
-                  "-DTGX_FLAVOR=${variant.flavor}"
-                )
-              }
-            }
+            externalNativeBuild.cmake.arguments(
+              "-DANDROID_PLATFORM=android-${Config.MIN_SDK_VERSION}",
+              "-DTGX_FLAVOR=latest"
+            )
           }
         }
 
