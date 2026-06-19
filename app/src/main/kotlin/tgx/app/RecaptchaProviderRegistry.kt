@@ -45,7 +45,7 @@ object RecaptchaProviderRegistry {
         if (client != null) {
           task.actor.runWithData(client)
         } else {
-          task.onError.runWithData(exception)
+          task.onError.runWithData(exception!!)
         }
       }
     }
