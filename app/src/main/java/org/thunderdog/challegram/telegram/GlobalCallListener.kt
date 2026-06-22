@@ -12,15 +12,15 @@
  *
  * File created on 19/02/2018
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-import org.drinkless.tdlib.TdApi;
-import org.thunderdog.challegram.voip.gui.CallSettings;
+import org.drinkless.tdlib.TdApi
+import org.thunderdog.challegram.voip.gui.CallSettings
 
-public interface GlobalCallListener {
-  default void onUpdateCall (Tdlib tdlib, TdApi.UpdateCall update) { }
-  default void onUpdateGroupCall (Tdlib tdlib, TdApi.UpdateGroupCall update) { }
+interface GlobalCallListener {
+  fun onUpdateCall (tdlib: Tdlib, update: TdApi.UpdateCall) {}
+  fun onUpdateGroupCall (tdlib: Tdlib, update: TdApi.UpdateGroupCall) {}
 
-  default void onCallUpdated (Tdlib tdlib, TdApi.Call call) { }
-  default void onCallSettingsChanged (Tdlib tdlib, int callId, CallSettings settings) { }
+  fun onCallUpdated (tdlib: Tdlib, call: TdApi.Call) {}
+  fun onCallSettingsChanged (tdlib: Tdlib, callId: Int, settings: CallSettings) {}
 }

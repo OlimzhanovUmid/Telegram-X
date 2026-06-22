@@ -12,21 +12,21 @@
  *
  * File created on 23/02/2018
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-public interface CleanupStartupDelegate {
+interface CleanupStartupDelegate {
   /**
    * Called when component has been initialized and authorization became ready
-   * */
-  default void onPerformStartup (boolean isAfterRestart) { }
+   */
+  fun onPerformStartup (isAfterRestart: Boolean) {}
 
   /**
    * Called when component should reset any user-related settings
    */
-  default void onPerformUserCleanup () { }
+  fun onPerformUserCleanup () {}
 
   /**
    * Called when TDLib client instance has been restarted
    */
-  default void onPerformRestart () { }
+  fun onPerformRestart () {}
 }
