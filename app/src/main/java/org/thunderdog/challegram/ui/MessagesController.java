@@ -2783,6 +2783,9 @@ public class MessagesController extends ViewController<MessagesController.Argume
     }
     TdApi.Chat headerChat = messageThread != null ? tdlib.chatSync(messageThread.getContextChatId()) : null;
     headerCell.setChat(tdlib, headerChat != null ? headerChat : chat, messageThread);
+    if (previewMode == PREVIEW_MODE_NONE) {
+      updateForumTopicHeader();
+    }
 
     if (inPreviewMode) {
       switch (previewMode) {
@@ -11311,9 +11314,43 @@ public class MessagesController extends ViewController<MessagesController.Argume
         headerCell.setChat(tdlib, chat, messageThread);
         if (messageThread != null) {
           updateMessageThreadSubtitle();
+        } else {
+          updateForumTopicHeader();
         }
       }
     }
+  }
+
+  // Forum topic header: when a forum topic is opened (messageTopicId = MessageTopicForum,
+  // no messageThread), show the topic name as the header title instead of the chat name.
+  private void updateForumTopicHeader () {
+    if (messageThread != null || headerCell == null) {
+      return;
+    }
+    TdApi.MessageTopic topic = getMessageTopicId();
+    if (!(topic instanceof TdApi.MessageTopicForum)) {
+      return;
+    }
+    final int forumTopicId = ((TdApi.MessageTopicForum) topic).forumTopicId;
+    final long chatId = getChatId();
+    TdApi.ForumTopicInfo info = tdlib.forumTopicInfo(chatId, forumTopicId);
+    if (info != null) {
+      applyForumTopicHeader(info);
+    } else {
+      tdlib.getForumTopic(chatId, forumTopicId, forumTopic -> {
+        if (forumTopic != null && forumTopic.info != null) {
+          runOnUiThreadOptional(() -> applyForumTopicHeader(forumTopic.info));
+        }
+      }, null);
+    }
+  }
+
+  private void applyForumTopicHeader (TdApi.ForumTopicInfo info) {
+    if (headerCell == null) {
+      return;
+    }
+    headerCell.setTitle(info.name);
+    headerCell.setForcedSubtitle(tdlib.chatTitle(getChatId()));
   }
 
   public void jumpToBeginningOfTheDay (int date) {
