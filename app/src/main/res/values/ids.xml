@@ -123,6 +123,8 @@
   <item type="id" name="edit_proxy_secret" />
 
   <item type="id" name="controller_msgTranslate" />
+  <item type="id" name="controller_topics" />
+  <item type="id" name="controller_createTopic" />
   <item type="id" name="controller_simplePager" />
   <item type="id" name="controller_logOut" />
   <item type="id" name="controller_editLanguage" />
@@ -418,6 +420,15 @@
   <item type="id" name="btn_addToGroup" />
   <item type="id" name="btn_addContact" />
   <item type="id" name="btn_inviteLink" />
+  <item type="id" name="btn_forumTopic" />
+  <item type="id" name="btn_viewAsMessages" />
+  <item type="id" name="btn_createTopic" />
+  <item type="id" name="edit_topicName" />
+  <item type="id" name="btn_editTopic" />
+  <item type="id" name="btn_deleteTopic" />
+  <item type="id" name="btn_closeTopic" />
+  <item type="id" name="btn_pinTopic" />
+  <item type="id" name="btn_hideTopic" />
   <item type="id" name="btn_toggleSignatures" />
   <item type="id" name="btn_toggleShowAuthors" />
   <item type="id" name="btn_toggleJoinByRequest" />

@@ -107,6 +107,7 @@ import org.thunderdog.challegram.ui.MainController;
 import org.thunderdog.challegram.ui.MapController;
 import org.thunderdog.challegram.ui.MapControllerFactory;
 import org.thunderdog.challegram.ui.MessagesController;
+import org.thunderdog.challegram.ui.TopicsController;
 import org.thunderdog.challegram.ui.PasscodeController;
 import org.thunderdog.challegram.ui.PasscodeSetupController;
 import org.thunderdog.challegram.ui.PasswordController;
@@ -1684,6 +1685,7 @@ public class TdlibUi extends Handler {
   private static final int CHAT_OPTION_SCHEDULED_MESSAGES = 1 << 6;
   private static final int CHAT_OPTION_OPEN_PROFILE_IF_DUPLICATE = 1 << 7;
   private static final int CHAT_OPTION_OPEN_DIRECT_MESSAGES_CHAT = 1 << 8;
+  private static final int CHAT_OPTION_FORCE_MESSAGES_VIEW = 1 << 9;
 
   public static class ChatOpenParameters {
     public int options;
@@ -1805,6 +1807,16 @@ public class TdlibUi extends Handler {
 
     public ChatOpenParameters keepStack () {
       this.options |= CHAT_OPTION_KEEP_STACK;
+      return this;
+    }
+
+    public ChatOpenParameters forceMessagesView () {
+      this.options |= CHAT_OPTION_FORCE_MESSAGES_VIEW;
+      return this;
+    }
+
+    public ChatOpenParameters messageTopicId (TdApi.MessageTopic messageTopicId) {
+      this.messageTopicId = messageTopicId;
       return this;
     }
 
@@ -2153,6 +2165,30 @@ public class TdlibUi extends Handler {
       }
     }
     if (doneOpen) {
+      if (after != null) {
+        after.runWithLong(chat.id);
+      }
+      if (params != null) {
+        params.onDone();
+      }
+      return;
+    }
+
+    // Forum supergroups open the topic list instead of a flat message view, unless a specific
+    // topic/message was requested or the caller forced the flat message view ("View as Messages").
+    // Note: TDLib's chat.viewAsTopics is false for forum-tabs forums and for chats explicitly set
+    // to "view as messages"; we gate on isForum so every forum exposes its topics (the topic list
+    // is the only forum UI we provide), and the header offers an escape to the flat view.
+    if (tdlib.isForum(chat.id)
+      && messageThread == null && messageTopicId == null
+      && highlightMode != MessagesManager.HIGHLIGHT_MODE_NORMAL
+      && shareItem == null && voiceChatInvitation == null && forceDraft == null
+      && filter == null && !onlyScheduled
+      && (options & CHAT_OPTION_FORCE_MESSAGES_VIEW) == 0
+      && (options & CHAT_OPTION_OPEN_PROFILE_IF_DUPLICATE) == 0) {
+      TopicsController topicsController = new TopicsController(context.context(), context.tdlib());
+      topicsController.setArguments(new TopicsController.Args(chat.id));
+      navigation.navigateTo(topicsController);
       if (after != null) {
         after.runWithLong(chat.id);
       }
