@@ -2635,6 +2635,56 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
     }
   }
 
+  // Forum topics
+
+  public void getForumTopics (long chatId, @Nullable String query, int offsetDate, long offsetMessageId, int offsetForumTopicId, int limit, @NonNull RunnableData<TdApi.ForumTopics> success, @Nullable RunnableData<TdApi.Error> error) {
+    send(new TdApi.GetForumTopics(chatId, query, offsetDate, offsetMessageId, offsetForumTopicId, limit), success, error != null ? error : err -> Log.i("getForumTopics failed chatId:%d %s", chatId, TD.toErrorString(err)));
+  }
+
+  public void getForumTopics (long chatId, @Nullable String query, int limit, @NonNull RunnableData<TdApi.ForumTopics> success, @Nullable RunnableData<TdApi.Error> error) {
+    getForumTopics(chatId, query, 0, 0, 0, limit, success, error);
+  }
+
+  public void getForumTopic (long chatId, int forumTopicId, @NonNull RunnableData<TdApi.ForumTopic> success, @Nullable RunnableData<TdApi.Error> error) {
+    send(new TdApi.GetForumTopic(chatId, forumTopicId), success, error != null ? error : err -> Log.i("getForumTopic failed chatId:%d topicId:%d %s", chatId, forumTopicId, TD.toErrorString(err)));
+  }
+
+  public void getForumTopicDefaultIcons (@NonNull RunnableData<TdApi.Stickers> success, @Nullable RunnableData<TdApi.Error> error) {
+    send(new TdApi.GetForumTopicDefaultIcons(), success, error != null ? error : err -> Log.i("getForumTopicDefaultIcons failed %s", TD.toErrorString(err)));
+  }
+
+  public void createForumTopic (long chatId, String name, boolean isNameImplicit, TdApi.ForumTopicIcon icon, @NonNull RunnableData<TdApi.ForumTopicInfo> success, @Nullable RunnableData<TdApi.Error> error) {
+    send(new TdApi.CreateForumTopic(chatId, name, isNameImplicit, icon), success, error != null ? error : err -> Log.i("createForumTopic failed chatId:%d %s", chatId, TD.toErrorString(err)));
+  }
+
+  public void editForumTopic (long chatId, int forumTopicId, String name, boolean editIconCustomEmoji, long iconCustomEmojiId, @Nullable Runnable after) {
+    send(new TdApi.EditForumTopic(chatId, forumTopicId, name, editIconCustomEmoji, iconCustomEmojiId), typedOkHandler(after));
+  }
+
+  public void deleteForumTopic (long chatId, int forumTopicId, @Nullable Runnable after) {
+    send(new TdApi.DeleteForumTopic(chatId, forumTopicId), typedOkHandler(after));
+  }
+
+  public void toggleForumTopicIsClosed (long chatId, int forumTopicId, boolean isClosed, @Nullable Runnable after) {
+    send(new TdApi.ToggleForumTopicIsClosed(chatId, forumTopicId, isClosed), typedOkHandler(after));
+  }
+
+  public void toggleForumTopicIsPinned (long chatId, int forumTopicId, boolean isPinned, @Nullable Runnable after) {
+    send(new TdApi.ToggleForumTopicIsPinned(chatId, forumTopicId, isPinned), typedOkHandler(after));
+  }
+
+  public void setPinnedForumTopics (long chatId, int[] forumTopicIds, @Nullable Runnable after) {
+    send(new TdApi.SetPinnedForumTopics(chatId, forumTopicIds), typedOkHandler(after));
+  }
+
+  public void toggleGeneralForumTopicIsHidden (long chatId, boolean isHidden, @Nullable Runnable after) {
+    send(new TdApi.ToggleGeneralForumTopicIsHidden(chatId, isHidden), typedOkHandler(after));
+  }
+
+  public void setForumTopicNotificationSettings (long chatId, int forumTopicId, TdApi.ChatNotificationSettings notificationSettings, @Nullable Runnable after) {
+    send(new TdApi.SetForumTopicNotificationSettings(chatId, forumTopicId, notificationSettings), typedOkHandler(after));
+  }
+
   public @Nullable TdApi.Chat chat (long chatId) {
     if (chatId == 0) {
       return null;
@@ -10907,6 +10957,27 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
             return true;
           }
           break;
+        case TdApi.ChatMemberStatusRestricted.CONSTRUCTOR:
+        case TdApi.ChatMemberStatusLeft.CONSTRUCTOR:
+        case TdApi.ChatMemberStatusBanned.CONSTRUCTOR:
+        case TdApi.ChatMemberStatusMember.CONSTRUCTOR:
+          break;
+      }
+    }
+    return false;
+  }
+
+  public boolean canManageTopics (long chatId) {
+    if (!isForum(chatId)) {
+      return false;
+    }
+    TdApi.ChatMemberStatus status = chatStatus(chatId);
+    if (status != null) {
+      switch (status.getConstructor()) {
+        case TdApi.ChatMemberStatusCreator.CONSTRUCTOR:
+          return true;
+        case TdApi.ChatMemberStatusAdministrator.CONSTRUCTOR:
+          return ((TdApi.ChatMemberStatusAdministrator) status).rights.canManageTopics;
         case TdApi.ChatMemberStatusRestricted.CONSTRUCTOR:
         case TdApi.ChatMemberStatusLeft.CONSTRUCTOR:
         case TdApi.ChatMemberStatusBanned.CONSTRUCTOR:
