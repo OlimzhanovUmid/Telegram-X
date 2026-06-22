@@ -1155,22 +1155,56 @@ public final class TGMessageService extends TGMessageServiceImpl {
 
   public TGMessageService (MessagesManager context, TdApi.Message msg, TdApi.MessageForumTopicCreated forumTopicCreated) {
     super(context, msg);
-    setUnsupportedTextCreator();
+    setTextCreator(() -> {
+      if (msg.isOutgoing) {
+        return getText(R.string.EventLogForumTopicCreatedYou, new BoldArgument(forumTopicCreated.name));
+      } else {
+        return getText(R.string.EventLogForumTopicCreated, new SenderArgument(sender), new BoldArgument(forumTopicCreated.name));
+      }
+    });
   }
 
   public TGMessageService (MessagesManager context, TdApi.Message msg, TdApi.MessageForumTopicEdited forumTopicEdited) {
     super(context, msg);
-    setUnsupportedTextCreator();
+    setTextCreator(() -> {
+      if (!StringUtils.isEmpty(forumTopicEdited.name)) {
+        if (msg.isOutgoing) {
+          return getText(R.string.TopicTitleChangedYou, new BoldArgument(forumTopicEdited.name));
+        } else {
+          return getText(R.string.TopicTitleChanged, new SenderArgument(sender), new BoldArgument(forumTopicEdited.name));
+        }
+      } else {
+        if (msg.isOutgoing) {
+          return getText(R.string.TopicIconChangedYou);
+        } else {
+          return getText(R.string.TopicIconChanged, new SenderArgument(sender));
+        }
+      }
+    });
   }
 
   public TGMessageService (MessagesManager context, TdApi.Message msg, TdApi.MessageForumTopicIsClosedToggled forumTopicIsClosedToggled) {
     super(context, msg);
-    setUnsupportedTextCreator();
+    setTextCreator(() -> {
+      boolean closed = forumTopicIsClosedToggled.isClosed;
+      if (msg.isOutgoing) {
+        return getText(closed ? R.string.TopicClosedYou : R.string.TopicReopenedYou);
+      } else {
+        return getText(closed ? R.string.TopicClosed : R.string.TopicReopened, new SenderArgument(sender));
+      }
+    });
   }
 
   public TGMessageService (MessagesManager context, TdApi.Message msg, TdApi.MessageForumTopicIsHiddenToggled forumTopicIsHiddenToggled) {
     super(context, msg);
-    setUnsupportedTextCreator();
+    setTextCreator(() -> {
+      boolean hidden = forumTopicIsHiddenToggled.isHidden;
+      if (msg.isOutgoing) {
+        return getText(hidden ? R.string.TopicHiddenYou : R.string.TopicUnhiddenYou);
+      } else {
+        return getText(hidden ? R.string.TopicHidden : R.string.TopicUnhidden, new SenderArgument(sender));
+      }
+    });
   }
 
   private void setUnsupportedTextCreator () {

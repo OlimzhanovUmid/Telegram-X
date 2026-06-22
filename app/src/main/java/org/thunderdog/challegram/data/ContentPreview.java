@@ -721,16 +721,25 @@ public class ContentPreview {
       case TdApi.MessagePaidMessagesRefunded.CONSTRUCTOR:
       case TdApi.MessagePaidMessagePriceChanged.CONSTRUCTOR:
 
+      case TdApi.MessageForumTopicCreated.CONSTRUCTOR:
+        return new ContentPreview(EMOJI_GROUP, R.string.NewTopic, ((TdApi.MessageForumTopicCreated) message.content).name);
+      case TdApi.MessageForumTopicEdited.CONSTRUCTOR: {
+        String newName = ((TdApi.MessageForumTopicEdited) message.content).name;
+        return StringUtils.isEmpty(newName)
+          ? new ContentPreview(EMOJI_GROUP, R.string.ChatPreviewTopicEdited)
+          : new ContentPreview(EMOJI_GROUP, R.string.NewTopic, newName);
+      }
+      case TdApi.MessageForumTopicIsClosedToggled.CONSTRUCTOR:
+        return new ContentPreview(EMOJI_GROUP, ((TdApi.MessageForumTopicIsClosedToggled) message.content).isClosed ? R.string.ChatPreviewTopicClosed : R.string.ChatPreviewTopicReopened);
+      case TdApi.MessageForumTopicIsHiddenToggled.CONSTRUCTOR:
+        return new ContentPreview(EMOJI_GROUP, ((TdApi.MessageForumTopicIsHiddenToggled) message.content).isHidden ? R.string.ChatPreviewTopicHidden : R.string.ChatPreviewTopicShown);
+
       // Handled by getSimpleContentPreview, but unsupported
       case TdApi.MessageUnsupported.CONSTRUCTOR:
       case TdApi.MessageUsersShared.CONSTRUCTOR:
       case TdApi.MessageChatShared.CONSTRUCTOR:
       case TdApi.MessageSuggestProfilePhoto.CONSTRUCTOR:
       case TdApi.MessageSuggestBirthdate.CONSTRUCTOR:
-      case TdApi.MessageForumTopicCreated.CONSTRUCTOR:
-      case TdApi.MessageForumTopicEdited.CONSTRUCTOR:
-      case TdApi.MessageForumTopicIsClosedToggled.CONSTRUCTOR:
-      case TdApi.MessageForumTopicIsHiddenToggled.CONSTRUCTOR:
       case TdApi.MessagePassportDataSent.CONSTRUCTOR:
       case TdApi.MessageChatSetBackground.CONSTRUCTOR:
       case TdApi.MessageChecklist.CONSTRUCTOR:
