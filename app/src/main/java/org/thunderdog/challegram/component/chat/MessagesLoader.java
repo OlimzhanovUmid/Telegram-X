@@ -1143,7 +1143,9 @@ public class MessagesLoader implements Client.ResultHandler {
           function = new TdApi.GetChatScheduledMessages(sourceChatId);
           break;
         default:
-          if (hasSearchFilter()) {
+          if (hasSearchFilter() || (topicId != null && topicId.getConstructor() == TdApi.MessageTopicForum.CONSTRUCTOR && messageThread == null)) {
+            // Forum topics (incl. the General topic, which cannot be a message thread) load their
+            // history via SearchChatMessages over the topic; plain GetChatHistory is not topic-filtered.
             loadingLocal = false;
             Log.ensureReturnType(TdApi.SearchChatMessages.class, TdApi.FoundChatMessages.class);
             function = new TdApi.SearchChatMessages(sourceChatId, topicId, null, null, (lastFromMessageId = fromMessageId).getMessageId(), lastOffset = offset, lastLimit = limit, searchFilter);
