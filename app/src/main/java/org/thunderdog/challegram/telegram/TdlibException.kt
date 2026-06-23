@@ -12,28 +12,14 @@
  *
  * File created on 17/07/2023
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.NonNull;
+import androidx.annotation.NonNull
+import org.drinkless.tdlib.TdApi
+import org.thunderdog.challegram.data.TD
 
-import org.drinkless.tdlib.TdApi;
-import org.thunderdog.challegram.data.TD;
-
-public class TdlibException extends RuntimeException {
-  private final TdApi.Error error;
-
-  public TdlibException (@NonNull TdApi.Error error) {
-    super(TD.toErrorString(error));
-    this.error = error;
-  }
-
-  public TdApi.Error getError () {
-    return error;
-  }
-
-  @Override
-  @NonNull
-  public String toString () {
-    return TD.toErrorString(error);
+class TdlibException (@JvmField val error: TdApi.Error) : RuntimeException(TD.toErrorString(error)) {
+  override fun toString (): String {
+    return TD.toErrorString(error)
   }
 }
