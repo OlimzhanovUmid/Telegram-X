@@ -10,10 +10,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 27/02/2018
+ * File created on 27/05/2017
  */
-package org.thunderdog.challegram.navigation;
+package org.thunderdog.challegram.navigation
 
-public interface ColorSwitchPreparator {
-  void prepareColorChangers (int fromColor, int toColor);
+import android.view.View
+
+interface PagerHeaderView : RtlCheckListener {
+  fun getView (): View
+  fun getTopView (): ViewPagerTopView
 }

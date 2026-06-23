@@ -10,17 +10,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 01/03/2016 at 11:17
+ * File created on 11/06/2017
  */
-package org.thunderdog.challegram.loader.gif;
+package org.thunderdog.challegram.mediaview.gl
 
-import android.view.View;
+import android.graphics.Bitmap
 
-public interface GifWatcher {
-  void gifLoaded (GifFile file, GifState state);
-  default void gifProgress (GifFile file, float progress) { }
-  default void gifFrameChanged (GifFile file, boolean isRestart) { }
-  default View findTargetView (GifFile file) {
-    return null;
-  }
+fun interface BitmapCallback {
+  fun onBitmapObtained (bitmap: Bitmap)
 }
