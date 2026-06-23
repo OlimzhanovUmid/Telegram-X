@@ -12,22 +12,19 @@
  *
  * File created on 17/07/2017
  */
-package org.thunderdog.challegram;
+package org.thunderdog.challegram
 
-import android.os.Bundle;
+import android.os.Bundle
+import org.thunderdog.challegram.telegram.TdlibManager
+import org.thunderdog.challegram.ui.SettingsCacheController
 
-import org.thunderdog.challegram.telegram.TdlibManager;
-import org.thunderdog.challegram.ui.SettingsCacheController;
-
-public class ManageSpaceActivity extends BaseActivity {
-  @Override
-  protected boolean needDrawer () {
-    return false;
+class ManageSpaceActivity : BaseActivity() {
+  override fun needDrawer (): Boolean {
+    return false
   }
 
-  @Override
-  public void onCreate (Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    navigation.initController(new SettingsCacheController(this, TdlibManager.instance().current()));
+  override fun onCreate (savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    navigation.initController(SettingsCacheController(this, TdlibManager.instance().current()))
   }
 }

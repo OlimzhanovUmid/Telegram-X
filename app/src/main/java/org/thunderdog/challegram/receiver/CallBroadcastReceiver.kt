@@ -10,8 +10,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 08/04/2017
+ * File created on 04/08/2018
  */
-package org.thunderdog.challegram.receiver;
+package org.thunderdog.challegram.receiver
 
-public class TGAutoMessageReceiver extends TGBaseReplyReceiver { }
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import org.thunderdog.challegram.service.TGCallService
+
+class CallBroadcastReceiver : BroadcastReceiver() {
+  override fun onReceive (context: Context, intent: Intent) {
+    val service = TGCallService.currentInstance()
+    if (service != null) {
+      service.processBroadcast(context, intent)
+    }
+  }
+}

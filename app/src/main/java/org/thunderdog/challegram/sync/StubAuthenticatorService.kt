@@ -12,26 +12,21 @@
  *
  * File created on 25/01/2019
  */
-package org.thunderdog.challegram.sync;
+package org.thunderdog.challegram.sync
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
 
-import androidx.annotation.Nullable;
+class StubAuthenticatorService : Service() {
+  private lateinit var authenticator: StubAuthenticator
 
-public class StubAuthenticatorService extends Service {
-  private StubAuthenticator authenticator;
-
-  @Override
-  public void onCreate () {
-    super.onCreate();
-    this.authenticator = new StubAuthenticator(this);
+  override fun onCreate () {
+    super.onCreate()
+    authenticator = StubAuthenticator(this)
   }
 
-  @Nullable
-  @Override
-  public IBinder onBind (Intent intent) {
-    return authenticator.getIBinder();
+  override fun onBind (intent: Intent): IBinder? {
+    return authenticator.iBinder
   }
 }
