@@ -6680,8 +6680,8 @@ public class MessagesController extends ViewController<MessagesController.Argume
         .setFlag(MediaViewController.Args.FLAG_DISALLOW_MULTI_SELECTION_MEDIA)
         .setFlag(MediaViewController.Args.FLAG_DISALLOW_SET_DESTRUCTION_TIMER)
         .setFlag(MediaViewController.Args.FLAG_DISALLOW_SEND_BUTTON_HAPTIC_MENU)
-        .setSendButtonIcon(R.drawable.baseline_check_circle_24)
-        .setReceiverChatId(getChatId()));
+        .setSendButtonIconRes(R.drawable.baseline_check_circle_24)
+        .setReceiverChatIdValue(getChatId()));
     controller.open();
   }
 
@@ -10181,7 +10181,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
                   }
                 },
                 stack, areScheduledOnly()
-              ).setReceiverChatId(getChatId())
+              ).setReceiverChatIdValue(getChatId())
                .setFlag(MediaViewController.Args.FLAG_DELETE_FILE_ON_EXIT, isSecretChat() || !Settings.instance().getNewSetting(Settings.SETTING_FLAG_CAMERA_KEEP_DISCARDED_MEDIA)));
             controller.open();
           });

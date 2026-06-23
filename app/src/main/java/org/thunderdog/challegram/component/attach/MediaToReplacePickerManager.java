@@ -122,11 +122,11 @@ public class MediaToReplacePickerManager extends MediaLayoutManager {
         }
       });
       mediaLayout.setMediaViewControllerArgumentsEditor(args -> args
-        .setSendButtonIcon(R.drawable.baseline_check_circle_24)
+        .setSendButtonIconRes(R.drawable.baseline_check_circle_24)
         .setFlag(MediaViewController.Args.FLAG_DISALLOW_MULTI_SELECTION_MEDIA)
         .setFlag(MediaViewController.Args.FLAG_DISALLOW_SET_DESTRUCTION_TIMER)
         .setFlag(MediaViewController.Args.FLAG_DISALLOW_SEND_BUTTON_HAPTIC_MENU)
-        .setReceiverChatId(chatId)
+        .setReceiverChatIdValue(chatId)
       );
 
       final boolean allowGallery = BitwiseUtils.hasFlag(rightsFlags, (1 << RightId.SEND_PHOTOS) | (1 << RightId.SEND_VIDEOS));

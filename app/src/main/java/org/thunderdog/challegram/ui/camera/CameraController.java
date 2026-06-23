@@ -1544,9 +1544,9 @@ public class CameraController extends ViewController<Void> implements CameraDele
           ImageGalleryFile galleryFile = (ImageGalleryFile) images.get(0);
           return onSendMedia(galleryFile, options, disableMarkdown, asFiles, showCaptionAboveMedia, hasSpoiler);
         }
-      }, stack, m != null && m.areScheduledOnly()).setAvatarPickerMode(avatarPickerMode);
+      }, stack, m != null && m.areScheduledOnly()).setAvatarPickerModeValue(avatarPickerMode);
       if (m != null) {
-        args.setReceiverChatId(m.getChatId());
+        args.setReceiverChatIdValue(m.getChatId());
       }
       c.setArguments(args);
       c.forceCameraAnimationType(true);

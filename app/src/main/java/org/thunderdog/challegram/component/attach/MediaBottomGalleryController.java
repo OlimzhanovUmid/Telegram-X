@@ -593,7 +593,7 @@ public class MediaBottomGalleryController extends MediaBottomBaseController<Medi
       MediaViewController controller = new MediaViewController(context, tdlib);
       controller.setArguments(mediaLayout.prepareMediaViewArguments(
         MediaViewController.Args.fromGallery(this, this, this, this, stack, mediaLayout.areScheduledOnly())
-          .setReceiverChatId(mediaLayout.getTargetChatId()).setAvatarPickerMode(mediaLayout.getAvatarPickerMode())
+          .setReceiverChatIdValue(mediaLayout.getTargetChatId()).setAvatarPickerModeValue(mediaLayout.getAvatarPickerMode())
           .setFlag(MediaViewController.Args.FLAG_DISALLOW_MULTI_SELECTION_MEDIA, mediaLayout.inSingleMediaMode())
       ));
       controller.open();
