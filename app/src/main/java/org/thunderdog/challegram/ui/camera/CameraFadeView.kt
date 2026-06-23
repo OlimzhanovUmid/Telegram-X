@@ -10,22 +10,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 18/05/2015 at 00:46
+ * File created on 22/09/2017
  */
-package org.thunderdog.challegram.loader;
+package org.thunderdog.challegram.ui.camera
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
+import android.content.Context
+import android.view.View
 
-public class ImageAnimatorHandler extends Handler {
+class CameraFadeView (context: Context) : View(context) {
+  private var fadeFactor = 1f
 
-  public ImageAnimatorHandler () {
-    super(Looper.getMainLooper());
+  init {
+    setBackgroundColor(0xB3000000.toInt())
   }
 
-  @Override
-  public void handleMessage (Message msg) {
-    ((ImageAnimator) msg.obj).onFrame(msg.what);
+  fun setFadeFactor (fadeFactor: Float) {
+    if (this.fadeFactor != fadeFactor) {
+      this.fadeFactor = fadeFactor
+      alpha = fadeFactor
+    }
   }
 }
