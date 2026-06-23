@@ -12,12 +12,11 @@
  *
  * File created on 25/02/2016 at 14:24
  */
-package org.thunderdog.challegram.component.chat;
+package org.thunderdog.challegram.component.chat
 
-public class SendHelper {
-
+object SendHelper {
   // Called when we received filePath directly
-  public static void sendAudio (final long chatId, final boolean silent, final long replyToId, final String filePath) {
-
+  @JvmStatic
+  fun sendAudio (chatId: Long, silent: Boolean, replyToId: Long, filePath: String) {
   }
 }

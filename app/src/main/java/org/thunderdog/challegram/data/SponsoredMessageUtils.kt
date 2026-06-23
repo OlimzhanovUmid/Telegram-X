@@ -10,8 +10,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.thunderdog.challegram.data;
+package org.thunderdog.challegram.data
 
-public class SponsoredMessageUtils {
-
-}
+object SponsoredMessageUtils
