@@ -10,19 +10,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 24/10/2023 at 02:14
+ * File created on 26/10/2016
  */
-package org.thunderdog.challegram.data;
+package org.thunderdog.challegram.component.attach
 
-import androidx.annotation.IntDef;
+import org.drinkless.tdlib.TdApi
+import org.thunderdog.challegram.loader.ImageFile
+import org.thunderdog.challegram.telegram.TdlibProvider
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+class MediaImageFile (
+  tdlib: TdlibProvider,
+  file: TdApi.File,
+  private val queryId: Long,
+  private val resultId: String
+) : ImageFile(tdlib, file) {
+  fun getQueryId (): Long = queryId
 
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
-  EmojiMessageContentType.NOT_EMOJI, EmojiMessageContentType.ANIMATED_EMOJI, EmojiMessageContentType.NON_BUBBLE_EMOJI
-})
-public @interface EmojiMessageContentType {
-  int NOT_EMOJI = 0, ANIMATED_EMOJI = 1, NON_BUBBLE_EMOJI = 2;
+  fun getResultId (): String = resultId
 }

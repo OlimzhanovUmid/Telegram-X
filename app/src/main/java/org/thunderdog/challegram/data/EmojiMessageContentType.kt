@@ -10,20 +10,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 29/02/2016 at 22:59
+ * File created on 24/10/2023 at 02:14
  */
-package org.thunderdog.challegram.loader.gif;
+package org.thunderdog.challegram.data
 
-import org.thunderdog.challegram.data.TD;
-import org.thunderdog.challegram.telegram.Tdlib;
+import androidx.annotation.IntDef
 
-public class GifFileRemote extends GifFile {
-  public GifFileRemote (Tdlib tdlib, String url, int type) {
-    super(tdlib, TD.newFile(0, url, url, 0), type);
-  }
-
-  @Override
-  protected String makeGifKey () {
-    return tdlib.id() + "_" + file.remote.id;
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
+  EmojiMessageContentType.NOT_EMOJI,
+  EmojiMessageContentType.ANIMATED_EMOJI,
+  EmojiMessageContentType.NON_BUBBLE_EMOJI
+)
+annotation class EmojiMessageContentType {
+  companion object {
+    const val NOT_EMOJI: Int = 0
+    const val ANIMATED_EMOJI: Int = 1
+    const val NON_BUBBLE_EMOJI: Int = 2
   }
 }
