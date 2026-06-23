@@ -10,23 +10,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 10/12/2016
+ * File created on 10/05/2017
  */
-package org.thunderdog.challegram.mediaview;
+package org.thunderdog.challegram.mediaview
 
-import android.content.Context;
-import android.view.MotionEvent;
+import me.vkryl.core.modulo
 
-import androidx.recyclerview.widget.RecyclerView;
+class PostTransformation {
+  private var rotationAroundCenter = 0f
 
-public class MediaFiltersRecyclerView extends RecyclerView {
-  public MediaFiltersRecyclerView (Context context) {
-    super(context);
+  fun isEmpty (): Boolean {
+    return rotationAroundCenter == 0f
   }
 
-  @Override
-  public boolean onTouchEvent (MotionEvent e) {
-    super.onTouchEvent(e);
-    return true;
+  fun rotateAroundCenter (): Float {
+    rotationAroundCenter = modulo(rotationAroundCenter - 90f, 360f)
+    return rotationAroundCenter
+  }
+
+  fun getRotationAroundCenter (): Float {
+    return rotationAroundCenter
   }
 }

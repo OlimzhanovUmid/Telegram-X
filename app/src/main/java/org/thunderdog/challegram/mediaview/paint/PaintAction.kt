@@ -12,28 +12,25 @@
  *
  * File created on 11/07/2017
  */
-package org.thunderdog.challegram.mediaview.paint;
+package org.thunderdog.challegram.mediaview.paint
 
-import android.os.SystemClock;
+import android.os.SystemClock
 
-public class PaintAction {
-  public static final int SIMPLE_DRAWING = 0;
+class PaintAction (
+  private val type: Int,
+  private val data: Any
+) {
+  private val creationTimeMs = SystemClock.uptimeMillis()
 
-  private final int type;
-  private final Object data;
-  private final long creationTimeMs;
-
-  public PaintAction (int type, Object data) {
-    this.type = type;
-    this.data = data;
-    this.creationTimeMs = SystemClock.uptimeMillis();
+  fun getType (): Int {
+    return type
   }
 
-  public int getType () {
-    return type;
+  fun getCreationTimeMs (): Long {
+    return creationTimeMs
   }
 
-  public long getCreationTimeMs () {
-    return creationTimeMs;
+  companion object {
+    const val SIMPLE_DRAWING = 0
   }
 }

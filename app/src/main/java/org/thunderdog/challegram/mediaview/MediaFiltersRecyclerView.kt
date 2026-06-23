@@ -10,15 +10,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 14/12/2016
+ * File created on 10/12/2016
  */
-package org.thunderdog.challegram.mediaview;
+package org.thunderdog.challegram.mediaview
 
-import android.content.Context;
-import android.view.View;
+import android.content.Context
+import android.view.MotionEvent
+import androidx.recyclerview.widget.RecyclerView
 
-public class PaletteView extends View {
-  public PaletteView (Context context) {
-    super(context);
+class MediaFiltersRecyclerView (context: Context) : RecyclerView(context) {
+  override fun onTouchEvent (e: MotionEvent): Boolean {
+    super.onTouchEvent(e)
+    return true
   }
 }
