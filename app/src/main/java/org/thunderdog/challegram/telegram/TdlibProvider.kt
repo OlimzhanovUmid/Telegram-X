@@ -12,13 +12,12 @@
  *
  * File created on 25/03/2019
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.NonNull;
+interface TdlibProvider {
+    fun accountId(): Int {
+        return tdlib().id()
+    }
 
-public interface TdlibProvider {
-  default int accountId () {
-    return tdlib().id();
-  }
-  @NonNull Tdlib tdlib ();
+    fun tdlib(): Tdlib
 }
