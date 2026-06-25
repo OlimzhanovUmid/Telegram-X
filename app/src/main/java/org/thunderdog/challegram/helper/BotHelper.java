@@ -174,7 +174,7 @@ public class BotHelper implements Runnable, InlineSearchContext.CommandListProvi
 
     if (full.botInfo != null) {
       if (!StringUtils.isEmpty(full.botInfo.description) && !context.areScheduledOnly()) {
-        this.botInfoMessage = new TGMessageBotInfo(context.getManager(), chatId, full.botInfo.description);
+        this.botInfoMessage = new TGMessageBotInfo(context.manager, chatId, full.botInfo.description);
       }
 
       if (full.botInfo.commands.length > 0) {
@@ -418,9 +418,9 @@ public class BotHelper implements Runnable, InlineSearchContext.CommandListProvi
 
     if (context != null) {
       if (botInfoMessage != null) {
-        context.getManager().setHeaderMessage(botInfoMessage);
+        context.manager.setHeaderMessage(botInfoMessage);
       } else {
-        context.getManager().checkBotStart();
+        context.manager.checkBotStart();
       }
       context.updateCommandButton((botsCount > 0 || type == TYPE_PRIVATE) && hasCommands());
     }

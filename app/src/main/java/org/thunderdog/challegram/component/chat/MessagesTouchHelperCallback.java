@@ -109,7 +109,7 @@ public class MessagesTouchHelperCallback extends CustomTouchHelper.Callback {
   @Override
   public float getSwipeThreshold (RecyclerView.ViewHolder holder) {
     float itemWidth = (float) holder.itemView.getMeasuredWidth();
-    if (controller.getManager().useBubbles()) {
+    if (controller.manager.useBubbles()) {
       return (float) Screen.dp(TGMessage.BUBBLE_MOVE_THRESHOLD) / itemWidth;
     } else {
       return (float) Screen.dp(MessageQuickActionSwipeHelper.SWIPE_THRESHOLD_WIDTH) / itemWidth;  /*(Settings.instance().needChatQuickShare() ? 1 : 3);*/

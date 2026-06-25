@@ -14,12 +14,10 @@
  */
 package org.thunderdog.challegram.player;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.RectF;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -1168,7 +1166,7 @@ public class RoundVideoController extends BasePlaybackController implements
     MessageViewGroup newTarget = null;
     ViewController<?> c = context.navigation().getCurrentStackItem();
     if (object != null && c != null && c instanceof MessagesController) {
-      View foundTarget = ((MessagesController) c).getManager().findMessageView(object.chatId, object.id);
+      View foundTarget = ((MessagesController) c).manager.findMessageView(object.chatId, object.id);
       if (foundTarget == null || foundTarget instanceof MessageViewGroup) {
         newTarget = (MessageViewGroup) foundTarget;
         if (!inPipMode || newTarget != null) {
@@ -1182,7 +1180,7 @@ public class RoundVideoController extends BasePlaybackController implements
             if (outSp.canAnimateScrollPosition) {
               smoothScrollBy((MessagesController) c, outSp.dy, outSp.duration);
             } else {
-              ((MessagesController) c).getManager().getLayoutManager().scrollToPositionWithOffset(outSp.index, outSp.offset);
+              ((MessagesController) c).manager.getLayoutManager().scrollToPositionWithOffset(outSp.index, outSp.offset);
             }
 
             awaitingCurrentView = c.isFocused();

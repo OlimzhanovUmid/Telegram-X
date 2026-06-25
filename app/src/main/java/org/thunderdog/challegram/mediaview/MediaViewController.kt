@@ -8239,7 +8239,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                             }
 
                             context.forceCloseCamera()
-                            val restriction = tdlib.getDefaultRestrictionText(m.getChat(), rightId)
+                            val restriction = tdlib.getDefaultRestrictionText(m.chat, rightId)
                             if (restriction != null) {
                                 if (canShare) {
                                     openShareControllerForItem(MediaItem(context, tdlib, file))
