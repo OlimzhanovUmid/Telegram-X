@@ -1074,7 +1074,7 @@ public class TGWebPage implements FileProgressComponent.SimpleListener, MediaWra
   }
 
   public int getLastLineWidth () {
-    return TGMessage.BOTTOM_LINE_EXPAND_HEIGHT;
+    return TGMessage.bottomLineContentWidth;
   }
 
   public void autodownloadContent (TdApi.ChatType info) {

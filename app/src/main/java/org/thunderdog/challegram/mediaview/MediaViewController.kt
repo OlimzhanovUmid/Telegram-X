@@ -2941,9 +2941,9 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         }
 
         fun setSecretPhoto(photo: TGMessageMedia) {
-            if (!photo.isOutgoing()) {
+            if (!photo.isOutgoing) {
                 secretPhoto = photo
-                setText(photo.getHotTimerText())
+                setText(photo.hotTimerText)
                 photo.setHotListener(this)
             }
         }
@@ -2951,7 +2951,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         override fun onHotInvalidate(secondsChanged: Boolean) {
             if (secretPhoto != null) {
                 if (secondsChanged) {
-                    setText(secretPhoto!!.getHotTimerText())
+                    setText(secretPhoto!!.hotTimerText)
                 }
                 invalidate()
             }
@@ -2988,7 +2988,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
       int radius2 = (int) (rectF.height() / 2);
       c.drawRoundRect(rectF, radius2, radius2, Paints.fillingPaint(0x4c000000));*/
             rectF.set((centerX - radius).toFloat(), (centerY - radius).toFloat(), (centerX + radius).toFloat(), (centerY + radius).toFloat())
-            c.drawArc(rectF, -90f, -360f * secretPhoto!!.getHotExpiresFactor(), true, Paints.fillingPaint(-0x1))
+            c.drawArc(rectF, -90f, -360f * secretPhoto!!.hotExpiresFactor, true, Paints.fillingPaint(-0x1))
             c.drawText(text!!, (offset + radius + radius + offset2).toFloat(), Screen.dp(35.5f).toFloat(), timerPaint)
         }
     }
@@ -5085,7 +5085,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                 captionView.setPadding(Screen.dp(14f), Screen.dp(14f), Screen.dp(14f), Screen.dp(14f))
                 captionView.setTextColorId(ColorId.white, true)
                 captionView.setTextSize(Screen.dp(16f).toFloat())
-                captionView.setTextStyleProvider(TGMessage.getTextStyleProvider())
+                captionView.setTextStyleProvider(TGMessage.textStyleProvider)
                 captionView.setLinkColorId(ColorId.caption_textLink, ColorId.caption_textLinkPressHighlight)
                 captionView.setForcedTheme(this@MediaViewController.forcedTheme)
                 captionView.setId(R.id.input)
@@ -5099,7 +5099,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                 captionWrap.setLayoutParams(ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
                 val scrollView = MaxHeightScrollView(context)
-                scrollView.setMaxHeight(Text.getLineHeight(TGMessage.getTextStyleProvider(), true) * 10 + Screen.dp(14f))
+                scrollView.setMaxHeight(Text.getLineHeight(TGMessage.textStyleProvider, true) * 10 + Screen.dp(14f))
                 scrollView.addView(captionWrap)
                 scrollView.setAlpha(0f)
                 scrollView.setBackgroundColor(Theme.getColor(ColorId.transparentEditor))
@@ -6113,13 +6113,13 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         }
     }
 
-    private fun getFilterState(createIfEmpty: Boolean): FiltersState {
+    private fun getFilterState(createIfEmpty: Boolean): FiltersState? {
         val item = stack!!.getCurrent()
         var state = item.getFiltersState()
         if (state == null && createIfEmpty) {
             state = FiltersState()
         }
-        return state!!
+        return state
     }
 
     // Crop
@@ -6352,13 +6352,13 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     private var cropBitmap: Bitmap? = null
     private var cropRotation = 0
 
-    private fun obtainCropState(createIfEmpty: Boolean): CropState {
+    private fun obtainCropState(createIfEmpty: Boolean): CropState? {
         val item = stack!!.getCurrent()
         var cropState = item.getCropState()
         if (cropState == null && createIfEmpty) {
             cropState = CropState()
         }
-        return cropState!!
+        return cropState
     }
 
     private fun prepareCropLayout() {
@@ -7841,7 +7841,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             return true
         }
 
-        val cropState = obtainCropState(true)
+        val cropState = obtainCropState(true)!!
 
         val targetWidth = (cropAreaView!!.getTargetWidth() * (cropState.getRight() - cropState.getLeft()))
         val targetHeight = (cropAreaView!!.getTargetHeight() * (cropState.getBottom() - cropState.getTop()))
@@ -9212,7 +9212,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
 
         @JvmStatic
         fun openFromMessage(message: TGMessage, item: MediaItem) {
-            val context = message.controller()
+            val context = message.controller()!!
             if (context.isStackLocked()) {
                 return
             }
@@ -9229,15 +9229,15 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             if (context is MediaCollectorDelegate) {
                 (context as MediaCollectorDelegate).modifyMediaArguments(message, args)
             }
-            args.noLoadMore = message.isEventLog() || message.isSponsoredMessage()
-            args.areOnlyScheduled = message.isScheduled()
+            args.noLoadMore = message.isEventLog || message.isSponsoredMessage()
+            args.areOnlyScheduled = message.isScheduled
 
             openWithArgs(context, args)
         }
 
         @JvmStatic
         fun openFromMessage(msg: TGMessageText) {
-            val context = msg.controller()
+            val context = msg.controller()!!
             if (context.isStackLocked()) {
                 return
             }
@@ -9260,7 +9260,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                 msg.tdlib().files().syncFiles(files, 500L)
                 stack.set(parsedWebPage.getInstantPosition(), items)
             } else {
-                val item = MediaItem.valueOf(context.context(), context.tdlib(), msg.getMessage())
+                val item = MediaItem.valueOf(context.context(), context.tdlib(), msg.message)
                 if (item == null) {
                     return
                 }
@@ -9271,7 +9271,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             args.noLoadMore = true
             args.copyLink = linkPreview.url
             args.forceThumbs = true
-            args.areOnlyScheduled = msg.isScheduled()
+            args.areOnlyScheduled = msg.isScheduled
             if (context is MediaCollectorDelegate) {
                 (context as MediaCollectorDelegate).modifyMediaArguments(msg, args)
             }
@@ -9282,8 +9282,8 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
 
         @JvmStatic
         fun openSecret(photo: TGMessageMedia): MediaViewController? {
-            val context = photo.controller()
-            val item = MediaItem.valueOf(context.context(), context.tdlib(), photo.getMessage())
+            val context = photo.controller()!!
+            val item = MediaItem.valueOf(context.context(), context.tdlib(), photo.message)
             if (item == null) {
                 return null
             }
@@ -9296,8 +9296,8 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
 
         @JvmStatic
         fun openFromMessage(messageContainer: TGMessageMedia, messageId: Long) {
-            val context = messageContainer.controller()
-            val msg = messageContainer.getMessage(messageId)
+            val context = messageContainer.controller()!!
+            val msg = messageContainer.getMessage(messageId)!!
             val item = MediaItem.valueOf(messageContainer, messageId)
             if (item == null) {
                 return
@@ -9348,7 +9348,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             }
 
             val args = Args(context, MODE_MESSAGES, stack)
-            args.noLoadMore = !allowLoadMore || messageContainer.isEventLog() || messageContainer.isSponsoredMessage()
+            args.noLoadMore = !allowLoadMore || messageContainer.isEventLog || messageContainer.isSponsoredMessage()
             if (context is MediaCollectorDelegate) {
                 (context as MediaCollectorDelegate).modifyMediaArguments(msg, args)
             }
@@ -9357,7 +9357,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             args.areOnlyScheduled = TD.isScheduled(msg)
 
             if (messageContainer.isSponsoredMessage()) {
-                args.setCustomSubtitle(messageContainer.getSponsoredMessage().title)
+                args.setCustomSubtitle((messageContainer as TGMessage).sponsoredMessage!!.title)
             }
 
             openWithArgs(context, args)

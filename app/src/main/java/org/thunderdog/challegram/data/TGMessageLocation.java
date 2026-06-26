@@ -199,7 +199,7 @@ public class TGMessageLocation extends TGMessage implements LiveLocationManager.
 
   @Override
   protected int getBottomLineContentWidth () {
-    return venue == null ? BOTTOM_LINE_EXPAND_HEIGHT : BOTTOM_LINE_KEEP_WIDTH;
+    return venue == null ? bottomLineContentWidth : BOTTOM_LINE_KEEP_WIDTH;
   }
 
   private long nextLiveLocationUpdateTime = -1;
@@ -496,10 +496,10 @@ public class TGMessageLocation extends TGMessage implements LiveLocationManager.
       boolean useBubbles = useBubbles();
       int textPaddingLeft = Screen.dp(11f);
       int circleRadius = Screen.dp(20f);
-      int horizontalPadding = (useFullWidth() ? xContentLeft : 0);
+      int horizontalPadding = (useFullWidth() ? contentLeft : 0);
       int maxTextWidth = maxWidth - horizontalPadding * 2;
       if (useBubbles) {
-        maxTextWidth -= (xBubblePadding - xBubblePaddingSmall) * 2;
+        maxTextWidth -= (bubbleContentPadding - xBubblePaddingSmall) * 2;
       } else if (NEED_VENUE_CIRCLE) {
         maxTextWidth -= textPaddingLeft + circleRadius * 2;
       }
@@ -710,7 +710,7 @@ public class TGMessageLocation extends TGMessage implements LiveLocationManager.
   protected void drawContent (MessageView view, Canvas c, final int startX, int startY, int maxWidth, Receiver mapReceiver, Receiver iconReceiver) {
     boolean useBubbles = useBubbles();
     final boolean clipped = useBubbles && !useForward();
-    final int saveCount = clipped ? ViewSupport.clipPath(c, getBubbleClipPath()) : Integer.MIN_VALUE;
+    final int saveCount = clipped ? ViewSupport.clipPath(c, bubbleClipPath) : Integer.MIN_VALUE;
     boolean useFullWidth = useFullWidth();
 
     mapReceiver.setBounds(getContentX(), getContentY(), getContentX() + previewWidth, getContentY() + previewHeight);
@@ -814,12 +814,12 @@ public class TGMessageLocation extends TGMessage implements LiveLocationManager.
     }
 
     if (venue != null || trimmedTitle != null || trimmedSubtitle != null) {
-      int venueContentX = useFullWidth ? xContentLeft : startX;
+      int venueContentX = useFullWidth ? contentLeft : startX;
       int venueContentY = startY + previewHeight;
       int paddingTop = Screen.dp(4f);
       int textX = venueContentX;
       if (useBubbles) {
-        textX += xBubblePadding - xBubblePaddingSmall;
+        textX += bubbleContentPadding - xBubblePaddingSmall;
       }/* else if (NEED_VENUE_CIRCLE && venue != null) {
         int circleRadius = Screen.dp(20f);
         int centerY = venueContentY + paddingTop + circleRadius;
@@ -837,7 +837,7 @@ public class TGMessageLocation extends TGMessage implements LiveLocationManager.
       }
 
       if (timer != null) {
-        timerCenterX = useFullWidth ? view.getMeasuredWidth() - xContentLeft : startX + previewWidth - (useBubbles ? Screen.dp(22) : Screen.dp(16f));
+        timerCenterX = useFullWidth ? view.getMeasuredWidth() - contentLeft : startX + previewWidth - (useBubbles ? Screen.dp(22) : Screen.dp(16f));
         timerCenterY = venueContentY + paddingTop + Screen.dp(22f);
         int timerRadius = Screen.dp(TIMER_RADIUS);
         int color = Theme.getColor(getProgressColorId());

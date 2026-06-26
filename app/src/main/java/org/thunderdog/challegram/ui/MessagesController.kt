@@ -37,20 +37,10 @@ import android.text.TextUtils
 import android.text.style.ClickableSpan
 import android.util.SparseIntArray
 import android.util.TypedValue
-import android.view.Gravity
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.view.View.OnLongClickListener
-import android.view.ViewGroup
-import android.widget.DatePicker
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.ScrollView
+import android.widget.*
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
@@ -63,182 +53,23 @@ import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResultCallback
-import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.LocationSettingsResult
-import com.google.android.gms.location.LocationSettingsStatusCodes
+import com.google.android.gms.location.*
+import me.vkryl.android.DECELERATE_INTERPOLATOR
 import me.vkryl.android.animator.BoolAnimator
 import me.vkryl.android.animator.FactorAnimator
 import me.vkryl.android.util.ClickHelper
 import me.vkryl.android.widget.FrameLayoutFix
 import me.vkryl.android.widget.FrameLayoutFix.Companion.newParams
-import me.vkryl.core.asArray
-import me.vkryl.core.clamp
+import me.vkryl.core.*
 import me.vkryl.core.collection.IntList
 import me.vkryl.core.collection.LongList
 import me.vkryl.core.collection.LongSet
-import me.vkryl.core.equalsOrBothEmpty
-import me.vkryl.core.hasFlag
-import me.vkryl.core.indexOf
-import me.vkryl.core.isEmpty
-import me.vkryl.core.isNumeric
-import me.vkryl.core.lambda.CancellableRunnable
-import me.vkryl.core.lambda.Future
-import me.vkryl.core.lambda.FutureBool
-import me.vkryl.core.lambda.RunnableBool
-import me.vkryl.core.lambda.RunnableData
-import me.vkryl.core.lambda.RunnableFloat
-import me.vkryl.core.lambda.RunnableInt
-import me.vkryl.core.lambda.RunnableLong
-import me.vkryl.core.parseInt
-import me.vkryl.core.setFlag
-import me.vkryl.core.trim
+import me.vkryl.core.lambda.*
 import org.drinkless.tdlib.Client
 import org.drinkless.tdlib.TdApi
-import org.drinkless.tdlib.TdApi.AddChatMember
-import org.drinkless.tdlib.TdApi.AddChatToList
-import org.drinkless.tdlib.TdApi.AddFavoriteSticker
-import org.drinkless.tdlib.TdApi.BackgroundTypeFill
-import org.drinkless.tdlib.TdApi.BackgroundTypeWallpaper
-import org.drinkless.tdlib.TdApi.BasicGroup
-import org.drinkless.tdlib.TdApi.BasicGroupFullInfo
-import org.drinkless.tdlib.TdApi.BlockListMain
-import org.drinkless.tdlib.TdApi.CanSendMessageToUser
-import org.drinkless.tdlib.TdApi.CanSendMessageToUserResult
-import org.drinkless.tdlib.TdApi.CanSendMessageToUserResultUserHasPaidMessages
-import org.drinkless.tdlib.TdApi.Chat
-import org.drinkless.tdlib.TdApi.ChatAction
-import org.drinkless.tdlib.TdApi.ChatActionBar
-import org.drinkless.tdlib.TdApi.ChatActionBarJoinRequest
-import org.drinkless.tdlib.TdApi.ChatActionBarReportAddBlock
-import org.drinkless.tdlib.TdApi.ChatActionBarReportSpam
-import org.drinkless.tdlib.TdApi.ChatActionCancel
-import org.drinkless.tdlib.TdApi.ChatAdministrators
-import org.drinkless.tdlib.TdApi.ChatEventLogFilters
-import org.drinkless.tdlib.TdApi.ChatJoinRequestsInfo
-import org.drinkless.tdlib.TdApi.ChatList
-import org.drinkless.tdlib.TdApi.ChatListMain
-import org.drinkless.tdlib.TdApi.ChatMember
-import org.drinkless.tdlib.TdApi.ChatMemberStatusMember
-import org.drinkless.tdlib.TdApi.ChatMessageSender
-import org.drinkless.tdlib.TdApi.ChatMessageSenders
-import org.drinkless.tdlib.TdApi.ChatNotificationSettings
-import org.drinkless.tdlib.TdApi.ChatPermissions
-import org.drinkless.tdlib.TdApi.ChatTypeBasicGroup
-import org.drinkless.tdlib.TdApi.ChatTypeSupergroup
-import org.drinkless.tdlib.TdApi.Contact
-import org.drinkless.tdlib.TdApi.DraftMessage
-import org.drinkless.tdlib.TdApi.EditMessageSchedulingState
-import org.drinkless.tdlib.TdApi.FailedToAddMember
-import org.drinkless.tdlib.TdApi.FailedToAddMembers
-import org.drinkless.tdlib.TdApi.ForumTopic
-import org.drinkless.tdlib.TdApi.ForumTopicInfo
-import org.drinkless.tdlib.TdApi.Game
-import org.drinkless.tdlib.TdApi.GetBackgroundUrl
-import org.drinkless.tdlib.TdApi.GetChatAdministrators
-import org.drinkless.tdlib.TdApi.GetChatAvailableMessageSenders
-import org.drinkless.tdlib.TdApi.GetChatMember
-import org.drinkless.tdlib.TdApi.GetChatMessageByDate
-import org.drinkless.tdlib.TdApi.GetMessage
-import org.drinkless.tdlib.TdApi.GetMessageProperties
-import org.drinkless.tdlib.TdApi.GetMessageViewers
-import org.drinkless.tdlib.TdApi.GetUser
-import org.drinkless.tdlib.TdApi.InlineKeyboardButtonTypeSwitchInline
-import org.drinkless.tdlib.TdApi.InlineQueryResultSticker
-import org.drinkless.tdlib.TdApi.InputBackgroundRemote
-import org.drinkless.tdlib.TdApi.InputFileId
-import org.drinkless.tdlib.TdApi.InputMessageAnimation
-import org.drinkless.tdlib.TdApi.InputMessageAudio
-import org.drinkless.tdlib.TdApi.InputMessageContact
-import org.drinkless.tdlib.TdApi.InputMessageContent
-import org.drinkless.tdlib.TdApi.InputMessageDice
-import org.drinkless.tdlib.TdApi.InputMessageDocument
-import org.drinkless.tdlib.TdApi.InputMessageGame
-import org.drinkless.tdlib.TdApi.InputMessageLocation
-import org.drinkless.tdlib.TdApi.InputMessagePhoto
-import org.drinkless.tdlib.TdApi.InputMessagePoll
-import org.drinkless.tdlib.TdApi.InputMessageReplyTo
-import org.drinkless.tdlib.TdApi.InputMessageReplyToExternalMessage
-import org.drinkless.tdlib.TdApi.InputMessageReplyToMessage
-import org.drinkless.tdlib.TdApi.InputMessageSticker
-import org.drinkless.tdlib.TdApi.InputMessageText
-import org.drinkless.tdlib.TdApi.InputMessageVideo
-import org.drinkless.tdlib.TdApi.InputSuggestedPostInfo
-import org.drinkless.tdlib.TdApi.InputTextQuote
-import org.drinkless.tdlib.TdApi.InternalLinkTypeVideoChat
-import org.drinkless.tdlib.TdApi.JoinChatByInviteLink
-import org.drinkless.tdlib.TdApi.LinkPreviewOptions
-import org.drinkless.tdlib.TdApi.MessageAnimatedEmoji
-import org.drinkless.tdlib.TdApi.MessageChatUpgradeTo
-import org.drinkless.tdlib.TdApi.MessageContact
-import org.drinkless.tdlib.TdApi.MessageContent
-import org.drinkless.tdlib.TdApi.MessageDice
-import org.drinkless.tdlib.TdApi.MessageDocument
-import org.drinkless.tdlib.TdApi.MessageLocation
-import org.drinkless.tdlib.TdApi.MessagePoll
-import org.drinkless.tdlib.TdApi.MessageProperties
-import org.drinkless.tdlib.TdApi.MessageReadDate
-import org.drinkless.tdlib.TdApi.MessageReadDateRead
-import org.drinkless.tdlib.TdApi.MessageSchedulingStateSendWhenOnline
-import org.drinkless.tdlib.TdApi.MessageSelfDestructType
-import org.drinkless.tdlib.TdApi.MessageSendOptions
-import org.drinkless.tdlib.TdApi.MessageSender
-import org.drinkless.tdlib.TdApi.MessageSenderUser
-import org.drinkless.tdlib.TdApi.MessageSticker
-import org.drinkless.tdlib.TdApi.MessageText
-import org.drinkless.tdlib.TdApi.MessageTopic
-import org.drinkless.tdlib.TdApi.MessageTopicDirectMessages
-import org.drinkless.tdlib.TdApi.MessageTopicForum
-import org.drinkless.tdlib.TdApi.MessageTopicThread
-import org.drinkless.tdlib.TdApi.MessageVenue
-import org.drinkless.tdlib.TdApi.MessageViewers
-import org.drinkless.tdlib.TdApi.NotificationSettingsScope
-import org.drinkless.tdlib.TdApi.PinChatMessage
-import org.drinkless.tdlib.TdApi.ReactionType
-import org.drinkless.tdlib.TdApi.ReadAllChatMentions
-import org.drinkless.tdlib.TdApi.ReadAllChatReactions
-import org.drinkless.tdlib.TdApi.RemoveChatActionBar
-import org.drinkless.tdlib.TdApi.RemoveFavoriteSticker
-import org.drinkless.tdlib.TdApi.ReplyMarkupInlineKeyboard
-import org.drinkless.tdlib.TdApi.ReplyMarkupShowKeyboard
-import org.drinkless.tdlib.TdApi.ReportChat
-import org.drinkless.tdlib.TdApi.ReportChatResult
-import org.drinkless.tdlib.TdApi.ScopeNotificationSettings
-import org.drinkless.tdlib.TdApi.SearchMessagesFilter
-import org.drinkless.tdlib.TdApi.SearchMessagesFilterAnimation
-import org.drinkless.tdlib.TdApi.SearchMessagesFilterAudio
-import org.drinkless.tdlib.TdApi.SearchMessagesFilterDocument
-import org.drinkless.tdlib.TdApi.SearchMessagesFilterPhoto
-import org.drinkless.tdlib.TdApi.SearchMessagesFilterPinned
-import org.drinkless.tdlib.TdApi.SearchMessagesFilterVideo
-import org.drinkless.tdlib.TdApi.SearchMessagesFilterVideoNote
-import org.drinkless.tdlib.TdApi.SearchMessagesFilterVoiceNote
-import org.drinkless.tdlib.TdApi.SecretChat
-import org.drinkless.tdlib.TdApi.SendChatAction
-import org.drinkless.tdlib.TdApi.SetChatDraftMessage
-import org.drinkless.tdlib.TdApi.SetChatMessageSender
-import org.drinkless.tdlib.TdApi.SetChatNotificationSettings
-import org.drinkless.tdlib.TdApi.SetDefaultBackground
-import org.drinkless.tdlib.TdApi.SetPollAnswer
-import org.drinkless.tdlib.TdApi.SharePhoneNumber
-import org.drinkless.tdlib.TdApi.Sticker
-import org.drinkless.tdlib.TdApi.StopPoll
-import org.drinkless.tdlib.TdApi.Supergroup
-import org.drinkless.tdlib.TdApi.SupergroupFullInfo
-import org.drinkless.tdlib.TdApi.ToggleChatDefaultDisableNotification
-import org.drinkless.tdlib.TdApi.UnpinAllChatMessages
-import org.drinkless.tdlib.TdApi.UnpinChatMessage
-import org.drinkless.tdlib.TdApi.UnreadReaction
-import org.drinkless.tdlib.TdApi.UserFullInfo
-import org.drinkless.tdlib.TdApi.UserStatus
-import org.thunderdog.challegram.BaseActivity
-import org.thunderdog.challegram.BuildConfig
-import org.thunderdog.challegram.Log
-import org.thunderdog.challegram.MainActivity
+import org.drinkless.tdlib.TdApi.*
+import org.thunderdog.challegram.*
 import org.thunderdog.challegram.R
-import org.thunderdog.challegram.U
 import org.thunderdog.challegram.component.MediaCollectorDelegate
 import org.thunderdog.challegram.component.attach.CustomItemAnimator
 import org.thunderdog.challegram.component.attach.MediaBottomFilesController.MusicEntry
@@ -247,40 +78,12 @@ import org.thunderdog.challegram.component.attach.MediaToReplacePickerManager
 import org.thunderdog.challegram.component.attach.MediaToReplacePickerManager.LocalPickedFile
 import org.thunderdog.challegram.component.attach.SponsoredMessagesInfoController
 import org.thunderdog.challegram.component.base.SettingView
-import org.thunderdog.challegram.component.chat.AttachLinearLayout
-import org.thunderdog.challegram.component.chat.AudioFile
-import org.thunderdog.challegram.component.chat.ChatBottomBarView
-import org.thunderdog.challegram.component.chat.ChatHeaderView
-import org.thunderdog.challegram.component.chat.ChatSearchMembersView
-import org.thunderdog.challegram.component.chat.CircleCounterBadgeView
-import org.thunderdog.challegram.component.chat.CommandKeyboardLayout
-import org.thunderdog.challegram.component.chat.CounterBadgeView
-import org.thunderdog.challegram.component.chat.EmojiToneHelper
-import org.thunderdog.challegram.component.chat.InlineResultsWrap
+import org.thunderdog.challegram.component.chat.*
 import org.thunderdog.challegram.component.chat.InlineResultsWrap.PickListener
-import org.thunderdog.challegram.component.chat.InputView
 import org.thunderdog.challegram.component.chat.InputView.SpanChangeListener
-import org.thunderdog.challegram.component.chat.InvisibleImageView
-import org.thunderdog.challegram.component.chat.JoinRequestsView
-import org.thunderdog.challegram.component.chat.MessageSenderButton
-import org.thunderdog.challegram.component.chat.MessageView
-import org.thunderdog.challegram.component.chat.MessageViewGroup
-import org.thunderdog.challegram.component.chat.MessagesHolder
-import org.thunderdog.challegram.component.chat.MessagesLayout
-import org.thunderdog.challegram.component.chat.MessagesManager
 import org.thunderdog.challegram.component.chat.MessagesManager.VideoScrollParameters
 import org.thunderdog.challegram.component.chat.MessagesSearchManagerMiddleware.SearchMessagesFilterTextPolyfill
-import org.thunderdog.challegram.component.chat.PinnedMessagesBar
-import org.thunderdog.challegram.component.chat.RaiseHelper
-import org.thunderdog.challegram.component.chat.ReplyBarView
-import org.thunderdog.challegram.component.chat.SilentButton
-import org.thunderdog.challegram.component.chat.StickerSuggestionAdapter
 import org.thunderdog.challegram.component.chat.TdlibSingleUnreadReactionsManager.UnreadSingleReactionListener
-import org.thunderdog.challegram.component.chat.TopBarView
-import org.thunderdog.challegram.component.chat.VoiceVideoButtonView
-import org.thunderdog.challegram.component.chat.WallpaperAdapter
-import org.thunderdog.challegram.component.chat.WallpaperRecyclerView
-import org.thunderdog.challegram.component.chat.WallpaperView
 import org.thunderdog.challegram.component.popups.MessageSeenController
 import org.thunderdog.challegram.component.popups.ModernActionedLayout
 import org.thunderdog.challegram.component.sticker.StickerSmallView
@@ -290,24 +93,8 @@ import org.thunderdog.challegram.config.Config
 import org.thunderdog.challegram.core.Background
 import org.thunderdog.challegram.core.Lang
 import org.thunderdog.challegram.core.Media
-import org.thunderdog.challegram.data.ContentPreview
-import org.thunderdog.challegram.data.InlineResult
-import org.thunderdog.challegram.data.InlineResultButton
-import org.thunderdog.challegram.data.InlineResultCommand
-import org.thunderdog.challegram.data.InlineResultCommon
-import org.thunderdog.challegram.data.InlineResultSticker
-import org.thunderdog.challegram.data.TD
-import org.thunderdog.challegram.data.TGAudio
-import org.thunderdog.challegram.data.TGBotStart
-import org.thunderdog.challegram.data.TGMessage
+import org.thunderdog.challegram.data.*
 import org.thunderdog.challegram.data.TGMessage.SelectableDelegate
-import org.thunderdog.challegram.data.TGMessageBotInfo
-import org.thunderdog.challegram.data.TGMessageLocation
-import org.thunderdog.challegram.data.TGMessageMedia
-import org.thunderdog.challegram.data.TGMessageSticker
-import org.thunderdog.challegram.data.TGSwitchInline
-import org.thunderdog.challegram.data.TGUser
-import org.thunderdog.challegram.data.ThreadInfo
 import org.thunderdog.challegram.filegen.PhotoGenerationInfo
 import org.thunderdog.challegram.filegen.VideoGenerationInfo
 import org.thunderdog.challegram.helper.BotHelper
@@ -318,127 +105,48 @@ import org.thunderdog.challegram.loader.ImageFile
 import org.thunderdog.challegram.loader.ImageGalleryFile
 import org.thunderdog.challegram.loader.ImageReader
 import org.thunderdog.challegram.loader.ImageStrictCache
-import org.thunderdog.challegram.mediaview.MediaSelectDelegate
-import org.thunderdog.challegram.mediaview.MediaSpoilerSendDelegate
-import org.thunderdog.challegram.mediaview.MediaViewController
+import org.thunderdog.challegram.mediaview.*
 import org.thunderdog.challegram.mediaview.MediaViewController.Args.Companion.fromGallery
 import org.thunderdog.challegram.mediaview.MediaViewController.Companion.openFromChat
-import org.thunderdog.challegram.mediaview.MediaViewDelegate
-import org.thunderdog.challegram.mediaview.MediaViewThumbLocation
-import org.thunderdog.challegram.mediaview.SliderView
 import org.thunderdog.challegram.mediaview.data.MediaItem
 import org.thunderdog.challegram.mediaview.data.MediaStack
-import org.thunderdog.challegram.navigation.ActivityResultHandler
-import org.thunderdog.challegram.navigation.BackHeaderButton
-import org.thunderdog.challegram.navigation.ComplexHeaderView
-import org.thunderdog.challegram.navigation.DoubleHeaderView
-import org.thunderdog.challegram.navigation.HeaderView
+import org.thunderdog.challegram.navigation.*
 import org.thunderdog.challegram.navigation.Menu
-import org.thunderdog.challegram.navigation.MenuMoreWrap
-import org.thunderdog.challegram.navigation.MoreDelegate
-import org.thunderdog.challegram.navigation.NavigationController
-import org.thunderdog.challegram.navigation.OptionsLayout
-import org.thunderdog.challegram.navigation.SelectDelegate
-import org.thunderdog.challegram.navigation.SettingsWrap
 import org.thunderdog.challegram.navigation.SettingsWrap.OnActionButtonClick
-import org.thunderdog.challegram.navigation.SettingsWrapBuilder
 import org.thunderdog.challegram.navigation.SettingsWrapBuilder.CustomSettingProcessor
-import org.thunderdog.challegram.navigation.TooltipOverlayView
 import org.thunderdog.challegram.navigation.TooltipOverlayView.TooltipBuilder
 import org.thunderdog.challegram.navigation.TooltipOverlayView.TooltipInfo
-import org.thunderdog.challegram.navigation.ViewController
-import org.thunderdog.challegram.navigation.ViewPagerController
-import org.thunderdog.challegram.navigation.ViewPagerHeaderViewCompact
-import org.thunderdog.challegram.navigation.ViewPagerTopView
 import org.thunderdog.challegram.player.RecordAudioVideoController.RecordStateListeners
 import org.thunderdog.challegram.support.RippleSupport
 import org.thunderdog.challegram.support.ViewSupport
-import org.thunderdog.challegram.telegram.ChatListener
-import org.thunderdog.challegram.telegram.EmojiMediaType
-import org.thunderdog.challegram.telegram.GlobalAccountListener
-import org.thunderdog.challegram.telegram.ListManager
-import org.thunderdog.challegram.telegram.MessageListManager
-import org.thunderdog.challegram.telegram.MessageThreadListener
-import org.thunderdog.challegram.telegram.NotificationSettingsListener
-import org.thunderdog.challegram.telegram.RightId
-import org.thunderdog.challegram.telegram.TGLegacyManager
+import org.thunderdog.challegram.telegram.*
 import org.thunderdog.challegram.telegram.TGLegacyManager.EmojiLoadListener
-import org.thunderdog.challegram.telegram.Tdlib
 import org.thunderdog.challegram.telegram.Tdlib.ChatMemberStatusChangeCallback
-import org.thunderdog.challegram.telegram.TdlibAccount
-import org.thunderdog.challegram.telegram.TdlibCache.BasicGroupDataChangeListener
-import org.thunderdog.challegram.telegram.TdlibCache.SecretChatDataChangeListener
-import org.thunderdog.challegram.telegram.TdlibCache.SupergroupDataChangeListener
-import org.thunderdog.challegram.telegram.TdlibCache.UserDataChangeListener
-import org.thunderdog.challegram.telegram.TdlibCache.UserStatusChangeListener
-import org.thunderdog.challegram.telegram.TdlibManager
+import org.thunderdog.challegram.telegram.TdlibCache.*
 import org.thunderdog.challegram.telegram.TdlibSettingsManager.DismissRequestsListener
-import org.thunderdog.challegram.telegram.TdlibUi
-import org.thunderdog.challegram.telegram.TdlibUi.ChatOpenParameters
-import org.thunderdog.challegram.telegram.TdlibUi.CustomLangPackResult
-import org.thunderdog.challegram.telegram.TdlibUi.SimpleSendCallback
-import org.thunderdog.challegram.telegram.TdlibUi.UrlOpenParameters
-import org.thunderdog.challegram.theme.ColorId
-import org.thunderdog.challegram.theme.ColorState
-import org.thunderdog.challegram.theme.TGBackground
-import org.thunderdog.challegram.theme.Theme
-import org.thunderdog.challegram.theme.ThemeManager
-import org.thunderdog.challegram.tool.Drawables
-import org.thunderdog.challegram.tool.Fonts
-import org.thunderdog.challegram.tool.Intents
-import org.thunderdog.challegram.tool.Keyboard
-import org.thunderdog.challegram.tool.Paints
-import org.thunderdog.challegram.tool.Screen
-import org.thunderdog.challegram.tool.Strings
-import org.thunderdog.challegram.tool.UI
-import org.thunderdog.challegram.tool.Views
+import org.thunderdog.challegram.telegram.TdlibUi.*
+import org.thunderdog.challegram.theme.*
+import org.thunderdog.challegram.tool.*
 import org.thunderdog.challegram.ui.camera.CameraAccessImageView
 import org.thunderdog.challegram.unsorted.Settings
 import org.thunderdog.challegram.unsorted.Settings.VideoModePreferenceListener
 import org.thunderdog.challegram.unsorted.Test
-import org.thunderdog.challegram.util.CancellableResultHandler
-import org.thunderdog.challegram.util.HapticMenuHelper
-import org.thunderdog.challegram.util.OptionDelegate
-import org.thunderdog.challegram.util.Permissions
-import org.thunderdog.challegram.util.SenderPickerDelegate
-import org.thunderdog.challegram.util.StringList
-import org.thunderdog.challegram.util.Unlockable
+import org.thunderdog.challegram.util.*
 import org.thunderdog.challegram.util.text.Text
 import org.thunderdog.challegram.util.text.TextColorSets
 import org.thunderdog.challegram.v.HeaderEditText
 import org.thunderdog.challegram.v.MessagesLayoutManager
 import org.thunderdog.challegram.v.MessagesRecyclerView
 import org.thunderdog.challegram.voip.VoIPLogs
-import org.thunderdog.challegram.widget.AvatarView
-import org.thunderdog.challegram.widget.CheckBoxView
-import org.thunderdog.challegram.widget.CircleButton
-import org.thunderdog.challegram.widget.CollapseListView
+import org.thunderdog.challegram.widget.*
 import org.thunderdog.challegram.widget.CollapseListView.TotalHeightChangeListener
 import org.thunderdog.challegram.widget.CollapseListView.ViewItem
-import org.thunderdog.challegram.widget.CustomTextView
-import org.thunderdog.challegram.widget.EmojiLayout
-import org.thunderdog.challegram.widget.EmojiPacksInfoView
-import org.thunderdog.challegram.widget.FillingSpace
-import org.thunderdog.challegram.widget.ForceTouchView
 import org.thunderdog.challegram.widget.ForceTouchView.ForceTouchContext
 import org.thunderdog.challegram.widget.ForceTouchView.PreviewDelegate
-import org.thunderdog.challegram.widget.KeyboardFrameLayout
-import org.thunderdog.challegram.widget.NoScrollTextView
-import org.thunderdog.challegram.widget.PopupLayout
-import org.thunderdog.challegram.widget.ProgressComponentView
-import org.thunderdog.challegram.widget.RippleRevealView
-import org.thunderdog.challegram.widget.SendButton
-import org.thunderdog.challegram.widget.SeparatorView
-import org.thunderdog.challegram.widget.ShadowView
-import org.thunderdog.challegram.widget.StickersSuggestionsLayout
-import org.thunderdog.challegram.widget.TextFormattingLayout
-import org.thunderdog.challegram.widget.TripleAvatarView
-import org.thunderdog.challegram.widget.ViewPager
-import org.thunderdog.challegram.widget.WallpaperParametersView
 import org.thunderdog.challegram.widget.WallpaperParametersView.WallpaperParametersListener
 import org.thunderdog.challegram.widget.rtl.RtlViewPager
-import tgx.td.MessageId
 import tgx.td.MAX_MESSAGE_GROUP_SIZE
+import tgx.td.MessageId
 import tgx.td.assertCanSendMessageToUserResult_15fb1d0f
 import tgx.td.assertChatActionBar_eedc82ed
 import tgx.td.assertInputMessageReplyTo_acef6f3a
@@ -481,16 +189,13 @@ import tgx.td.toUserId
 import tgx.td.ui.reportChatSponsoredMessage
 import tgx.td.unsupported
 import java.io.File
-import java.util.Arrays
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.contracts.ExperimentalContracts
 import kotlin.math.max
 import kotlin.math.min
-import me.vkryl.android.DECELERATE_INTERPOLATOR
 
 @OptIn(ExperimentalContracts::class)
 open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<MessagesController.Arguments?>(context, tdlib), Menu, Unlockable,
@@ -3274,12 +2979,12 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 if (messageCount > 0) {
                     for (i in first..last) {
                         if (i >= 0 && i < messageCount && MessagesHolder.isMessageType(adapter.getItemViewType(i)) && adapter.getItem(i)
-                                .getId() == playingMessageId
+                                .id == playingMessageId
                         ) {
                             val view = manager.findViewByPosition(i)
                             if (view is MessageViewGroup) {
                                 val msg = view.getMessageView().getMessage()
-                                if (msg != null && msg.getId() == playingMessageId) {
+                                if (msg != null && msg.id == playingMessageId) {
                                     targetView = view
                                     break
                                 }
@@ -3810,7 +3515,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             if (selectedMessageIds != null && selectedMessageIds!!.size() == 1) {
                 val messageId = selectedMessageIds!!.keyAt(0)
                 val m = selectedMessageIds!!.valueAt(0)
-                val message = m.getMessage(messageId)
+                val message = m.getMessage(messageId)!!
                 val properties = m.lastMessageProperties(messageId)
                 return MessageWithProperties(message, properties)
             }
@@ -3984,7 +3689,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                             for (i in selectedMessageIds!!.size() - 1 downTo 0) {
                                 val messageId = selectedMessageIds!!.keyAt(i)
                                 tdlib.send<TdApi.Ok?>(
-                                    EditMessageSchedulingState(selectedMessageIds!!.valueAt(i).getChatId(), messageId, null),
+                                    EditMessageSchedulingState(selectedMessageIds!!.valueAt(i).chatId, messageId, null),
                                     tdlib.typedOkHandler()
                                 )
                             }
@@ -4055,7 +3760,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 for (i in 0..<size) {
                     val messageId = selectedMessageIds!!.keyAt(i)
                     val m = selectedMessageIds!!.valueAt(i)
-                    val message = m.getMessage(messageId)
+                    val message = m.getMessage(messageId)!!
                     val properties = m.lastMessageProperties(messageId)
                     messages[i] = MessageWithProperties(message, properties)
                 }
@@ -4068,7 +3773,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 var lastChatId: Long = 0
                 for (i in 0..<selectedMessageIds!!.size()) {
                     val messageId = selectedMessageIds!!.keyAt(i)
-                    val message = selectedMessageIds!!.valueAt(i).getMessage(messageId)
+                    val message = selectedMessageIds!!.valueAt(i).getMessage(messageId)!!
                     if (lastChatId != message.chatId || lastMediaGroupId != message.mediaAlbumId || lastMediaGroupId == 0L) {
                         lastChatId = message.chatId
                         lastMediaGroupId = message.mediaAlbumId
@@ -4745,20 +4450,20 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         val b = SpannableStringBuilder()
         if (chat != null) {
             val isChannel = tdlib.isChannel(chat!!.id)
-            if (!isChannel && msg.getMessage().content != null) {
-                when (msg.getMessage().content.getConstructor()) {
+            if (!isChannel && msg.message.content != null) {
+                when (msg.message.content.getConstructor()) {
                     MessageSticker.CONSTRUCTOR -> {
-                        val from = tdlib.messageAuthor(msg.getMessage(), true, true)
+                        val from = tdlib.messageAuthor(msg.message, true, true)
                         if (!isEmpty(from)) {
                             b.append(from)
                             b.append(": ")
                         }
-                        val contentPreview = ContentPreview.getChatListPreview(tdlib, msg.getChatId(), msg.getMessage(), true)
+                        val contentPreview = ContentPreview.getChatListPreview(tdlib, msg.chatId, msg.message, true)
                         b.append(contentPreview.buildText(false))
                     }
 
                     MessageDice.CONSTRUCTOR -> {
-                        val emoji = (msg.getMessage().content as MessageDice).emoji
+                        val emoji = (msg.message.content as MessageDice).emoji
                         b.append(
                             Lang.getString(
                                 if (ContentPreview.EMOJI_DART.textRepresentation == emoji) R.string.SendDartHint else if (ContentPreview.EMOJI_DICE.textRepresentation == emoji) R.string.SendDiceHint else R.string.SendUnknownDiceHint,
@@ -4768,29 +4473,29 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                     }
                 }
             }
-            if (isChannel && !msg.isScheduled()) {
-                if (msg.getViewCount() > 0) {
+            if (isChannel && !msg.isScheduled) {
+                if (msg.viewCount > 0) {
                     if (b.length > 0) {
                         b.append(", ")
                     }
-                    b.append(Lang.pluralBold(R.string.xViews, msg.getViewCount().toLong()))
+                    b.append(Lang.pluralBold(R.string.xViews, msg.viewCount.toLong()))
                 }
-                if (msg.getForwardCount() > 0) {
+                if (msg.forwardCount > 0) {
                     if (b.length > 0) {
                         b.append(", ")
                     }
-                    b.append(Lang.pluralBold(R.string.StatsXShared, msg.getForwardCount().toLong()))
+                    b.append(Lang.pluralBold(R.string.StatsXShared, msg.forwardCount.toLong()))
                 }
-                if (msg.getMessageReactions().getTotalCount() > 0) {
+                if (msg.messageReactions!!.getTotalCount() > 0) {
                     if (b.length > 0) {
                         b.append(", ")
                     }
-                    b.append(Lang.pluralBold(R.string.xReacted, msg.getMessageReactions().getTotalCount().toLong()))
+                    b.append(Lang.pluralBold(R.string.xReacted, msg.messageReactions!!.getTotalCount().toLong()))
                 }
             }
         }
-        if (msg.isFailed()) {
-            val errors = msg.getFailureMessages()
+        if (msg.isFailed) {
+            val errors = msg.failureMessages
             if (errors != null) {
                 if (b.length > 0) {
                     // b.append("\n");
@@ -4800,7 +4505,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             }
         }
         if (msg.isSponsoredMessage()) {
-            val additionalInfo = msg.getSponsoredMessage().additionalInfo
+            val additionalInfo = msg.sponsoredMessage!!.additionalInfo
             if (!isEmpty(additionalInfo)) {
                 if (b.length > 0) {
                     b.append('\n')
@@ -4813,7 +4518,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 // b.append("\n\n");
                 b.append(". ")
             }
-            val senderId = msg.getMessage().senderId
+            val senderId = msg.message.senderId
             val resId: Int
             if (tdlib.cache().senderBot(senderId)) {
                 resId = R.string.RestrictSavingBotInfo
@@ -4834,7 +4539,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 val shown = AtomicBoolean(false)
                 val inject = AtomicReference<RunnableData<MessageReadDate?>?>()
                 msg.checkReadDate(RunnableBool { expectAgain: Boolean ->
-                    val readDate = msg.getReadDate()
+                    val readDate = msg.readDate
                     if (shown.getAndSet(true)) {
                         if (!expectAgain && readDate != null && readDate.getConstructor() == MessageReadDateRead.CONSTRUCTOR) {
                             val act = inject.get()
@@ -4960,14 +4665,14 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
 
     private fun patchUsedEmojiPacks(layout: PopupLayout, messageContext: MessageContext) {
         val message = messageContext.message
-        val emojiPackIds = message.getUniqueEmojiPackIdList()
+        val emojiPackIds = message.uniqueEmojiPackIdList
         if (emojiPackIds.size == 0) {
             return
         }
 
         val optionsLayout = layout.getChildAt(1) as OptionsLayout
         val emojiPacksInfoView = EmojiPacksInfoView(layout.getContext(), this, tdlib)
-        emojiPacksInfoView.update(message.getFirstEmojiId(), emojiPackIds, object : ClickableSpan() {
+        emojiPacksInfoView.update(message.firstEmojiId, emojiPackIds, object : ClickableSpan() {
             override fun onClick(widget: View) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
                 tdlib.ui().showStickerSets(this@MessagesController, emojiPackIds, true, null)
@@ -4979,7 +4684,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
 
     private fun patchReadReceiptsOptions(layout: PopupLayout, messageContext: MessageContext) {
         val message = messageContext.message
-        if (!message.canGetViewers() || messageContext.disableMetadata || (message.isUnread() && !message.noUnread()) || (layout.getChildAt(1) !is OptionsLayout)) {
+        if (!message.canGetViewers() || messageContext.disableMetadata || (message.isUnread && !message.noUnread()) || (layout.getChildAt(1) !is OptionsLayout)) {
             return
         }
 
@@ -5060,7 +4765,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             isSubtitleVisible.setValue(true, true)
         }
 
-        tdlib.client().send(GetMessageViewers(message.getChatId(), message.getId()), Client.ResultHandler { obj: TdApi.Object? ->
+        tdlib.client().send(GetMessageViewers(message.chatId, message.id), Client.ResultHandler { obj: TdApi.Object? ->
             if (obj!!.getConstructor() != MessageViewers.CONSTRUCTOR) return@ResultHandler
             runOnUiThreadOptional(Runnable {
                 val viewers = obj as MessageViewers
@@ -5070,7 +4775,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                     val viewer = viewers.viewers[0]
                     receiptText.setText(tdlib.senderName(MessageSenderUser(viewer.userId)))
                     if (viewer.viewDate != 0) {
-                        val viewedText = TGUser.getActionDateStatus(tdlib, viewer.viewDate, message.getMessage())
+                        val viewedText = TGUser.getActionDateStatus(tdlib, viewer.viewDate, message.message)
                         viewSubtitle.runWithData(viewedText)
                     }
                 } else {
@@ -5112,8 +4817,8 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             return false
         }
         val str: String?
-        if (tdlib.isMultiChat(getChatId()) && msg.getSender().isBot()) {
-            str = command + '@' + msg.getSender().getUsername() + ' '
+        if (tdlib.isMultiChat(getChatId()) && msg.sender.isBot()) {
+            str = command + '@' + msg.sender.getUsername() + ' '
         } else {
             str = command + ' '
         }
@@ -5147,7 +4852,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         for (i in 0..<size) {
             val messageId = selectedMessageIds!!.keyAt(i)
             val msg = selectedMessageIds!!.valueAt(i)
-            val message = msg.getMessage(messageId)
+            val message = msg.getMessage(messageId)!!
             val properties = msg.lastMessageProperties(messageId)
             messages[i] = MessageWithProperties(message, properties)
         }
@@ -5355,7 +5060,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 }
             }
             if (msg.replyTo != null) {
-                val inReply = m.getInReplyTo()
+                val inReply = m.inReplyTo
                 if (!isEmpty(inReply)) {
                     b.append("\n[")
                     b.append(Lang.getString(R.string.InReplyToX, inReply))
@@ -5364,7 +5069,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             }
             if (msg.forwardInfo != null) {
                 b.append("\n[ ")
-                b.append(Lang.getString(R.string.ForwardedFromX, m.getSourceName()))
+                b.append(Lang.getString(R.string.ForwardedFromX, m.sourceName))
                 b.append(" ]")
             }
             val text = msg.content.textOrCaption()
@@ -5397,7 +5102,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             return m!!.message.canBeSaved && TD.canCopyText(m.message)
         }
         for (i in 0..<selectedMessageIds!!.size()) {
-            val message = selectedMessageIds!!.valueAt(i).getMessage(selectedMessageIds!!.keyAt(i))
+            val message = selectedMessageIds!!.valueAt(i).getMessage(selectedMessageIds!!.keyAt(i))!!
             if (!message.canBeSaved) {
                 return false
             }
@@ -5492,7 +5197,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 val message = msg.getMessage(selectedMessageIds!!.keyAt(i))
                 if (TD.canDeleteFiles(tdlib(), message)) {
                     canClearCache++
-                    hasMergedMessages = hasMergedMessages || msg.getCombinedMessageCount() > 0
+                    hasMergedMessages = hasMergedMessages || msg.combinedMessageCount > 0
                 }
             }
             return canClearCache > 1 || hasMergedMessages
@@ -5544,10 +5249,10 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     fun selectAllMessages(msg: TGMessage, pivotX: Float, pivotY: Float) {
-        val ids = LongSet(msg.getMessageCount())
+        val ids = LongSet(msg.messageCount)
         msg.getIds(ids)
         val size = ids.size()
-        val unselect = msg.isCompletelySelected()
+        val unselect = msg.isCompletelySelected
         var counterSet = false
         for (messageId in ids) {
             var ok = false
@@ -5692,7 +5397,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 val i = selectedMessageIds!!.indexOfKey(messageId)
                 if (i >= 0) {
                     val msg = selectedMessageIds!!.valueAt(i)
-                    if (msg != null && msg.getChatId() == chatId) {
+                    if (msg != null && msg.chatId == chatId) {
                         selectedMessageIds!!.setValueAt(i, container!!)
                         return true
                     }
@@ -5787,19 +5492,19 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 tdlib.ui().showStickerSets(this@MessagesController, (itemView as EmojiPacksInfoView).getEmojiPacksIds(), true, null)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageApplyLocalization) {
-                if (selectedMessage.getMessage().content.getConstructor() == MessageDocument.CONSTRUCTOR) {
-                    val document = (selectedMessage.getMessage().content as MessageDocument).document
+                if (selectedMessage.message.content.getConstructor() == MessageDocument.CONSTRUCTOR) {
+                    val document = (selectedMessage.message.content as MessageDocument).document
                     tdlib.ui().readCustomLanguage(
                         this,
                         document,
-                        RunnableData { langPack: CustomLangPackResult? -> tdlib.ui().showLanguageInstallPrompt(this, langPack, selectedMessage.getMessage()) },
+                        RunnableData { langPack: CustomLangPackResult? -> tdlib.ui().showLanguageInstallPrompt(this, langPack, selectedMessage.message) },
                         null
                     )
                 }
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageInstallTheme) {
-                if (selectedMessage.getMessage().content.getConstructor() == MessageDocument.CONSTRUCTOR) {
-                    val document = (selectedMessage.getMessage().content as MessageDocument).document
+                if (selectedMessage.message.content.getConstructor() == MessageDocument.CONSTRUCTOR) {
+                    val document = (selectedMessage.message.content as MessageDocument).document
                     tdlib.ui().readCustomTheme(this, document, null, null)
                 }
                 return@OptionDelegate true
@@ -5812,8 +5517,8 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageCopyLink) {
                 tdlib.getMessageLink(
-                    selectedMessage.getNewestMessage(),
-                    selectedMessage.getMessageCount() > 1,
+                    selectedMessage.newestMessage,
+                    selectedMessage.messageCount > 1,
                     messageThread != null,
                     RunnableData { link: Tdlib.MessageLink? ->
                         UI.copyText(
@@ -5823,11 +5528,11 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                     })
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageRetractVote) {
-                val message = selectedMessage.getMessage()
+                val message = selectedMessage.message
                 tdlib.send<TdApi.Ok?>(SetPollAnswer(message.chatId, message.id, null), tdlib.typedOkHandler())
                 return@OptionDelegate true
             } else if (id == R.id.btn_messagePollStop) {
-                val message = selectedMessage.getMessage()
+                val message = selectedMessage.message
                 val poll = (message.content as MessagePoll).poll
                 val isQuiz = poll.type.getConstructor() == TdApi.PollTypeQuiz.CONSTRUCTOR
                 showOptions(
@@ -5849,21 +5554,21 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 (selectedMessage as TGMessageLocation).stopLiveLocation()
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageAddContact) {
-                val contact = (selectedMessage.getMessage().content as MessageContact).contact
+                val contact = (selectedMessage.message.content as MessageContact).contact
                 tdlib.ui().addContact(this, contact)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageCallContact) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
-                val contact = (selectedMessage.getMessage().content as MessageContact).contact
+                val contact = (selectedMessage.message.content as MessageContact).contact
                 showCallOptions(contact.phoneNumber, contact.userId)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageResend) {
-                tdlib.resendMessages(selectedMessage.getChatId(), selectedMessage.getIds())
+                tdlib.resendMessages(selectedMessage.chatId, selectedMessage.ids)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageSendNow) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
                 if (!showRestriction(null, tdlib.getSlowModeRestrictionText(getChatId()))) {
-                    tdlib.send<TdApi.Ok?>(EditMessageSchedulingState(getChatId(), selectedMessage.getId(), null), tdlib.typedOkHandler())
+                    tdlib.send<TdApi.Ok?>(EditMessageSchedulingState(getChatId(), selectedMessage.id, null), tdlib.typedOkHandler())
                 }
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageReschedule) {
@@ -5871,7 +5576,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 tdlib.ui().showScheduleOptions(this, getChatId(), false, SimpleSendCallback { sendOptions: MessageSendOptions?, disableMarkdown: Boolean ->
                     if (sendOptions!!.schedulingState != null) {
                         tdlib.send<TdApi.Ok?>(
-                            EditMessageSchedulingState(getChatId(), selectedMessage.getId(), sendOptions.schedulingState),
+                            EditMessageSchedulingState(getChatId(), selectedMessage.id, sendOptions.schedulingState),
                             tdlib.typedOkHandler()
                         )
                     }
@@ -5881,16 +5586,16 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 selectedMessage.openSourceMessage()
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageShowInChat) {
-                val chatId = selectedMessage.getChatId()
-                val messageId = selectedMessage.getSmallestId()
+                val chatId = selectedMessage.chatId
+                val messageId = selectedMessage.smallestId
                 val otherMessageIds = selectedMessage.getOtherMessageIds(messageId)
                 tdlib.ui().openMessage(this, chatId, MessageId(chatId, messageId, otherMessageIds), selectedMessage.openParameters())
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageShowInChatSearch) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
                 if (inOnlyFoundMode()) {
-                    val chatId = selectedMessage.getChatId()
-                    val messageId = selectedMessage.getSmallestId()
+                    val chatId = selectedMessage.chatId
+                    val messageId = selectedMessage.smallestId
                     val otherMessageIds = selectedMessage.getOtherMessageIds(messageId)
                     manager!!.setHighlightMessageId(MessageId(chatId, messageId), MessagesManager.HIGHLIGHT_MODE_NORMAL)
                     onSetSearchFilteredShowMode(false)
@@ -5898,7 +5603,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageDirections) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
-                val content = selectedMessage.getMessage().content
+                val content = selectedMessage.message.content
                 when (content.getConstructor()) {
                     MessageVenue.CONSTRUCTOR -> {
                         val venue = (content as MessageVenue).venue
@@ -5913,26 +5618,26 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageFoursquare) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
-                val venueId = (selectedMessage.getMessage().content as MessageVenue).venue.id
+                val venueId = (selectedMessage.message.content as MessageVenue).venue.id
                 tdlib.ui().openUrl(this, "https://foursquare.com/v/" + venueId, selectedMessage.openParameters())
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageCall) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
-                tdlib.context().calls().makeCall(this, tdlib.calleeUserId(selectedMessage.getMessage()), null)
+                tdlib.context().calls().makeCall(this, tdlib.calleeUserId(selectedMessage.message), null)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageShareCallLogs) {
                 val logFiles = selectedMessageTag as VoIPLogs.Pair?
                 tdlib.ui().shareCallLogs(this, logFiles, true)
             } else if (id == R.id.btn_messageDelete) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
-                tdlib.ui().showDeleteOptions(this, selectedMessage.getAllMessagesAndProperties(), null)
+                tdlib.ui().showDeleteOptions(this, selectedMessage.allMessagesAndProperties, null)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageReport) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
                 if (selectedMessage.isSponsoredMessage()) {
-                    this.reportChatSponsoredMessage<Arguments?>(tdlib, getChatId(), selectedMessage.getSponsoredMessage())
+                    this.reportChatSponsoredMessage<Arguments?>(tdlib, getChatId(), selectedMessage.sponsoredMessage!!)
                 } else {
-                    reportChat(selectedMessage.getAllMessagesAndProperties(), null)
+                    reportChat(selectedMessage.allMessagesAndProperties, null)
                 }
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageSelect) {
@@ -5940,20 +5645,20 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageViewList) { //FIXME?
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
-                foundMessageId = MessageId(selectedMessage.getMessage().chatId, selectedMessage.getMessage().id)
+                foundMessageId = MessageId(selectedMessage.message.chatId, selectedMessage.message.id)
                 searchFromUserMessageId = foundMessageId
                 manager!!.setHighlightMessageId(foundMessageId, MessagesManager.HIGHLIGHT_MODE_NORMAL)
-                viewMessagesFromSender(selectedMessage.getMessage().senderId, true)
+                viewMessagesFromSender(selectedMessage.message.senderId, true)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageRestrictMember) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
                 val c = EditRightsController(context, tdlib)
                 c.setArguments(
                     EditRightsController.Args(
-                        selectedMessage.getChatId(),
-                        selectedMessage.getMessage().senderId,
+                        selectedMessage.chatId,
+                        selectedMessage.message.senderId,
                         true,
-                        tdlib.chatStatus(selectedMessage.getChatId())!!,
+                        tdlib.chatStatus(selectedMessage.chatId)!!,
                         selectedMessageSender
                     )
                 )
@@ -5961,11 +5666,11 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageBlockUser) {
                 if (selectedMessageSender != null) {
-                    tdlib.ui().kickMember(this, selectedMessage.getChatId(), selectedMessage.getMessage().senderId, selectedMessageSender.status)
+                    tdlib.ui().kickMember(this, selectedMessage.chatId, selectedMessage.message.senderId, selectedMessageSender.status)
                 }
             } else if (id == R.id.btn_messageUnblockMember) {
                 if (selectedMessageSender != null) {
-                    tdlib.ui().unblockMember(this, selectedMessage.getChatId(), selectedMessage.getMessage().senderId, selectedMessageSender.status)
+                    tdlib.ui().unblockMember(this, selectedMessage.chatId, selectedMessage.message.senderId, selectedMessageSender.status)
                 }
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageMore) {
@@ -5973,13 +5678,13 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 val ids = IntList(3)
                 val icons = IntList(3)
                 val strings = StringList(3)
-                val chatId = selectedMessage.getChatId()
-                if (isMultiChat(chatId) && !tdlib.isChannel(chatId) && TD.isAdmin(tdlib.chatStatus(chatId)) && selectedMessage.getMessage().senderId.getSenderId() != chatId) {
-                    val senderId = selectedMessage.getMessage().senderId
+                val chatId = selectedMessage.chatId
+                if (isMultiChat(chatId) && !tdlib.isChannel(chatId) && TD.isAdmin(tdlib.chatStatus(chatId)) && selectedMessage.message.senderId.getSenderId() != chatId) {
+                    val senderId = selectedMessage.message.senderId
                     tdlib.send<ChatMember?>(GetChatMember(chatId, senderId), Tdlib.ResultHandler { otherMember: ChatMember?, error: TdApi.Error? ->
                         runOnUiThreadOptional(
                             Runnable {
-                                if (!selectedMessage.isDestroyed()) {
+                                if (!selectedMessage.isDestroyed) {
                                     val tag = MessageView.fillMessageOptions(this, selectedMessage, otherMember, ids, icons, strings, true)
                                     if (!ids.isEmpty()) {
                                         showMessageOptions(selectedMessage, ids.get(), strings.get(), icons.get(), tag, otherMember, true)
@@ -5999,14 +5704,14 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 (selectedMessage as TGMessageSticker).openStickerSet()
             } else if (id == R.id.btn_messageFavoriteContent || id == R.id.btn_messageUnfavoriteContent) {
                 val isFavorite = id == R.id.btn_messageFavoriteContent
-                val fileId = (selectedMessage.getMessage().content as MessageSticker).sticker.sticker.id
+                val fileId = (selectedMessage.message.content as MessageSticker).sticker.sticker.id
                 val inputFile: TdApi.InputFile = InputFileId(fileId)
                 tdlib.send<TdApi.Ok?>(if (isFavorite) AddFavoriteSticker(inputFile) else RemoveFavoriteSticker(inputFile), tdlib.typedOkHandler())
             } else if (id == R.id.btn_messageUnpin || id == R.id.btn_messagePin) {
                 pinUnpinMessage(selectedMessage, id == R.id.btn_messagePin)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageReply) {
-                val message = selectedMessage.getNewestMessage()
+                val message = selectedMessage.newestMessage
                 selectedMessage.getMessageProperties(message.id, RunnableData { properties: MessageProperties? ->
                     runOnUiThreadOptional(Runnable {
                         if (properties != null) {
@@ -6023,7 +5728,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 selectedMessage.openMessageThread()
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageReplyWithDice) {
-                sendDice(itemView, (selectedMessage.getMessage().content as MessageDice).emoji)
+                sendDice(itemView, (selectedMessage.message.content as MessageDice).emoji)
                 return@OptionDelegate true
             } else if (id == R.id.btn_copyTranslation || id == R.id.btn_messageCopy) {
                 if (!selectedMessage.canBeSaved()) {
@@ -6036,9 +5741,9 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                     message = selectedMessage.getMessage(messageId)
                 }
                 if (message == null) {
-                    message = selectedMessage.getNewestMessage()
+                    message = selectedMessage.newestMessage
                 }
-                val text = if (id == R.id.btn_copyTranslation) selectedMessage.getTranslatedText() else message.content.textOrCaption()
+                val text = if (id == R.id.btn_copyTranslation) selectedMessage.translatedText else message!!.content.textOrCaption()
                 if (text != null) UI.copyText(TD.toCopyText(text), R.string.CopiedText)
                 return@OptionDelegate true
             } else if (id == R.id.btn_messageEdit) {
@@ -6048,7 +5753,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                     message = selectedMessage.getMessage(messageId)
                 }
                 if (message == null) {
-                    message = selectedMessage.getNewestMessage()
+                    message = selectedMessage.newestMessage
                 }
                 val editingMessage = message
                 val properties = selectedMessage.lastMessageProperties(editingMessage!!.id)
@@ -6057,7 +5762,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             } else if (id == R.id.btn_messageShare) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
                 if (selectedMessage.canBeForwarded()) {
-                    shareMessages(selectedMessage.getAllMessages(), false)
+                    shareMessages(selectedMessage.allMessages, false)
                 }
                 return@OptionDelegate true
             } else if (id == R.id.btn_chatTranslate) {
@@ -6087,12 +5792,12 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return@OptionDelegate true
             } else if (id == R.id.btn_openIn) {
                 if (selectedMessageTag != null) {
-                    val document = (selectedMessage.getMessage().content as MessageDocument).document
+                    val document = (selectedMessage.message.content as MessageDocument).document
                     U.openFile(this, U.getFileName(document.document.local.path), File(document.document.local.path), document.mimeType, 0)
                 }
                 return@OptionDelegate true
             } else if (id == R.id.btn_addToPlaylist) {
-                TdlibManager.instance().player().addToPlayList(selectedMessage.getMessage())
+                TdlibManager.instance().player().addToPlayList(selectedMessage.message)
                 return@OptionDelegate true
             } else if (id == R.id.btn_downloadFile) {
                 if (!selectedMessage.canBeSaved()) {
@@ -6112,7 +5817,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return@OptionDelegate true
             } else if (id == R.id.btn_viewStatistics) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
-                val messages = selectedMessage.getAllMessages()
+                val messages = selectedMessage.allMessages
                 val statsController = MessageStatisticsController(context, tdlib)
                 if (messages.size == 1) {
                     statsController.setArguments(MessageStatisticsController.Args(messages[0]!!.chatId, messages[0]))
@@ -6126,7 +5831,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 if (selectedMessageTag != null) {
                     TD.deleteFiles(this, selectedMessageTag as MutableList<TD.DownloadedFile?>, null)
                 } else {
-                    val messages = selectedMessage.getAllMessages()
+                    val messages = selectedMessage.allMessages
                     val files = SparseArrayCompat<TdApi.File?>(messages.size)
                     for (message in messages) {
                         val filesList = TD.getFiles(message)
@@ -6145,7 +5850,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return@OptionDelegate true
             } else if (id == R.id.btn_stickerSetInfo) {
                 cancelSheduledKeyboardOpeningAndHideAllKeyboards()
-                val content = selectedMessage.getMessage().content
+                val content = selectedMessage.message.content
                 if (content.getConstructor() == MessageSticker.CONSTRUCTOR) {
                     val sticker = content as MessageSticker
                     tdlib.ui().showStickerSet(this, sticker.sticker.setId, null)
@@ -7469,7 +7174,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return
             }
         }
-        tdlib().ui().openMessage(this, msg.getChatId(), msg.toMessageId(), null)
+        tdlib().ui().openMessage(this, msg.chatId, msg.toMessageId(), null)
     }
 
     private fun resetEditState() {
@@ -8284,7 +7989,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
 
     // pinned messages
     private fun pinUnpinMessage(m: TGMessage, pin: Boolean) {
-        val chatId = m.getMessage().chatId
+        val chatId = m.message.chatId
         if (chatId == 0L) {
             return
         }
@@ -8298,7 +8003,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             return
         }
         if (tdlib.isSelfChat(getChatId())) {
-            tdlib.send<TdApi.Ok?>(PinChatMessage(chatId, m.getSmallestId(), false, false), tdlib.typedOkHandler())
+            tdlib.send<TdApi.Ok?>(PinChatMessage(chatId, m.smallestId, false, false), tdlib.typedOkHandler())
             return
         }
         val hintRes: Int
@@ -8332,7 +8037,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                     val isUserChat = isUserChat(chatId)
                     val disableNotification = !isUserChat && !checkbox
                     val onlyForSelf = isUserChat && !checkbox
-                    tdlib.send<TdApi.Ok?>(PinChatMessage(chatId, m.getSmallestId(), disableNotification, onlyForSelf), tdlib.typedOkHandler())
+                    tdlib.send<TdApi.Ok?>(PinChatMessage(chatId, m.smallestId, disableNotification, onlyForSelf), tdlib.typedOkHandler())
                 })
                 .setRawItems(arrayOf<ListItem>(item)).setSaveStr(R.string.Pin)
         )
@@ -13116,7 +12821,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         }
 
         @JvmStatic val slideBackBound: Int
-            get() = TGMessage.getContentLeft()
+            get() = TGMessage.contentLeft
 
         private var shownTutorials: HashSet<String?>? = null
 

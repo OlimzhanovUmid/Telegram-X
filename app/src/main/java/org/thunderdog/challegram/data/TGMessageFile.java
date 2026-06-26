@@ -179,7 +179,7 @@ public class TGMessageFile extends TGMessage {
     private int calculateLastLineWidth () {
       if (captionWrapper != null) {
         if (captionWrapper.getLastLineIsRtl() != Lang.rtl()) {
-          return BOTTOM_LINE_EXPAND_HEIGHT;
+          return bottomLineContentWidth;
         }
         return captionWrapper.getLastLineWidth();
       } else {

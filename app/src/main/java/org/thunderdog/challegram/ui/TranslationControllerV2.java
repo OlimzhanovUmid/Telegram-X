@@ -205,7 +205,7 @@ public class TranslationControllerV2 extends BottomSheetViewController.BottomShe
       if (forwardInfo != null) {
         senderTextView.setText(forwardInfo.getAuthorName());
       } else {
-        senderTextView.setText(message.getSender().getName());
+        senderTextView.setText(message.sender.getName());
       }
       linearLayout.addView(senderTextView, LayoutHelper.createLinear(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 2, Gravity.LEFT | Gravity.CENTER_VERTICAL));
 

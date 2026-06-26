@@ -215,7 +215,7 @@ public class ReactionsSelectorRecyclerView extends RecyclerView {
     public void onBindViewHolder (@NonNull ReactionHolder holder, int position) {
       TdApi.ReactionType reactionType = reactions[position].type;
       TGReaction reaction = tdlib.getReaction(reactionType);
-      TdApi.MessageReaction tdReaction = message.getMessageReactions().getTdMessageReaction(reactionType);
+      TdApi.MessageReaction tdReaction = message.messageReactions.getTdMessageReaction(reactionType);
       ReactionView view = (ReactionView) holder.itemView;
       if (reaction == null) return;
 

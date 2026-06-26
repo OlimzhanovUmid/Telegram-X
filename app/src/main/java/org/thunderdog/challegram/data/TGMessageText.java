@@ -345,7 +345,7 @@ public class TGMessageText extends TGMessage {
 
   @Override
   protected int getBubbleContentPadding () {
-    return xBubblePadding + xBubblePaddingSmall;
+    return bubbleContentPadding + xBubblePaddingSmall;
   }
 
   private int maxWidth;
@@ -581,7 +581,7 @@ public class TGMessageText extends TGMessage {
       // TODO: support for rtl <-> non-rtl transition
       return Math.round(lastLineWidth.get());
     }
-    return BOTTOM_LINE_EXPAND_HEIGHT;
+    return bottomLineContentWidth;
   }
 
   @Override
@@ -606,8 +606,8 @@ public class TGMessageText extends TGMessage {
   protected float getIntermediateBubbleExpandFactor () {
     int textLastLineWidth = calculateTextLastLineWidth();
     int linkPreviewLastLineWidth = linkPreview != null ? linkPreview.getLastLineWidth() : textLastLineWidth;
-    float fromExpandFactor = linkPreviewLastLineWidth == BOTTOM_LINE_EXPAND_HEIGHT ? 1f : 0f;
-    float toExpandFactor = textLastLineWidth == BOTTOM_LINE_EXPAND_HEIGHT ? 1f : 0f;
+    float fromExpandFactor = linkPreviewLastLineWidth == bottomLineContentWidth ? 1f : 0f;
+    float toExpandFactor = textLastLineWidth == bottomLineContentWidth ? 1f : 0f;
     return MathUtils.fromTo(fromExpandFactor, toExpandFactor, linkPreviewAboveText.getFloatValue());
   }
 
@@ -621,7 +621,7 @@ public class TGMessageText extends TGMessage {
     } else if (factor == 0f) {
       return linkPreviewLastLineWidth;
     }
-    int fromLastLineWidth = linkPreviewLastLineWidth == BOTTOM_LINE_EXPAND_HEIGHT ? linkPreview.getWidth() - bubbleTimePartWidth : linkPreviewLastLineWidth;
+    int fromLastLineWidth = linkPreviewLastLineWidth == bottomLineContentWidth ? linkPreview.getWidth() - bubbleTimePartWidth : linkPreviewLastLineWidth;
     int toLastLineWidth = /*textLastLineWidth == BOTTOM_LINE_KEEP_WIDTH ? wrapper.getWidth() - bubbleTimePartWidth : */textLastLineWidth;
     return MathUtils.fromTo(fromLastLineWidth, toLastLineWidth, factor);
   }

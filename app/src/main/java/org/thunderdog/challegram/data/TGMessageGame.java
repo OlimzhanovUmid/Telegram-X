@@ -60,7 +60,7 @@ public class TGMessageGame extends TGMessage implements MediaWrapper.OnClickList
 
   @Override
   protected int getBubbleContentPadding () {
-    return xBubblePadding + xBubblePaddingSmall;
+    return bubbleContentPadding + xBubblePaddingSmall;
   }
 
   @Override

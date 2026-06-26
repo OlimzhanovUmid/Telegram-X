@@ -87,7 +87,7 @@ public class TGMessageCall extends TGMessage {
 
   @Override
   protected int getBubbleContentPadding () {
-    return xBubblePadding + xBubblePaddingSmall;
+    return bubbleContentPadding + xBubblePaddingSmall;
   }
 
   @Override

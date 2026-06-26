@@ -1221,7 +1221,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
       for (TGMessage message : items) {
         if (message.getAdministrator() != null)
           continue;
-        long userId = message.getSender().getUserId();
+        long userId = message.sender.getUserId();
         if (adminUserId != userId) {
           adminUserId = userId;
           administrator = chatAdmins.get(adminUserId);

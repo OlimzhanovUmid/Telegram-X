@@ -51,7 +51,7 @@ public class TGMessageBotInfo extends TGMessage {
   private TGMessageBotInfo (MessagesManager context, long chatId, TdApi.FormattedText description) {
     super(context, TD.newFakeMessage(chatId, context.controller().tdlib().sender(chatId), new TdApi.MessageText(description, null, null)));
 
-    if (!tdlib().isRepliesChat(ChatId.fromUserId(getSender().getUserId()))) {
+    if (!tdlib().isRepliesChat(ChatId.fromUserId(sender.getUserId()))) {
       String text = Lang.getString(R.string.WhatThisBotCanDo);
       this.titleWrapper = new TextWrapper(text, getTextStyleProvider(), getTextColorSet()).addTextFlags(Text.FLAG_ALL_BOLD);
       this.titleWrapper.setViewProvider(currentViews);
@@ -103,7 +103,7 @@ public class TGMessageBotInfo extends TGMessage {
 
   @Override
   protected void buildContent (int maxWidth) {
-    int maxTextWidth = width - xPaddingRight - xContentLeft;
+    int maxTextWidth = width - xPaddingRight - contentLeft;
     if (titleWrapper != null) {
       titleWrapper.prepare(maxTextWidth);
     }

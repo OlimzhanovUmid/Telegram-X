@@ -16,7 +16,6 @@ package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.os.Build;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1153,16 +1152,16 @@ public class MessageView extends SparseDrawableView implements Destroyable, Draw
       if (isMore) {
         ids.append(R.id.btn_messageViewList);
         int icon = R.drawable.baseline_person_24;
-        if (msg.getSender().isAnonymousGroupAdmin()) {
+        if (msg.sender.isAnonymousGroupAdmin()) {
           strings.append(R.string.ViewMessagesFromAnonymousAdmins);
           icon = R.drawable.baseline_group_24;
         } else if (msg.isOutgoing()) {
           strings.append(R.string.ViewMessagesFromYou);
         } else if (msg.getMessage().senderId.getConstructor() == TdApi.MessageSenderChat.CONSTRUCTOR) {
-          strings.append(Lang.getString(R.string.ViewMessagesFromChat, msg.getSender().getNameShort()));
+          strings.append(Lang.getString(R.string.ViewMessagesFromChat, msg.sender.getNameShort()));
           icon = msg.tdlib().isChannel(Td.getSenderId(msg.getMessage().senderId)) ? R.drawable.baseline_bullhorn_24 : R.drawable.baseline_group_24;
         } else {
-          strings.append(Lang.getString(R.string.ViewMessagesFromUser, msg.getSender().getNameShort()));
+          strings.append(Lang.getString(R.string.ViewMessagesFromUser, msg.sender.getNameShort()));
         }
         icons.append(icon);
       } else {

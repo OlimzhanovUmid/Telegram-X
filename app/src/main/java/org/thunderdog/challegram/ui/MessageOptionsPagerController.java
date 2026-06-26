@@ -115,7 +115,7 @@ public class MessageOptionsPagerController extends BottomSheetViewController<Opt
         .noBackground().allBold(true).textSize(13f).colorSet(this).callback(this)
         .drawable(R.drawable.baseline_favorite_16, 16f, 6f, Gravity.LEFT)
         .build(), this, Screen.dp(16));
-      counters[ALL_REACTED_POSITION].counter.setCount(message.getMessageReactions().getTotalCount(), false);
+      counters[ALL_REACTED_POSITION].counter.setCount(message.messageReactions.getTotalCount(), false);
       state.headerAlwaysVisibleCountersWidth += counters[ALL_REACTED_POSITION].calculateWidth(null, Screen.dp(ViewPagerTopView.DEFAULT_ITEM_SPACING));
     } else {
       ALL_REACTED_POSITION = -1;
@@ -826,7 +826,7 @@ public class MessageOptionsPagerController extends BottomSheetViewController<Opt
       int startY = positionCords[1] + v.getMeasuredHeight() / 2;
 
       if (!Config.PROTECT_ANONYMOUS_REACTIONS || state.message.messagesController().callNonAnonymousProtection(state.message.getId() + reaction.getId(), tooltipManager().builder(v))) {
-        if (state.message.getMessageReactions().toggleReaction(reaction.type, true, true, handler(v, () -> {
+        if (state.message.messageReactions.toggleReaction(reaction.type, true, true, handler(v, () -> {
         }))) {
           state.message.scheduleSetReactionAnimationFullscreenFromBottomSheet(reaction, new Point(startX, startY));
         }
@@ -839,13 +839,13 @@ public class MessageOptionsPagerController extends BottomSheetViewController<Opt
       int startX = positionCords[0] + v.getMeasuredWidth() / 2;
       int startY = positionCords[1] + v.getMeasuredHeight() / 2;
 
-      boolean hasReaction = state.message.getMessageReactions().hasReaction(reaction.type);
+      boolean hasReaction = state.message.messageReactions.hasReaction(reaction.type);
       if (Config.DISABLE_ANONYMOUS_NON_OWNER_REACTIONS && !hasReaction && tdlib.isAnonymousAdminNonCreator(state.message.getChatId())) {
         tooltipManager().builder(v).show(tdlib, R.string.error_ANONYMOUS_REACTIONS_DISABLED).hideDelayed();
         return;
       }
       if (!Config.PROTECT_ANONYMOUS_REACTIONS || hasReaction || state.message.messagesController().callNonAnonymousProtection(state.message.getId() + reaction.getId(), tooltipManager().builder(v))) {
-        if (state.message.getMessageReactions().toggleReaction(reaction.type, false, true, handler(v, () -> {
+        if (state.message.messageReactions.toggleReaction(reaction.type, false, true, handler(v, () -> {
         }))) {
           state.message.scheduleSetReactionAnimationFromBottomSheet(reaction, new Point(startX, startY));
         }
@@ -1059,14 +1059,14 @@ public class MessageOptionsPagerController extends BottomSheetViewController<Opt
       this.onReactionClickListener = onReactionClickListener;
       this.isPremium = message.tdlib().hasPremium();
 
-      this.messageReactions = message.getMessageReactions().getReactions();
-      this.chosenReactions = message.getMessageReactions().getChosen();
+      this.messageReactions = message.messageReactions.getReactions();
+      this.chosenReactions = message.messageReactions.getChosen();
       this.availableReactions = message.getMessageAvailableReactions();
       this.needShowMessageViews = !(!message.canGetViewers() || message.isUnread() || message.noUnread());
       this.needShowMessageOptions = options != null;
 
       this.needShowReactionsPopupPicker = needShowMessageOptions && message.needShowReactionPopupPicker();
-      this.needShowMessageReactionSenders = !Td.isEmpty(messageReactions) && message.canGetAddedReactions() && message.getMessageReactions().getTotalCount() > 0;
+      this.needShowMessageReactionSenders = !Td.isEmpty(messageReactions) && message.canGetAddedReactions() && message.messageReactions.getTotalCount() > 0;
 
       this.headerButtonsVisibleWidth = needShowReactionsPopupPicker ? Screen.dp(56): 0;
       this.needShowCustomEmojiInsidePicker = isPremium && message.isCustomEmojiReactionsAvailable();

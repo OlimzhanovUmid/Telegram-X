@@ -496,7 +496,7 @@ public class TGMessageMedia extends TGMessage {
     }
 
     if (wrapper != null) {
-      wrapper.prepare(useBubbles() ? mosaicWrapper.getWidth() - xBubblePadding * 2 : getRealContentMaxWidth());
+      wrapper.prepare(useBubbles() ? mosaicWrapper.getWidth() - bubbleContentPadding * 2 : getRealContentMaxWidth());
     }
   }
 
@@ -560,7 +560,7 @@ public class TGMessageMedia extends TGMessage {
 
   @Override
   protected int getBottomLineContentWidth () {
-    return wrapper != null && Lang.rtl() == wrapper.getLastLineIsRtl() ? wrapper.getLastLineWidth() + (xBubblePaddingSmall + xBubblePadding) * 2 : BOTTOM_LINE_EXPAND_HEIGHT;
+    return wrapper != null && Lang.rtl() == wrapper.getLastLineIsRtl() ? wrapper.getLastLineWidth() + (xBubblePaddingSmall + bubbleContentPadding) * 2 : bottomLineContentWidth;
   }
 
   /*@Override
@@ -581,7 +581,7 @@ public class TGMessageMedia extends TGMessage {
   @Override
   protected void drawContent (MessageView view, Canvas c, int startX, int startY, int maxWidth, ComplexReceiver complexReceiver) {
     final boolean clipped = useBubbles() && !useForward();
-    final int saveCount = clipped ? ViewSupport.clipPath(c, getBubbleClipPath()) : Integer.MIN_VALUE;
+    final int saveCount = clipped ? ViewSupport.clipPath(c, bubbleClipPath) : Integer.MIN_VALUE;
     mosaicWrapper.draw(view, c, startX, startY, complexReceiver, useFullWidth());
     if (clipped) {
       ViewSupport.restoreClipPath(c, saveCount);
@@ -639,13 +639,13 @@ public class TGMessageMedia extends TGMessage {
   private int getTextX (View view, @NonNull TextWrapper wrapper, boolean rtl) {
     if (rtl) {
       if (useBubbles())
-        return (getActualRightContentEdge() - xBubblePadding - xBubblePaddingSmall);
+        return (getActualRightContentEdge() - bubbleContentPadding - xBubblePaddingSmall);
       if (useFullWidth())
         return view.getMeasuredWidth() - getRealContentX();
       int startX = getContentX();
       return Math.max(startX + mosaicWrapper.getWidth(), startX + wrapper.getWidth());
     } else {
-      return useBubbles() ? (useForward() ? getContentX() : getContentX() + xBubblePadding) : getRealContentX();
+      return useBubbles() ? (useForward() ? getContentX() : getContentX() + bubbleContentPadding) : getRealContentX();
     }
   }
 

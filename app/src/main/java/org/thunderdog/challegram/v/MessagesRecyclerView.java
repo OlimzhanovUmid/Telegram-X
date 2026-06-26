@@ -421,7 +421,7 @@ public class MessagesRecyclerView extends RecyclerView implements FactorAnimator
               continue;
             }
             if (isLast) {
-              Object tag = msg.getTag();
+              Object tag = msg.tag;
               if (tag != null) {
                 TGMessage tagMsg = (TGMessage) tag;
                 if (!tagMsg.isDestroyed() && tagMsg.drawDate(c, centerX, top, 1f, alpha)) {
@@ -431,12 +431,12 @@ public class MessagesRecyclerView extends RecyclerView implements FactorAnimator
                   lastAlpha = alpha;
                   continue;
                 }
-                msg.setTag(null);
+                msg.tag = null;
               }
               for (int j = position + 1; j < adapter.getMessageCount(); j++) {
                 TGMessage olderMessage = adapter.getMessage(j);
                 if (olderMessage != null && olderMessage.drawDate(c, centerX, top, 1f, alpha)) {
-                  msg.setTag(olderMessage);
+                  msg.tag = olderMessage;
                   hasDrawn = true;
                   lastTop = top;
                   lastMessage = msg;
