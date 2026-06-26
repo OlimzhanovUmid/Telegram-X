@@ -720,6 +720,7 @@ public class ContentPreview {
       case TdApi.MessageGroupCall.CONSTRUCTOR:
       case TdApi.MessagePaidMessagesRefunded.CONSTRUCTOR:
       case TdApi.MessagePaidMessagePriceChanged.CONSTRUCTOR:
+        break;
 
       case TdApi.MessageForumTopicCreated.CONSTRUCTOR:
         return new ContentPreview(EMOJI_GROUP, R.string.NewTopic, ((TdApi.MessageForumTopicCreated) message.content).name);
