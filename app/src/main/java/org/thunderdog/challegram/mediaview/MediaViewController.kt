@@ -119,6 +119,7 @@ import org.thunderdog.challegram.widget.*
 import org.thunderdog.challegram.widget.PopupLayout.*
 import org.thunderdog.challegram.widget.RootFrameLayout.InsetsChangeListener
 import org.thunderdog.challegram.widget.VideoTimelineView.TimelineDelegate
+import tgx.td.MAX_MESSAGE_GROUP_SIZE
 import tgx.td.MessageId
 import tgx.td.assertMessageSelfDestructType_58882d8c
 import tgx.td.findBiggest
@@ -131,19 +132,32 @@ import tgx.td.isSecret
 import tgx.td.isText
 import tgx.td.isUserChat
 import tgx.td.messageThreadId
-import tgx.td.MAX_MESSAGE_GROUP_SIZE
 import tgx.td.newSendOptions
 import tgx.td.toBasicGroupId
 import tgx.td.toSupergroupId
 import tgx.td.unsupported
 import java.io.File
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
-import kotlin.collections.MutableList
-import kotlin.collections.minus
-import kotlin.math.*
-import kotlin.sequences.minus
+import kotlin.Any
+import kotlin.Array
+import kotlin.Boolean
+import kotlin.CharSequence
+import kotlin.Double
+import kotlin.Float
+import kotlin.IllegalStateException
+import kotlin.Int
+import kotlin.IntArray
+import kotlin.Long
+import kotlin.LongArray
+import kotlin.OptIn
+import kotlin.String
+import kotlin.also
+import kotlin.arrayOf
+import kotlin.check
 import kotlin.contracts.ExperimentalContracts
+import kotlin.intArrayOf
+import kotlin.math.*
+import kotlin.require
 
 @OptIn(ExperimentalContracts::class)
 class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<MediaViewController.Args>(context, tdlib), AnimatedPopupProvider,
@@ -7864,14 +7878,14 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                 if (stack!!.getCurrent() === item) {
                     val selfDestructType: MessageSelfDestructType?
                     val textRepresentation: String?
-                    if (result!!.isOff()) {
+                    if (result!!.isOff) {
                         selfDestructType = null
                         textRepresentation = null
-                    } else if (result.isImmediate()) {
+                    } else if (result.isImmediate) {
                         selfDestructType = MessageSelfDestructTypeImmediately()
                         textRepresentation = TdlibUi.getDuration(0, TimeUnit.SECONDS, false) // FIXME
                     } else {
-                        val newTTL = result.getTtlTime()
+                        val newTTL = result.ttlTime
                         textRepresentation = TdlibUi.getDuration(newTTL.toLong(), TimeUnit.SECONDS, false)
                         selfDestructType = MessageSelfDestructTypeTimer(newTTL)
                     }

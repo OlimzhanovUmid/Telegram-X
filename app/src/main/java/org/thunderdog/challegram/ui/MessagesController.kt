@@ -2134,13 +2134,10 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         }
     }
 
-    private fun reportChat(messages: Array<MessageWithProperties?>?, after: Runnable?) {
-        val array: Array<TdApi.Message?>?
+    private fun reportChat(messages: Array<MessageWithProperties>?, after: Runnable?) {
+        val array: Array<TdApi.Message>?
         if (messages != null) {
-            array = arrayOfNulls<TdApi.Message>(messages.size)
-            for (i in array.indices) {
-                array[i] = messages[i]!!.message
-            }
+            array = Array(messages.size) { i -> messages[i].message }
         } else {
             array = null
         }
@@ -3611,7 +3608,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             selectMessagesInBetween()
         } else if (id == R.id.menu_btn_stopwatch) {
             if (this.isSecretChat) {
-                tdlib.ui().showTTLPicker(context(), chat)
+                tdlib.ui().showTTLPicker(context(), chat!!)
             }
         } else if (id == R.id.menu_btn_viewScheduled) {
             viewScheduledMessages(false)
@@ -3756,7 +3753,8 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             }
             if (selectedMessageIds != null && selectedMessageIds!!.size() > 0) {
                 val size = selectedMessageIds!!.size()
-                val messages = arrayOfNulls<MessageWithProperties>(size)
+                @Suppress("UNCHECKED_CAST")
+                val messages = arrayOfNulls<MessageWithProperties>(size) as Array<MessageWithProperties>
                 for (i in 0..<size) {
                     val messageId = selectedMessageIds!!.keyAt(i)
                     val m = selectedMessageIds!!.valueAt(i)
@@ -4840,7 +4838,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     // Message selection
     private var selectedMessageIds: LongSparseArray<TGMessage>? = null
 
-    private fun selectedMessagesToArray(): Array<MessageWithProperties?>? {
+    private fun selectedMessagesToArray(): Array<MessageWithProperties>? {
         if (selectedMessageIds == null) {
             return null
         }
@@ -4848,7 +4846,8 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         if (size == 0) {
             return null
         }
-        val messages = arrayOfNulls<MessageWithProperties>(size)
+        @Suppress("UNCHECKED_CAST")
+        val messages = arrayOfNulls<MessageWithProperties>(size) as Array<MessageWithProperties>
         for (i in 0..<size) {
             val messageId = selectedMessageIds!!.keyAt(i)
             val msg = selectedMessageIds!!.valueAt(i)
@@ -5497,7 +5496,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                     tdlib.ui().readCustomLanguage(
                         this,
                         document,
-                        RunnableData { langPack: CustomLangPackResult? -> tdlib.ui().showLanguageInstallPrompt(this, langPack, selectedMessage.message) },
+                        RunnableData { langPack: CustomLangPackResult -> tdlib.ui().showLanguageInstallPrompt(this, langPack, selectedMessage.message) },
                         null
                     )
                 }
@@ -5778,7 +5777,8 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                         context().tooltipManager().builder(itemView).show(tdlib, R.string.ChannelNoSave).hideDelayed()
                         return@OptionDelegate false
                     }
-                    tdlib.ui().saveGifs((selectedMessageTag as MutableList<TD.DownloadedFile?>))
+                    @Suppress("UNCHECKED_CAST")
+                    tdlib.ui().saveGifs(selectedMessageTag as MutableList<TD.DownloadedFile>)
                 }
                 return@OptionDelegate true
             } else if (id == R.id.btn_saveFile) {
@@ -6327,8 +6327,9 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     fun highlightMessage(messageId: MessageId, parameters: UrlOpenParameters?) {
-        if (parameters != null && parameters.messageId != null && parameters.messageId.chatId == messageId.chatId) {
-            highlightMessage(messageId, parameters.messageId)
+        val paramMsgId = parameters?.messageId
+        if (paramMsgId != null && paramMsgId.chatId == messageId.chatId) {
+            highlightMessage(messageId, paramMsgId)
         } else {
             highlightMessage(messageId)
         }

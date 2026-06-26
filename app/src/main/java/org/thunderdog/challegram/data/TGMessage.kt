@@ -4268,11 +4268,12 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             return arrayOf<TdApi.Message?>(msg)
         }
 
-    val allMessagesAndProperties: Array<MessageWithProperties?>
+    val allMessagesAndProperties: Array<MessageWithProperties>
         get() {
             synchronized(this) {
                 if (this.combinedMessagesUnsafely != null && !combinedMessagesUnsafely!!.isEmpty()) {
-                    val result = arrayOfNulls<MessageWithProperties>(combinedMessagesUnsafely!!.size)
+                    @Suppress("UNCHECKED_CAST")
+                    val result = arrayOfNulls<MessageWithProperties>(combinedMessagesUnsafely!!.size) as Array<MessageWithProperties>
                     for (i in result.indices) {
                         val message = combinedMessagesUnsafely!!.get(i)
                         val properties = lastMessageProperties(message.id)
@@ -4281,7 +4282,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                     return result
                 }
             }
-            return arrayOf<MessageWithProperties?>(
+            return arrayOf(
                 MessageWithProperties(msg!!, lastMessageProperties(msg!!.id))
             )
         }
