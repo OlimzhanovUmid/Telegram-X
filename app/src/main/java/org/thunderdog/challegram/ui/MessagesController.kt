@@ -294,7 +294,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             getChatId(),
             this.isEditingMessage, canSendWithoutMarkdown, true
         )
-        if (!canSendWithoutMarkdown && tdlib.shouldSendAsDice(currentText) && !this.isEditingMessage) {
+        if (!canSendWithoutMarkdown && tdlib.shouldSendAsDice(currentText!!) && !this.isEditingMessage) {
             if (items == null) items = ArrayList<HapticMenuHelper.MenuItem?>()
             if (ContentPreview.EMOJI_DART.textRepresentation == currentText!!.text) {
                 items.add(HapticMenuHelper.MenuItem(R.id.btn_sendNoMarkdown, Lang.getString(R.string.SendDiceAsEmoji), R.drawable.baseline_gps_fixed_24))
@@ -464,11 +464,12 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             if (tdlib.isSelfSender(previewSearchSender)) {
                 headerCell!!.setForcedSubtitle(Lang.pluralBold(R.string.XFoundMessagesFromSelf, totalCount.toLong()))
             } else {
+                val sender = previewSearchSender!!
                 headerCell!!.setForcedSubtitle(
                     Lang.pluralBold(
-                        if (previewSearchSender!!.getConstructor() == MessageSenderUser.CONSTRUCTOR) R.string.XFoundMessagesFromUser else R.string.XFoundMessagesFromChat,
+                        if (sender.getConstructor() == MessageSenderUser.CONSTRUCTOR) R.string.XFoundMessagesFromUser else R.string.XFoundMessagesFromChat,
                         totalCount.toLong(),
-                        tdlib.senderName(previewSearchSender, true)
+                        tdlib.senderName(sender, true)
                     )
                 )
             }
@@ -476,10 +477,11 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             if (tdlib.isSelfSender(previewSearchSender)) {
                 headerCell!!.setForcedSubtitle(Lang.getString(R.string.FoundMessagesFromSelf))
             } else {
+                val sender = previewSearchSender!!
                 headerCell!!.setForcedSubtitle(
                     Lang.getStringBold(
-                        if (previewSearchSender!!.getConstructor() == MessageSenderUser.CONSTRUCTOR) R.string.FoundMessagesFromUser else R.string.FoundMessagesFromChat,
-                        tdlib.senderName(previewSearchSender, true)
+                        if (sender.getConstructor() == MessageSenderUser.CONSTRUCTOR) R.string.FoundMessagesFromUser else R.string.FoundMessagesFromChat,
+                        tdlib.senderName(sender, true)
                     )
                 )
             }
@@ -2784,10 +2786,10 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         // Loading bot information after the messages to display them faster
         val isMultiChat = tdlib.isMultiChat(chat!!.id)
 
-        if (isMultiChat || tdlib.isBotChat(chat) /* || (TGUtils.isChannel(chat) && TGUtils.hasWritePermission(chat))*/) {
+        if (isMultiChat || tdlib.isBotChat(chat!!) /* || (TGUtils.isChannel(chat) && TGUtils.hasWritePermission(chat))*/) {
             updateCommandButton(R.drawable.deproko_baseline_bots_command_26)
             updateCommandButton(false)
-            botHelper = BotHelper(this, chat)
+            botHelper = BotHelper(this, chat!!)
         } else {
             updateCommandButton(0)
             botHelper = null
@@ -3109,14 +3111,14 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 showSecretChatAction(secretChat)
             } else if (tdlib.chatFullyBlocked(chat!!.id) && tdlib.isUserChat(chat)) {
                 showActionUnblockButton()
-            } else if (tdlib.chatUserDeleted(chat) || (isBasicGroup(chat!!.id) && (!tdlib.chatBasicGroupActive(chat!!.id) || TD.isNotInChat(status))) || (tdlib.isSupergroupChat(
+            } else if (tdlib.chatUserDeleted(chat!!) || (isBasicGroup(chat!!.id) && (!tdlib.chatBasicGroupActive(chat!!.id) || TD.isNotInChat(status))) || (tdlib.isSupergroupChat(
                     chat
                 ) && TD.isNotInChat(status) && joinSupergroupToSendMessages)
             ) {
                 if (tdlib.isSupergroupChat(chat) && status != null && TD.canReturnToChat(status)) {
                     showActionJoinChatButton()
                 } else if (messageThread != null) {
-                    val restrictionStatus = tdlib.getBasicMessageRestrictionText(chat)
+                    val restrictionStatus = tdlib.getBasicMessageRestrictionText(chat!!)
                     if (restrictionStatus != null && !hasSendSomeMediaPermission()) {
                         showActionButton(restrictionStatus, ACTION_EMPTY, false)
                     } else {
@@ -3125,10 +3127,10 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 } else {
                     showActionDeleteChatButton()
                 }
-            } else if (tdlib.isBotChat(chat) && chat!!.lastMessage == null) {
+            } else if (tdlib.isBotChat(chat!!) && chat!!.lastMessage == null) {
                 showActionBotButton()
             } else {
-                val restrictionStatus = tdlib.getBasicMessageRestrictionText(chat)
+                val restrictionStatus = tdlib.getBasicMessageRestrictionText(chat!!)
                 if (restrictionStatus != null && !hasSendSomeMediaPermission()) {
                     showActionButton(restrictionStatus, ACTION_EMPTY, false)
                 } else if (this.isReplyRequired) {
@@ -4327,7 +4329,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             }
             if (tdlib.canDeleteMessages(messageThread!!.getChatId())) {
                 val message = messageThread!!.getOldestMessage()
-                val properties = tdlib.getMessagePropertiesSync(message)
+                val properties = tdlib.getMessagePropertiesSync(message!!)
                 if (properties.canGetMessageThread && properties.canBeDeletedForAllUsers) {
                     ids.append(R.id.btn_deleteThread)
                     strings.append(R.string.DeleteThread)
@@ -4368,7 +4370,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
 
         if (!messagesHidden) {
             if (isUserChat(chat!!.id)) {
-                val user = tdlib.chatUser(chat)
+                val user = tdlib.chatUser(chat!!)
                 if (TD.suggestSharingContact(user)) {
                     ids.append(R.id.btn_shareMyContact)
                     strings.append(R.string.ShareMyContactInfo)
@@ -4379,7 +4381,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 strings.append(R.string.PinnedMessage)
             }
 
-            if (tdlib.isBotChat(chat) && botHelper != null) {
+            if (tdlib.isBotChat(chat!!) && botHelper != null) {
                 if (botHelper!!.findHelpCommand() != null) {
                     ids.append(R.id.btn_botHelp)
                     strings.append(R.string.BotHelp)
@@ -5982,7 +5984,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
 
     @JvmOverloads
     fun showActionBotButton(argument: String? = botStartArgument): Boolean {
-        if (tdlib.isBotChat(chat)) {
+        if (tdlib.isBotChat(getChatId())) {
             this.botStartArgument = argument
             showActionButton(R.string.BotStart, ACTION_BOT_START)
             return true
@@ -6008,8 +6010,8 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     fun showActionUnblockButton() {
-        val userId = tdlib.chatUserId(chat)
-        if (!tdlib.isRepliesChat(chat!!.id) && tdlib.isBotChat(chat)) {
+        val userId = tdlib.chatUserId(getChatId())
+        if (!tdlib.isRepliesChat(chat!!.id) && tdlib.isBotChat(chat!!)) {
             showActionButton(R.string.RestartBot, ACTION_BOT_START)
         } else {
             showActionButton(R.string.Unblock, ACTION_UNBAN_USER)
@@ -7665,7 +7667,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         if (chat != null && isPrivate(getChatId())) {
             val builder = AlertDialog.Builder(context(), Theme.dialogTheme())
             builder.setTitle(Lang.getString(R.string.ShareYourPhoneNumberTitle))
-            builder.setMessage(Lang.getString(R.string.ShareYourPhoneNumberDesc, tdlib.chatTitle(chat)))
+            builder.setMessage(Lang.getString(R.string.ShareYourPhoneNumberDesc, tdlib.chatTitle(getChatId())))
             builder.setPositiveButton(Lang.getOK(), DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
                 shareMyContact(true)
                 if (oneTime) {
@@ -8299,10 +8301,11 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                                 if (tdlib.isSelfSender(senderId)) {
                                     return false
                                 }
+                                val sender = senderId ?: return false
 
                                 tdlib.setChatMemberStatus(
                                     chat!!.id,
-                                    senderId,
+                                    sender,
                                     ChatMemberStatusMember(),
                                     null,
                                     ChatMemberStatusChangeCallback { ok: Boolean, error: TdApi.Error?, failedToAddMember: FailedToAddMember? ->
@@ -8438,9 +8441,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     fun switchInline(viaBotUserId: Long, switchInline: InlineKeyboardButtonTypeSwitchInline) {
-        if (chat == null) {
-            return
-        }
+        val chat = this.chat ?: return
         val user = if (viaBotUserId != 0L) tdlib.cache().user(viaBotUserId) else tdlib.chatUser(chat)
         if (user == null || !user.hasUsername()) {
             return
@@ -8975,7 +8976,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     override fun onSearchRequested(layout: EmojiLayout?, areStickers: Boolean) {
-        setInputInlineBot(0, "@" + tdlib.getAnimationSearchBotUsername())
+        setInputInlineBot(0, "@" + tdlib.animationSearchBotUsername)
     }
 
     fun onInputTextChange(charSequence: CharSequence, byUserAction: Boolean) {
@@ -9089,11 +9090,11 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             return true
         }
 
-        if (videosStatus == null || (videosStatus.isGlobal() && photosStatus != null && !photosStatus.isGlobal())) {
+        if (videosStatus == null || (videosStatus.isGlobal && photosStatus != null && !photosStatus.isGlobal)) {
             // photo
             return showRestriction(view, RightId.SEND_PHOTOS, R.string.ChatDisabledPhoto, R.string.ChatRestrictedPhoto, R.string.ChatRestrictedPhotoUntil)
         }
-        if (photosStatus == null || (photosStatus.isGlobal() && videosStatus != null && !videosStatus.isGlobal())) {
+        if (photosStatus == null || (photosStatus.isGlobal && videosStatus != null && !videosStatus.isGlobal)) {
             // video
             return showRestriction(view, RightId.SEND_PHOTOS, R.string.ChatDisabledVideo, R.string.ChatRestrictedVideo, R.string.ChatRestrictedVideoUntil)
         }
@@ -9101,7 +9102,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     fun showRestriction(view: View?, @RightId rightId: Int): Boolean {
-        val text = tdlib.getDefaultRestrictionText(chat, rightId)
+        val text = tdlib.getDefaultRestrictionText(chat!!, rightId)
         return showRestriction(view, text)
     }
 
@@ -9135,7 +9136,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     fun showRestriction(view: View?, @RightId rightId: Int, defaultRes: Int, specificRes: Int, specificUntilRes: Int): Boolean {
-        val restrictionText = tdlib.buildRestrictionText(chat, rightId, defaultRes, specificRes, specificUntilRes)
+        val restrictionText = tdlib.buildRestrictionText(chat!!, rightId, defaultRes, specificRes, specificUntilRes)
         return showRestriction(view, restrictionText)
     }
 
@@ -9966,7 +9967,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     fun send(content: InputMessageContent?, allowReply: Boolean, initialSendOptions: MessageSendOptions, after: RunnableData<TdApi.Message?>?) {
-        if (tdlib().getRestrictionText(chat, content) == null) {
+        if (tdlib().getRestrictionText(chat!!, content) == null) {
             pickDateOrProceed(initialSendOptions, SimpleSendCallback { modifiedSendOptions: MessageSendOptions?, disableMarkdown: Boolean ->
                 val replyInfo = if (allowReply) obtainReplyTo() else null
                 val replyTo = if (replyInfo != null) replyInfo.toInputMessageReply() else null
@@ -10077,7 +10078,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     }
 
     fun forwardMessage(message: TdApi.Message) { // TODO remove all related to Forward stuff to replace with ShareLayout
-        if (tdlib.getRestrictionText(chat, message) == null) {
+        if (tdlib.getRestrictionText(chat!!, message) == null) {
             val replyInfo = this.currentReplyId
             val topicId = getMessageTopicId(replyInfo)
             val sendOptions = newSendOptions(
@@ -11073,7 +11074,8 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
 
     @UiThread
     private fun checkCanSendMessagesToUser(allowRemote: Boolean) {
-        if (chat != null && TD.isPrivateChat(chat!!.type) && !inPreviewMode && !isInForceTouchMode()) {
+        val chat = this.chat
+        if (chat != null && TD.isPrivateChat(chat.type) && !inPreviewMode && !isInForceTouchMode()) {
             val user = tdlib.chatUser(chat)
             if (user != null && user.restrictsNewChats) {
                 val userId = user.id
@@ -11096,7 +11098,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 return
             }
         }
-        processCanSendMessagesToUser(tdlib.chatUserId(chat), null)
+        processCanSendMessagesToUser(tdlib.chatUserId(getChatId()), null)
     }
 
     private fun processCanSendMessagesToUser(userId: Long, result: CanSendMessageToUserResult?) {
@@ -11932,7 +11934,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         get() = !canSelectSender()
 
     fun createHapticSenderItem(id: Int, sender: MessageSender?, useUsername: Boolean, isLocked: Boolean): HapticMenuHelper.MenuItem {
-        val title = if (useUsername) tdlib.senderName(sender) else Lang.getString(R.string.SendAs)
+        val title = if (useUsername) tdlib.senderName(sender!!) else Lang.getString(R.string.SendAs)
         if (tdlib.isSelfSender(sender)) {
             return HapticMenuHelper.MenuItem(id, title, Lang.getString(R.string.YourAccount), R.drawable.dot_baseline_acc_personal_24, tdlib, sender, false)
         } else if (!tdlib.isChannel(sender)) {
@@ -12965,7 +12967,8 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         }
 
         @JvmStatic fun setNewMessageSender(tdlib: Tdlib, chatId: Long, sender: ChatMessageSender, after: Runnable?) {
-            tdlib.send<TdApi.Ok?>(SetChatMessageSender(chatId, sender.sender), tdlib.typedOkHandler(after))
+            val handler = tdlib.typedOkHandler(after)
+            tdlib.send<TdApi.Ok?>(SetChatMessageSender(chatId, sender.sender), handler)
         }
 
         private const val SEARCH_MODE_MESSAGES = 0

@@ -77,7 +77,7 @@ internal class TdlibOutlineManager(tdlib: Tdlib) : TdlibDataManager<String, TdAp
       return "${type}_${arg1}_${options}"
     }
 
-    fun toRequest (): TdApi.Function<TdApi.Outline> {
+    fun toRequest (): TdApi.Function<TdApi.Outline?> {
       return when (type) {
         TYPE_STICKER_OUTLINE -> TdApi.GetStickerOutline(
           arg1.toInt(),
@@ -106,7 +106,7 @@ internal class TdlibOutlineManager(tdlib: Tdlib) : TdlibDataManager<String, TdAp
   override fun requestData(contextId: Int, keysToRequest: MutableCollection<String>) {
     for (key in keysToRequest) {
       val parsedKey = ParsedKey.parse(key)
-      tdlib.send(parsedKey.toRequest()) { outline, error ->
+      tdlib.send<TdApi.Outline>(parsedKey.toRequest()) { outline, error ->
         if (isCancelled(contextId)) {
           return@send
         }

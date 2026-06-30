@@ -53,7 +53,7 @@ class TopicsController(context: Context, tdlib: Tdlib) :
 
   override fun getId (): Int = R.id.controller_topics
 
-  override fun getName (): CharSequence = tdlib.chatTitle(chatId)
+  override fun getName (): CharSequence = tdlib.chatTitle(chatId) ?: ""
 
   override fun getMenuId (): Int = R.id.menu_more
 
@@ -110,6 +110,7 @@ class TopicsController(context: Context, tdlib: Tdlib) :
     tdlib.getForumTopics(chatId, null, offsetDate, offsetMessageId, offsetForumTopicId, LOAD_LIMIT, { result ->
       runOnUiThreadOptional {
         loading = false
+        if (result == null) return@runOnUiThreadOptional
         if (reset) {
           topics.clear()
           endReached = false

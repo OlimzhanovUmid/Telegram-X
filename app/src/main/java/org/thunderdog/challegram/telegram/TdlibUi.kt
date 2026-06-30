@@ -150,7 +150,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         )
     }
 
-    private fun getBlockString(chatId: Long, senderId: MessageSender?, willBeBlocked: Boolean): CharSequence {
+    private fun getBlockString(chatId: Long, senderId: MessageSender, willBeBlocked: Boolean): CharSequence {
         if (tdlib.isChannel(chatId)) {
             return Lang.getStringBold(if (willBeBlocked) R.string.MemberCannotJoinChannel else R.string.MemberCanJoinChannel, tdlib.senderName(senderId))
         } else {
@@ -1364,7 +1364,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         // TODO progress
         tdlib.client().send(createRequest, Client.ResultHandler { `object`: TdApi.Object? ->
             when (`object`!!.getConstructor()) {
-                Chat.CONSTRUCTOR -> openChat(context, tdlib.objectToChat(`object`), params)
+                Chat.CONSTRUCTOR -> openChat(context, tdlib.objectToChat(`object`)!!, params)
                 SupergroupFullInfo.CONSTRUCTOR -> openChat(context, (`object` as SupergroupFullInfo).linkedChatId, params)
                 TdApi.Error.CONSTRUCTOR -> {
                     showChatOpenError(createRequest, `object` as TdApi.Error, params)
@@ -1789,7 +1789,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         // TODO progress
         tdlib.client().send(createRequest, Client.ResultHandler { `object`: TdApi.Object? ->
             when (`object`!!.getConstructor()) {
-                Chat.CONSTRUCTOR -> openChatProfile(context, tdlib.objectToChat(`object`), messageThread, openParameters)
+                Chat.CONSTRUCTOR -> openChatProfile(context, tdlib.objectToChat(`object`)!!, messageThread, openParameters)
                 TdApi.User.CONSTRUCTOR -> {
                     val userId = (`object` as TdApi.User).id
                     openChatProfile(context, fromUserId(userId), messageThread, CreatePrivateChat(userId, false), openParameters)
@@ -1837,7 +1837,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         tdlib.client().send(SearchPublicChat(botUsername), Client.ResultHandler { `object`: TdApi.Object? ->
             when (`object`!!.getConstructor()) {
                 Chat.CONSTRUCTOR -> {
-                    val chat = tdlib.objectToChat(`object`)
+                    val chat = tdlib.objectToChat(`object`)!!
                     if (!tdlib.isBotChat(chat)) {
                         showLinkTooltip(context.tdlib(), R.drawable.baseline_warning_24, Lang.getStringBold(R.string.BotNotFound, botUsername), openParameters)
                         return@ResultHandler
@@ -2019,7 +2019,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         // TODO progress
         tdlib.client().send(CreateNewSecretChat(userId), Client.ResultHandler { `object`: TdApi.Object? ->
             when (`object`!!.getConstructor()) {
-                Chat.CONSTRUCTOR -> openChat(context, tdlib.objectToChat(`object`), params)
+                Chat.CONSTRUCTOR -> openChat(context, tdlib.objectToChat(`object`)!!, params)
                 TdApi.Error.CONSTRUCTOR -> UI.showError(`object`)
             }
         })
@@ -3667,7 +3667,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
 
     // Delete account on server
     fun permanentlyDeleteAccount(context: ViewController<*>, showAlternatives: Boolean) {
-        val needShowAlternatives = tdlib.isAuthorized() && showAlternatives
+        val needShowAlternatives = tdlib.isAuthorized && showAlternatives
         context.showOptions(
             Lang.getMarkdownString(context, if (needShowAlternatives) R.string.DeleteAccountConfirmFirst else R.string.DeleteAccountConfirm),
             intArrayOf(R.id.btn_deleteAccount, R.id.btn_cancel),
@@ -3741,7 +3741,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             context.navigateTo(c)
             return
         }
-        removeAccount(context, tdlib.account(), true)
+        removeAccount(context, tdlib.account()!!, true)
         /*context.showOptions(new int[]{R.id.btn_logout, R.id.btn_cancel}, new String[]{Lang.getString(R.string.LogOut), Lang.getString(R.string.Cancel)}, new int[]{ViewController.OPTION_COLOR_RED, ViewController.OPTION_COLOR_NORMAL}, id -> {
       if (id == R.id.btn_logout) {
         tdlib.send(new TdApi.LogOut(), tdlib.typedOkHandler());
@@ -4940,7 +4940,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
     fun showAddChatsToFolderOptions(context: ViewController<*>, chatIds: LongArray, after: Runnable?) {
         if (chatIds.size == 0) return
 
-        val chatFolders = tdlib.chatFolders()
+        val chatFolders = tdlib.chatFolders() ?: emptyArray()
         val items: MutableList<ListItem?> = ArrayList<ListItem?>(chatFolders.size + 1)
         for (chatFolderInfo in chatFolders) {
             items.add(
@@ -4990,7 +4990,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
     }
 
     fun showDeleteChatFolderOrLeaveChats(context: ViewController<*>, chatFolderId: Int) {
-        val info = tdlib.chatFolderInfo(chatFolderId)
+        val info = tdlib.chatFolderInfo(chatFolderId) ?: return
         if (info.isShareable) {
             tdlib.send<Chats?>(GetChatFolderChatsToLeave(chatFolderId), Tdlib.ResultHandler { result: Chats?, error: TdApi.Error? ->
                 post(Runnable {
@@ -5147,18 +5147,19 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         } else if (actionId == R.id.btn_archiveChat || actionId == R.id.btn_unarchiveChat) {
             val isUnarchive = actionId == R.id.btn_unarchiveChat
             val targetChatList: ChatList = if (isUnarchive) CHAT_LIST_MAIN else CHAT_LIST_ARCHIVE
-            tdlib.send<TdApi.Ok?>(AddChatToList(chatId, targetChatList), tdlib.typedOkHandler(Runnable {
+            val archiveCallback: Runnable = Runnable {
                 showArchiveHint(chatList, 1, isUnarchive)
                 if (after != null) {
                     after.run()
                 }
-            }))
+            }
+            tdlib.send<TdApi.Ok?>(AddChatToList(chatId, targetChatList), tdlib.typedOkHandler(archiveCallback))
             return true
         } else if (actionId == R.id.btn_markChatAsRead) {
             if (messageThread != null) {
-                tdlib.markChatAsRead(messageThread.getChatId(), source, false, after)
+                tdlib.markChatAsRead(messageThread.getChatId(), source!!, false, after)
             } else {
-                tdlib.markChatAsRead(chat.id, source, true, after)
+                tdlib.markChatAsRead(chat.id, source!!, true, after)
             }
             return true
         } else if (actionId == R.id.btn_markChatAsUnread) {
@@ -5208,7 +5209,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             val removed = pinnedChatIds.remove(chatId) or includedChatIds.remove(chatId)
             if (removed && Config.CHAT_FOLDERS_SMART_CHAT_DELETION_ENABLED) {
                 val chat = tdlib.chat(chatId)
-                val isBotChat = tdlib.isBotChat(chat)
+                val isBotChat = tdlib.isBotChat(chatId)
                 val isUserChat = tdlib.isUserChat(chat) && !isBotChat
                 val isContactChat = isUserChat && tdlib.isContactChat(chat)
                 if (!chatFolder.includeContacts && isUserChat && isContactChat) continue

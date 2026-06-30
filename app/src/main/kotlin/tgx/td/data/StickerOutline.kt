@@ -61,9 +61,9 @@ class StickerOutline @JvmOverloads constructor(
     tdlib.outline().requestStickerOutline(sticker.sticker.id, isAnimatedEmoji, isClickedEmojiMessage, { _, entry ->
       entry.value?.let { outline ->
         setOutline(outline)
-        tdlib.runOnUiThread {
+        tdlib.runOnUiThread(Runnable {
           target.invalidate()
-        }
+        })
       }
     }, true)
   }

@@ -454,7 +454,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         val topMessage = top.message
         if (top.headerDisabled() || top.isSponsoredMessage() != isSponsoredMessage() || (flags and FLAG_SHOW_BADGE) != 0 || !tdlib.isSameSender(
                 topMessage,
-                msg
+                msg!!
             ) || !TD.isSameSource(
                 topMessage,
                 msg,

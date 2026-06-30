@@ -58,7 +58,7 @@ class TopicIconPickerView(context: Context, private val tdlib: Tdlib) : View(con
   private val cell = RectF()
 
   fun load () {
-    tdlib.getForumTopicDefaultIcons({ stickers -> post { setDefaultIcons(stickers) } }, null)
+    tdlib.getForumTopicDefaultIcons({ stickers -> if (stickers != null) post { setDefaultIcons(stickers) } }, null)
   }
 
   private fun setDefaultIcons (stickers: TdApi.Stickers) {

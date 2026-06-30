@@ -99,7 +99,7 @@ class MediaLocationFinder private constructor() {
         }
       }
 
-      tdlib.client().send(TdApi.SearchPublicChat(tdlib.getVenueSearchBotUsername()), handler)
+      tdlib.client().send(TdApi.SearchPublicChat(tdlib.venueSearchBotUsername), handler)
       return handler
     }
   }
