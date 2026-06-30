@@ -9207,7 +9207,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         fun reactionsTextStyleProvider(): TextStyleProvider? {
             if (reactionBubbleProvider == null) {
                 reactionBubbleProvider =
-                    TextStyleProvider(Fonts.newRobotoStorage()).setTextSizeDiff(-4f).setTextSize(Settings.instance().getChatFontSize()).setAllowSp(true)
+                    TextStyleProvider(Fonts.newRobotoStorage()).setTextSizeDiff(-4f).setTextSize(Settings.instance().chatFontSize).setAllowSp(true)
                 Settings.instance().addChatFontSizeChangeListener(reactionBubbleProvider)
             }
             return reactionBubbleProvider
@@ -9235,7 +9235,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             get() {
                 if (styleProvider == null) {
                     styleProvider =
-                        TextStyleProvider(Fonts.newRobotoStorage()).setTextSize(Settings.instance().getChatFontSize())
+                        TextStyleProvider(Fonts.newRobotoStorage()).setTextSize(Settings.instance().chatFontSize)
                             .setAllowSp(true)
                     Settings.instance().addChatFontSizeChangeListener(styleProvider)
                 }
@@ -9254,7 +9254,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         fun bubbleServiceTextStyleProvider(): TextStyleProvider? {
             if (bubbleServiceProvider == null) {
                 bubbleServiceProvider =
-                    TextStyleProvider(Fonts.newRobotoStorage()).setTextSizeDiff(-2f).setTextSize(Settings.instance().getChatFontSize()).setAllowSp(true)
+                    TextStyleProvider(Fonts.newRobotoStorage()).setTextSizeDiff(-2f).setTextSize(Settings.instance().chatFontSize).setAllowSp(true)
                 Settings.instance().addChatFontSizeChangeListener(bubbleServiceProvider)
             }
             return bubbleServiceProvider
@@ -9264,7 +9264,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             get() {
                 if (smallerStyleProvider == null) {
                     smallerStyleProvider = TextStyleProvider(Fonts.newRobotoStorage()).setTextSizeDiff(-1f)
-                        .setTextSize(Settings.instance().getChatFontSize()).setAllowSp(true)
+                        .setTextSize(Settings.instance().chatFontSize).setAllowSp(true)
                     Settings.instance().addChatFontSizeChangeListener(smallerStyleProvider)
                 }
                 return smallerStyleProvider!!
@@ -9275,7 +9275,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             get() {
                 if (biggerStyleProvider == null) {
                     biggerStyleProvider = TextStyleProvider(Fonts.newRobotoStorage()).setTextSizeDiff(1f)
-                        .setTextSize(Settings.instance().getChatFontSize()).setAllowSp(true)
+                        .setTextSize(Settings.instance().chatFontSize).setAllowSp(true)
                     Settings.instance().addChatFontSizeChangeListener(biggerStyleProvider)
                 }
                 return biggerStyleProvider

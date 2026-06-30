@@ -12784,7 +12784,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             var found = false
             var index = 0
             for (dp in Settings.CHAT_FONT_SIZES) {
-                if (dp == Settings.instance().getChatFontSize()) {
+                if (dp == Settings.instance().chatFontSize) {
                     found = true
                     break
                 }
@@ -12799,7 +12799,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             var found = false
             var index = 0
             for (dp in Settings.CHAT_FONT_SIZES) {
-                if (dp == Settings.instance().getChatFontSize()) {
+                if (dp == Settings.instance().chatFontSize) {
                     found = true
                     break
                 }

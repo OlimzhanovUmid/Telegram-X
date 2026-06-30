@@ -111,11 +111,11 @@ public abstract class SettingsCloudController<T extends Settings.CloudSetting> e
           if (isCurrent) {
             view.setData(currentStringRes);
           } else if (isPending) {
-            view.setData(Lang.getDownloadStatus(isInstalling ? null : setting.getFile(), installingStringRes, false));
+            view.setData(Lang.getDownloadStatus(isInstalling ? null : setting.file, installingStringRes, false));
           } else {
             int installState = setting.getInstallState(true);
             boolean isInstalled = installState == Settings.CloudSetting.STATE_INSTALLED;
-            view.setData(Lang.getDownloadStatus(isInstalled ? null : setting.getFile(), setting.isBuiltIn() ? builtinStringRes : installState == Settings.CloudSetting.STATE_UPDATE_NEEDED ? updateStringRes : installedStringRes, !isInstalled));
+            view.setData(Lang.getDownloadStatus(isInstalled ? null : setting.file, setting.isBuiltIn() ? builtinStringRes : installState == Settings.CloudSetting.STATE_UPDATE_NEEDED ? updateStringRes : installedStringRes, !isInstalled));
           }
           boolean isEffective = installingSetting == null ? isCurrent : isPending;
           RadioView radioView = view.findRadioView();
@@ -125,7 +125,7 @@ public abstract class SettingsCloudController<T extends Settings.CloudSetting> e
           radioView.setChecked(isEffective, isUpdate);
           view.setDataColorId(isCurrent && isEffective ? ColorId.textNeutral : 0);
 
-          view.getReceiver().requestFile(setting.getPreviewFile());
+          view.getReceiver().requestFile(setting.previewFile);
         }
       }
     };
@@ -160,7 +160,7 @@ public abstract class SettingsCloudController<T extends Settings.CloudSetting> e
     for (T setting : settings) {
       if (!items.isEmpty())
         items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
-      items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT_WITH_RADIO, R.id.btn_settings, 0, setting.getDisplayName(), false).setData(setting).setDrawModifier(new DrawModifier() {
+      items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT_WITH_RADIO, R.id.btn_settings, 0, setting.displayName, false).setData(setting).setDrawModifier(new DrawModifier() {
         @Override
         public void afterDraw (View view, Canvas c) {
           ImageReceiver receiver = ((SettingView) view).getReceiver();
@@ -222,7 +222,7 @@ public abstract class SettingsCloudController<T extends Settings.CloudSetting> e
     if (installingSetting != null) {
       if (installingSetting.equals(setting))
         return;
-      tdlib.files().removeCloudReference(installingSetting.getFile(), this);
+      tdlib.files().removeCloudReference(installingSetting.file, this);
       installingSetting = null;
     }
 
@@ -271,7 +271,7 @@ public abstract class SettingsCloudController<T extends Settings.CloudSetting> e
     for (ListItem item : adapter.getItems()) {
       if (item.getId() == R.id.btn_settings && item.getData() != null) {
         T setting = (T) item.getData();
-        TdApi.File file = setting.getFile();
+        TdApi.File file = setting.file;
         if (file != null && file.id == fileId) {
           return setting;
         }
@@ -286,11 +286,11 @@ public abstract class SettingsCloudController<T extends Settings.CloudSetting> e
         T setting = findSetting(file.id);
         if (setting == null)
           return;
-        Td.copyTo(file, setting.getFile());
+        Td.copyTo(file, setting.file);
         if (TD.isFileLoaded(file)) {
           tdlib.files().unsubscribe(file.id, this);
-          tdlib.files().removeCloudReference(setting.getFile(), this);
-          if (installingSetting != null && installingSetting.getFile() != null && installingSetting.getFile().id == file.id) {
+          tdlib.files().removeCloudReference(setting.file, this);
+          if (installingSetting != null && installingSetting.file != null && installingSetting.file.id == file.id) {
             install(installingSetting);
           }
         } else if (allowSubscribe) {
@@ -310,12 +310,12 @@ public abstract class SettingsCloudController<T extends Settings.CloudSetting> e
       installationSignal.cancel();
       installationSignal = null;
     }
-    if (setting.isBuiltIn() || setting.getFile() == null || setting.isInstalled()) {
+    if (setting.isBuiltIn() || setting.file == null || setting.isInstalled()) {
       install(setting);
     } else {
       CancellationSignal signal = new CancellationSignal();
       installationSignal = signal;
-      TdApi.File file = setting.getFile();
+      TdApi.File file = setting.file;
       tdlib.files().isFileLoadedAndExists(file, isLoadedAndExists -> {
         if (!signal.isCanceled()) {
           if (isLoadedAndExists) {

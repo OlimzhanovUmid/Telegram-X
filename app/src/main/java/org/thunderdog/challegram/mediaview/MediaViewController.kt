@@ -2861,7 +2861,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     }
 
     private fun restorePipFactors() {
-        val position = Settings.instance().getPipPosition()
+        val position = Settings.instance().pipPosition
         pipXFactor = splitLongToFirstInt(position).toFloat()
         pipYFactor = splitLongToSecondInt(position).toFloat()
     }
@@ -5847,8 +5847,8 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                             if (targetIndex != newIndex) {
                                 targetIndex = newIndex
                                 currentVideoLimit = videoLimits!!.get(targetIndex)
-                                if (targetIndex == videoLimits!!.size - 1 && (prevVideoLimit!!.size.isUnlimited() || (!currentVideoLimit!!.size.isUnlimited() && currentVideoLimit!!.size.majorSize < prevVideoLimit!!.size.majorSize))) {
-                                    currentVideoLimit = VideoLimit(prevVideoLimit)
+                                if (targetIndex == videoLimits!!.size - 1 && (prevVideoLimit!!.size.isUnlimited || (!currentVideoLimit!!.size.isUnlimited && currentVideoLimit!!.size.majorSize < prevVideoLimit!!.size.majorSize))) {
+                                    currentVideoLimit = VideoLimit(prevVideoLimit!!)
                                 }
                                 updateQualityInfo()
                             }
@@ -7057,7 +7057,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             }
 
             SECTION_QUALITY -> {
-                Settings.instance().setPreferredVideoLimit(currentVideoLimit)
+                Settings.instance().preferredVideoLimit = currentVideoLimit
             }
         }
         return false
@@ -7072,7 +7072,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             }
 
             SECTION_QUALITY -> {
-                currentVideoLimit = VideoLimit(prevVideoLimit)
+                currentVideoLimit = VideoLimit(prevVideoLimit!!)
             }
 
             SECTION_CROP -> {
@@ -7535,7 +7535,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             }
             videoLimits!!.add(videoLimit)
         }
-        if (currentVideoLimit!!.size.isUnlimited()) {
+        if (currentVideoLimit!!.size.isUnlimited) {
             currentValue = videoLimits!!.size - 1
         }
         qualitySlider!!.setValueCount(videoLimits!!.size)
@@ -7556,8 +7556,8 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     }
 
     private fun prepareQuality(): Boolean {
-        this.prevVideoLimit = Settings.instance().getPreferredVideoLimit()
-        this.currentVideoLimit = VideoLimit(prevVideoLimit)
+        this.prevVideoLimit = Settings.instance().preferredVideoLimit!!
+        this.currentVideoLimit = VideoLimit(prevVideoLimit!!)
         return true
     }
 

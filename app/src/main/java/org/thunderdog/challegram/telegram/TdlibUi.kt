@@ -2498,7 +2498,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                     val host = uri.getHost()
                     val path = uri.getPath()
                     if (!isEmpty(host) && path != null && path.length > 1) {
-                        when (Settings.instance().getInstantViewMode()) {
+                        when (Settings.instance().instantViewMode) {
                             Settings.INSTANT_VIEW_MODE_INTERNAL -> ok = tdlib.isKnownHost(host, true)
                             Settings.INSTANT_VIEW_MODE_ALL -> ok = true
                         }
@@ -3779,7 +3779,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
      * If no proxies available, opens proxy add screen.
      */
     fun openProxySettings(context: TdlibDelegate, needProxyHint: Boolean) {
-        if (Settings.instance().getAvailableProxyCount() == 0) {
+        if (Settings.instance().availableProxyCount == 0) {
             addNewProxy(context, needProxyHint)
         } else {
             context.context().navigation().navigateTo(SettingsProxyController(context.context(), context.tdlib()))
@@ -7141,9 +7141,9 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
     fun getEmojiStickers(stickerType: StickerType, query: String?, isComplexQuery: Boolean, limit: Int, chatId: Long): EmojiStickers {
         var mode: Int
         if (stickerType.getConstructor() == TdApi.StickerTypeCustomEmoji.CONSTRUCTOR) {
-            mode = Settings.instance().getEmojiMode()
+            mode = Settings.instance().emojiMode
         } else {
-            mode = Settings.instance().getStickerMode()
+            mode = Settings.instance().stickerMode
         }
         if (tdlib.suggestOnlyApiStickers() && mode == Settings.STICKER_MODE_ALL) {
             mode = Settings.STICKER_MODE_ONLY_INSTALLED
