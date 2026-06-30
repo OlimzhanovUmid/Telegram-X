@@ -4548,7 +4548,7 @@ class Tdlib internal constructor(account: TdlibAccount, @field:Mode @param:Mode 
         val remaining = AtomicInteger()
         val emojiReactionWatcher: TdlibEmojiReactionsManager.Watcher =
             object : TdlibEmojiReactionsManager.Watcher {
-                override fun onEntryLoaded(context: TdlibDataManager<String, TdApi.EmojiReaction, TdlibEmojiReactionsManager.Entry>?, entry: TdlibEmojiReactionsManager.Entry?) {
+                override fun onEntryLoaded(context: TdlibDataManager<String, TdApi.EmojiReaction, TdlibEmojiReactionsManager.Entry>, entry: TdlibEmojiReactionsManager.Entry) {
                     /*if (entry.value != null) {
         synchronized (dataLock) {
           cachedReactions.put(entry.key, new TGReaction(this, entry.value));
@@ -4982,7 +4982,7 @@ class Tdlib internal constructor(account: TdlibAccount, @field:Mode @param:Mode 
         }
         if (customEmojiId != 0L) {
             emoji().findOrRequest(customEmojiId, RunnableData { entry: TdlibEmojiManager.Entry? ->
-                if (entry != null && !entry.isNotFound()) {
+                if (entry != null && !entry.isNotFound) {
                     val customEmojiSticker = entry.value
                     val animatedEmoji = MessageAnimatedEmoji(
                         AnimatedEmoji(customEmojiSticker, customEmojiSticker!!.width, customEmojiSticker.height, 0, null),
@@ -10332,7 +10332,7 @@ class Tdlib internal constructor(account: TdlibAccount, @field:Mode @param:Mode 
         val newEmojiStatusId = emojiStatus.customEmojiId()
         val emojiEntry = if (newEmojiStatusId != 0L) emoji().find(newEmojiStatusId) else null
         val accentColor = cache().userAccentColor(user)
-        val emojiStatusSticker = if (emojiEntry != null && !emojiEntry.isNotFound()) emojiEntry.value else null
+        val emojiStatusSticker = if (emojiEntry != null && !emojiEntry.isNotFound) emojiEntry.value else null
 
         account()!!.storeUserInformation(user, if (accentColor != null) accentColor.getRemoteAccentColor() else null, emojiStatusSticker)
         downloadMyProfilePhoto(user)
@@ -10387,7 +10387,7 @@ class Tdlib internal constructor(account: TdlibAccount, @field:Mode @param:Mode 
         myEmojiStatusId = newEmojiStatusId
         if (newEmojiStatusId != 0L) {
             emoji().findOrRequest(newEmojiStatusId, RunnableData { entry: TdlibEmojiManager.Entry? ->
-                if (!entry!!.isNotFound() && newEmojiStatusId == myEmojiStatusId) {
+                if (!entry!!.isNotFound && newEmojiStatusId == myEmojiStatusId) {
                     account()!!.storeUserEmojiStatusMetadata(newEmojiStatusId, entry.value!!)
                     client().send(
                         DownloadFile(entry.value.sticker.id, TdlibFilesManager.PRIORITY_SELF_EMOJI_STATUS, 0, 0, true),
