@@ -989,7 +989,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
           if (inSearchMode()) {
             val input = s.toString()
-            updateClearSearchButton(input.length > 0, true)
+            updateClearSearchButton(input.isNotEmpty(), true)
             if (lastSearchInput != input) {
               lastSearchInput = input
               onSearchInputChanged(input)
@@ -1547,9 +1547,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
 
     val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL.toFloat())
     ll.addView(inputView, params)
-    if (layoutOverride != null) {
-      layoutOverride.runWithData(ll)
-    }
+    layoutOverride?.runWithData(ll)
 
     val alert = AlertDialog.Builder(context, Theme.dialogTheme())
       .setTitle(title)
@@ -1584,33 +1582,33 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
     }
     alert.setCancelable(false)
     val dialog = showAlert(alert)
-    if (dialog!!.window != null) {
+    if (dialog?.window != null) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED)
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED)
       } else {
-        dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
       }
     }
-    var button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+    var button = dialog?.getButton(DialogInterface.BUTTON_POSITIVE)
     button?.setOnClickListener { v: View? ->
       val result = inputView.text.toString()
       if (callback.onAcceptInput(inputView, result)) {
         if (hideKeyboard) {
           Keyboard.hide(inputView.editText)
         }
-        dialog.dismiss()
+        dialog?.dismiss()
       } else {
         inputView.setInErrorState(true)
       }
     }
     if (needReset) {
-      button = dialog.getButton(DialogInterface.BUTTON_NEUTRAL)
+      button = dialog?.getButton(DialogInterface.BUTTON_NEUTRAL)
       button?.setOnClickListener { v: View? ->
         if (callback.onAcceptInput(inputView, defaultValue)) {
           if (hideKeyboard) {
             Keyboard.hide(inputView.editText)
           }
-          dialog.dismiss()
+          dialog?.dismiss()
         } else {
           inputView.setInErrorState(true)
         }
@@ -1683,24 +1681,13 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
     b.setSaveStr(R.string.Share)
     b.setIntDelegate(SettingsIntDelegate { id: Int, result: SparseIntArray? ->
       val resId = result!!.get(id)
-      val time: Int
-      when (resId) {
-          R.id.btn_messageLiveTemp -> {
-            time = 60
-          }
-          R.id.btn_messageLive15Minutes -> {
-            time = 60 * 15
-          }
-          R.id.btn_messageLive1Hour -> {
-            time = 60 * 60
-          }
-          R.id.btn_messageLive8Hours -> {
-            time = 60 * 60 * 8
-          }
-          else -> {
-            return@SettingsIntDelegate
-          }
-      }
+      val time =      when (resId) {
+        R.id.btn_messageLiveTemp -> 60
+        R.id.btn_messageLive15Minutes -> 60 * 15
+        R.id.btn_messageLive1Hour -> 60 * 60
+        R.id.btn_messageLive8Hours -> 60 * 60 * 8
+        else -> null
+      } ?: return@SettingsIntDelegate
       callback.runWithInt(time)
     })
     showSettings(b)
@@ -1772,7 +1759,8 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
   }
 
   fun openLinkAlert(url: String, options: UrlOpenParameters?) {
-    tdlib!!.ui().openUrl(this, url, options?.requireOpenPrompt() ?: UrlOpenParameters().requireOpenPrompt())
+    tdlib!!.ui().openUrl(this, url, options?.requireOpenPrompt()
+      ?: UrlOpenParameters().requireOpenPrompt())
   }
 
   fun openOkAlert(title: String?, message: CharSequence?) {
@@ -2435,25 +2423,23 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
       return null
     }
 
-    val popupLayout = PopupLayout(context)
-
-    popupLayout.tag = this
-    popupLayout.init(true)
-    popupLayout.setDismissOtherPopUps(!options.ignoreOtherPopUps)
-    popupLayout.setNeedFullScreen(true)
-
-    if (delegate != null) {
-      popupLayout.setDisableCancelOnTouchDown(delegate.disableCancelOnTouchdown())
+    val popupLayout = PopupLayout(context).apply {
+      tag = this@ViewController
+      init(true)
+      setDismissOtherPopUps(!options.ignoreOtherPopUps)
+      setNeedFullScreen(true)
+      if (delegate != null) {
+        setDisableCancelOnTouchDown(delegate.disableCancelOnTouchdown())
+      }
     }
 
-    val optionsWrap = OptionsLayout(context(), this, forcedTheme)
-    optionsWrap.setHeader(options.title)
-    if (options.subtitle != null) {
-      optionsWrap.setSubtitle(options.subtitle)
-    }
+    val optionsWrap = OptionsLayout(context(), this, forcedTheme).apply {
+      setHeader(options.title)
+      options.subtitle?.let { setSubtitle(options.subtitle) }
 
-    optionsWrap.setInfo(this, tdlib(), options.info, false, options.maxLineCount)
-    optionsWrap.setLayoutParams(newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM))
+      setInfo(this@ViewController, tdlib(), options.info, false, options.maxLineCount)
+      setLayoutParams(newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM))
+    }
 
     val shadowView = ShadowView(context)
     shadowView.setSimpleTopShadow(true)
@@ -2461,15 +2447,14 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
     addThemeInvalidateListener(shadowView)
 
     // Item generation
-    val onClickListener: View.OnClickListener?
-    if (delegate != null) {
-      onClickListener = View.OnClickListener { v: View? ->
+    val onClickListener = if (delegate != null) {
+      View.OnClickListener { v: View? ->
         if (delegate.onOptionItemPressed(v, v!!.id)) {
           popupLayout.hideWindow(true)
         }
       }
     } else {
-      onClickListener = View.OnClickListener { v: View? ->
+      View.OnClickListener { v: View? ->
         val c = context.navigation().currentStackItem
         if (c is OptionDelegate && (c as OptionDelegate).onOptionItemPressed(v, v!!.id)) {
           popupLayout.hideWindow(true)
@@ -2508,7 +2493,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
       RippleSupport.setTransparentSelector(text)
       forcedTheme?.let { Theme.forceTheme(text, it) }
       text.setLayoutParams(LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Screen.dp(54f)))
-      if (delegate != null) {
+      delegate?.let {
         text.tag = delegate.getTagForItem(index)
       }
       optionsWrap.addView(text)
@@ -2607,13 +2592,11 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
 
     val monthItemsRaw = Lang.getMonths(Lang.locale())
     val monthItems: MutableList<SimpleStringItem?> = ArrayList<SimpleStringItem?>()
-    var currentMonth = 0
-    for (monthItem in monthItemsRaw) {
+    for ((currentMonth, monthItem) in monthItemsRaw.withIndex()) {
       monthItems.add(
         SimpleStringItem(0, monthItem)
           .setArg1(currentMonth.toLong())
       )
-      currentMonth++
     }
 
     val yearItems: MutableList<SimpleStringItem?> = ArrayList<SimpleStringItem?>()
@@ -2633,7 +2616,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
     val monthColumn = ColumnDataPicker.Column(monthItems, StylingOptions(2.5f), month)
     val yearColumn = ColumnDataPicker.Column(yearItems, StylingOptions(1f).setNoPadding(true), yearIndex)
 
-    val columns = Arrays.asList(
+    val columns = listOf(
       dayColumn,
       monthColumn,
       yearColumn
@@ -2675,7 +2658,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
           dayColumn.view.removeRange(maxDayCount, prevMaxDayCount - maxDayCount)
         }
       }
-      if (listener != null) {
+      listener?.let {
         val newDay = getDay.getIntValue()
         val newMonth = getMonth.getIntValue()
         val newYear = getYear.getIntValue()
@@ -2794,14 +2777,16 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
             (cy - h2).toFloat(),
             viewWidth.toFloat(),
             (cy - h2).toFloat(),
-            Paints.strokeSeparatorPaint(forcedTheme?.getColor(ColorId.separator) ?: Theme.separatorColor())
+            Paints.strokeSeparatorPaint(forcedTheme?.getColor(ColorId.separator)
+              ?: Theme.separatorColor())
           )
           c.drawLine(
             0f,
             (cy + h2).toFloat(),
             viewWidth.toFloat(),
             (cy + h2).toFloat(),
-            Paints.strokeSeparatorPaint(forcedTheme?.getColor(ColorId.separator) ?: Theme.separatorColor())
+            Paints.strokeSeparatorPaint(forcedTheme?.getColor(ColorId.separator)
+              ?: Theme.separatorColor())
           )
         }
 
@@ -2853,12 +2838,12 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
           SimpleStringItem(
             0,
             when (day) {
-                0 -> Lang.getString(R.string.Today)
-                1 -> Lang.getString(R.string.Tomorrow)
-                else -> Lang.getDate(
-                  startMillis,
-                  TimeUnit.MILLISECONDS
-                )
+              0 -> Lang.getString(R.string.Today)
+              1 -> Lang.getString(R.string.Tomorrow)
+              else -> Lang.getDate(
+                startMillis,
+                TimeUnit.MILLISECONDS
+              )
             }
           )
             .setArgs(c.get(Calendar.YEAR).toLong(), c.get(Calendar.DAY_OF_YEAR).toLong())
@@ -2909,8 +2894,8 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
           c.add(Calendar.MINUTE, minAddMinutes)
           val hour = c.get(Calendar.HOUR_OF_DAY)
           val minute = c.get(Calendar.MINUTE)
-          hourPickerFinal.get()!!.setCurrentItem(hour)
-          minutePickerFinal.get()!!.setCurrentItem(minute)
+          hourPickerFinal.get()?.setCurrentItem(hour)
+          minutePickerFinal.get()?.setCurrentItem(minute)
         }
         listener.onCurrentIndexChanged(v, index)
       }
