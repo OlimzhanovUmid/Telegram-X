@@ -452,7 +452,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         val isChannel = this.isChannel
 
         val topMessage = top.message
-        if (top.headerDisabled() || top.isSponsoredMessage() != isSponsoredMessage() || (flags and FLAG_SHOW_BADGE) != 0 || !tdlib.isSameSender(
+        if (top.headerDisabled() || top.isSponsoredMessage() != isSponsoredMessage() || (flags and FLAG_SHOW_BADGE) != 0 || !tdlib!!.isSameSender(
                 topMessage,
                 msg!!
             ) || !TD.isSameSource(
@@ -746,7 +746,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     ) {
         if (openingComments.getValue()) return
         openingComments.setValue(true, needAnimateChanges())
-        tdlib.client().send(query, Client.ResultHandler { result: TdApi.Object? ->
+        tdlib!!.client().send(query, Client.ResultHandler { result: TdApi.Object? ->
             runOnUiThreadOptional(Runnable {
                 when (result!!.getConstructor()) {
                     MessageThreadInfo.CONSTRUCTOR -> {
@@ -760,7 +760,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                             )
                         ) {
                             val message = threadInfo.getOldestMessage()
-                            if (message != null && message.replyTo == null && tdlib.isChannelAutoForward(message)) {
+                            if (message != null && message.replyTo == null && tdlib!!.isChannelAutoForward(message)) {
                                 message.replyTo = msg!!.replyTo
                             }
                         }
@@ -781,7 +781,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                                 params.ensureHighlightAvailable()
                             }
                         }
-                        tdlib.ui().openChat(this, messageThread.chatId, params)
+                        tdlib!!.ui().openChat(this, messageThread.chatId, params)
                     }
 
                     TdApi.Error.CONSTRUCTOR -> {
@@ -1162,7 +1162,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                 }
 
                 ChatTypeSupergroup.CONSTRUCTOR -> {
-                    return this.isEventLog || (tdlib.isSupergroupChat(chat) && !this.isOutgoing)
+                    return this.isEventLog || (tdlib!!.isSupergroupChat(chat) && !this.isOutgoing)
                 }
 
                 ChatTypePrivate.CONSTRUCTOR -> {
@@ -1181,7 +1181,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
     protected fun userForId(userId: Long): TdApi.User? {
         if (!msg!!.isOutgoing && this.isDemoChat) return manager.demoParticipant(userId)
-        else return tdlib.cache().user(userId)
+        else return tdlib!!.cache().user(userId)
     }
 
     protected fun needName(): Boolean {
@@ -2613,7 +2613,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                         },
                         Lang.getRelativeDate(
                             this@TGMessage.editDate.toLong(), TimeUnit.SECONDS,
-                            tdlib.currentTimeMillis(), TimeUnit.MILLISECONDS,
+                            tdlib!!.currentTimeMillis(), TimeUnit.MILLISECONDS,
                             true, 60, R.string.message_edited, false
                         ),
                         2500
@@ -2630,10 +2630,10 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                                 if (replyToMessage.chatId == 0L || replyToMessage.messageId == 0L) {
                                     buildContentHint(view, this@TGMessage.replyLocationProvider, false)!!.show(tdlib, Lang.getString(R.string.MessageReplyPrivate))
                                 } else {
-                                    tdlib.ui().openMessage(controller(), replyToMessage.chatId, MessageId(replyToMessage), openParameters())
+                                    tdlib!!.ui().openMessage(controller(), replyToMessage.chatId, MessageId(replyToMessage), openParameters())
                                 }
                             } else if (this@TGMessage.isScheduled) {
-                                tdlib.ui().openMessage(controller(), replyToMessage.chatId, MessageId(replyToMessage), openParameters())
+                                tdlib!!.ui().openMessage(controller(), replyToMessage.chatId, MessageId(replyToMessage), openParameters())
                             } else {
                                 highlightOtherMessage(MessageId(replyToMessage))
                             }
@@ -2835,10 +2835,10 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         get() = msg!!.importInfo != null
 
     val isChannelAutoForward: Boolean
-        get() = tdlib.isChannelAutoForward(msg)
+        get() = tdlib!!.isChannelAutoForward(msg)
 
     val isRepliesChat: Boolean
-        get() = tdlib.isRepliesChat(msg!!.chatId)
+        get() = tdlib!!.isRepliesChat(msg!!.chatId)
 
     val isMessageThread: Boolean
         get() = messagesController().messageThread != null
@@ -2851,7 +2851,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             return
         }
         if (this.chat == null) {
-            this.chat = tdlib.chat(msg!!.chatId)
+            this.chat = tdlib!!.chat(msg!!.chatId)
         }
         hasAvatar = true
         // FIXME: better logic behind this method
@@ -2878,9 +2878,9 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         } else if (isSponsoredMessage()) {
             openSponsoredMessage()
         } else if (sender.isUser()) {
-            tdlib.ui().openPrivateProfile(controller(), sender.getUserId(), openParameters)
+            tdlib!!.ui().openPrivateProfile(controller(), sender.getUserId(), openParameters)
         } else if (sender.isChat()) {
-            tdlib.ui().openChatProfile(controller(), sender.getChatId(), null, openParameters)
+            tdlib!!.ui().openChatProfile(controller(), sender.getChatId(), null, openParameters)
         } else {
             return false
         }
@@ -2927,7 +2927,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         var maxWidth = maxWidth
         if (maxWidth <= 0) return null
         val hasBot = viaBotUserId != 0L
-        val viaBot = if (viaBotUserId != 0L) tdlib.cache().user(viaBotUserId) else null
+        val viaBot = if (viaBotUserId != 0L) tdlib!!.cache().user(viaBotUserId) else null
         var viaBotUsername: String? = ""
         if (hasBot) {
             if (viaBot.hasUsername()) {
@@ -3023,11 +3023,11 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             colorTheme = this.chatAuthorColorSet
         }
 
-        if (!(tdlib.isSelfChat(chat) && forwardInfo != null) && !hasBot && !isForward && sender.isUser()) {
+        if (!(tdlib!!.isSelfChat(chat) && forwardInfo != null) && !hasBot && !isForward && sender.isUser()) {
             hAuthorEmojiStatus = EmojiStatusHelper.makeDrawable(
                 null,
                 tdlib,
-                tdlib.cache().user(sender.getUserId()),
+                tdlib!!.cache().user(sender.getUserId()),
                 colorTheme,
                 Text.TextMediaListener { text1: Text?, specificMedia: TextMedia? -> invalidateEmojiStatusReceiver() })
             hAuthorEmojiStatus!!.invalidateTextMedia()
@@ -4316,7 +4316,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                     return null
                 }
                 if (forwardInfo is TGSourceUser) {
-                    val user = tdlib.cache().user((forwardInfo as TGSourceUser).getSenderUserId())
+                    val user = tdlib!!.cache().user((forwardInfo as TGSourceUser).getSenderUserId())
                     return if (user != null) user.firstName else null
                 }
                 return null
@@ -4635,9 +4635,9 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             } else if (sender.isAnonymousGroupAdmin()) {
                 result =
                     if (!isEmpty(msg!!.authorSignature)) msg!!.authorSignature else Lang.getString(R.string.message_adminSignPlain)
-            } else if (isEmpty(msg!!.authorSignature) && msg!!.chatId != 0L && tdlib.isMultiChat(msg!!.chatId)) {
+            } else if (isEmpty(msg!!.authorSignature) && msg!!.chatId != 0L && tdlib!!.isMultiChat(msg!!.chatId)) {
                 val chatId = sender.getChatId()
-                if (tdlib.isChannel(chatId)) {
+                if (tdlib!!.isChannel(chatId)) {
                     result = null //Lang.getString(R.string.message_channelSign);
                 } else if (isMultiChat(chatId)) {
                     result = Lang.getString(R.string.message_groupSign)
@@ -4682,7 +4682,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         get() = if (event != null && event!!.event.date != 0) event!!.event.date else if (msg!!.schedulingState != null) (if (msg!!.schedulingState!!.getConstructor() == MessageSchedulingStateSendAtDate.CONSTRUCTOR) (msg!!.schedulingState as MessageSchedulingStateSendAtDate).sendDate else 0) else msg!!.date
 
     val isSending: Boolean
-        get() = msg!!.sendingState != null && msg!!.sendingState!!.getConstructor() == TdApi.MessageSendingStatePending.CONSTRUCTOR && !tdlib.qack()
+        get() = msg!!.sendingState != null && msg!!.sendingState!!.getConstructor() == TdApi.MessageSendingStatePending.CONSTRUCTOR && !tdlib!!.qack()
             .isMessageAcknowledged(msg!!.chatId, msg!!.id)
 
     val isPsa: Boolean
@@ -4740,12 +4740,12 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
     val isChatMember: Boolean
         get() {
-            val chat = tdlib.chat(this.chatId)
+            val chat = tdlib!!.chat(this.chatId)
             if (chat != null) {
                 when (chat.type.getConstructor()) {
                     ChatTypePrivate.CONSTRUCTOR, TdApi.ChatTypeSecret.CONSTRUCTOR, TdApi.ChatTypeBasicGroup.CONSTRUCTOR -> return true
                     ChatTypeSupergroup.CONSTRUCTOR -> {
-                        val status = tdlib.chatStatus(chat.id)
+                        val status = tdlib!!.chatStatus(chat.id)
                         return status != null && TD.isMember(status, false)
                     }
                 }
@@ -4811,7 +4811,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         if (isSponsoredMessage()) {
             return sponsoredMessage!!.canBeReported
         } else {
-            return !this.isSelfChat && msg!!.sendingState == null && !msg!!.isOutgoing && tdlib.canReportChatSpam(msg!!.chatId) && !this.isEventLog
+            return !this.isSelfChat && msg!!.sendingState == null && !msg!!.isOutgoing && tdlib!!.canReportChatSpam(msg!!.chatId) && !this.isEventLog
         }
     }
 
@@ -4868,7 +4868,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     }
 
     fun canBeReacted(): Boolean {
-        return !isSponsoredMessage() && !this.isEventLog && !messageAvailableReactions.isEmpty() && (tdlib.hasPremium() || messageAvailableReactions!!.hasNonPremiumReactions())
+        return !isSponsoredMessage() && !this.isEventLog && !messageAvailableReactions.isEmpty() && (tdlib!!.hasPremium() || messageAvailableReactions!!.hasNonPremiumReactions())
     }
 
     open fun canBeSaved(): Boolean {
@@ -4883,7 +4883,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         var chat = this.chat
         val messageThread = messagesController().messageThread
         if (chat == null) {
-            chat = tdlib.chat(msg!!.chatId)
+            chat = tdlib!!.chat(msg!!.chatId)
             setChatData(chat!!, messageThread)
         }
         val lastReadMessageId: Long
@@ -4936,7 +4936,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
             highlightUnreadReactions()
             highlight(true)
-            tdlib.ui().postDelayed(Runnable {
+            tdlib!!.ui().postDelayed(Runnable {
                 flags = setFlag(flags, FLAG_IGNORE_REACTIONS_VIEW, false)
             }, 500L)
 
@@ -5048,7 +5048,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         /*if (replyData != null && TD.isMultiChat(chat)) {
       replyData.setUseColorize(!useBubbles());
     }*/
-        if (tdlib.isChannelChat(chat)) {
+        if (tdlib!!.isChannelChat(chat)) {
             if (replyData != null) {
                 replyData!!.setChannelTitle(chat.title)
             }
@@ -5061,7 +5061,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             when (chat!!.type.getConstructor()) {
                 ChatTypePrivate.CONSTRUCTOR -> {
                     val userId = (chat!!.type as ChatTypePrivate).userId
-                    return tdlib.isSelfUserId(userId) || tdlib.cache().userBot(userId)
+                    return tdlib!!.isSelfUserId(userId) || tdlib!!.cache().userBot(userId)
                 }
             }
         }
@@ -5069,7 +5069,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     }
 
     private val isSelfChat: Boolean
-        get() = chat != null && chat!!.type.getConstructor() == ChatTypePrivate.CONSTRUCTOR && tdlib.isSelfUserId((chat!!.type as ChatTypePrivate).userId)
+        get() = chat != null && chat!!.type.getConstructor() == ChatTypePrivate.CONSTRUCTOR && tdlib!!.isSelfUserId((chat!!.type as ChatTypePrivate).userId)
 
     fun needMessageButton(): Boolean {
         return ((flags and FLAG_SELF_CHAT) != 0 || this.isChannelAutoForward || this.isRepliesChat) && msg!!.forwardInfo.hasMessageSource() && msg!!.forwardInfo!!.source!!.chatId != msg!!.chatId
@@ -5082,7 +5082,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                 val replyToMessageId = msg!!.replyTo.toMessageId()
                 openMessageThread(replyMessageId, replyToMessageId)
             } else {
-                tdlib.ui().openMessage(controller(), msg!!.forwardInfo!!.source!!.chatId, MessageId(msg!!.forwardInfo!!.source!!), openParameters())
+                tdlib!!.ui().openMessage(controller(), msg!!.forwardInfo!!.source!!.chatId, MessageId(msg!!.forwardInfo!!.source!!), openParameters())
             }
         }
     }
@@ -5264,7 +5264,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
     fun readContent() {
         if (!this.isEventLog) {
-            tdlib.send<TdApi.Ok?>(OpenMessageContent(msg!!.chatId, msg!!.id), tdlib.typedOkHandler())
+            tdlib!!.send<TdApi.Ok?>(OpenMessageContent(msg!!.chatId, msg!!.id), tdlib!!.typedOkHandler())
             if (!this.isOutgoing) {
                 startHotTimer(true)
             }
@@ -5420,7 +5420,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     }
 
     fun setMessagePendingContentChanged(chatId: Long, messageId: Long): Int {
-        val pending = tdlib.getPendingMessageMedia(chatId, messageId)
+        val pending = tdlib!!.getPendingMessageMedia(chatId, messageId)
         if (pending != null && pending.getFile() != null && !isSupportedMessagePendingContent(pending)) {
             return MESSAGE_REPLACE_REQUIRED
         }
@@ -5530,7 +5530,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         }
         if (reactionsCounter != null) {
             var count = messageReactions.getTotalCount()
-            if (tdlib.isUserChat(msg!!.chatId) && messageReactions.getReactions() != null && (count == 1 || messageReactions.getReactions()
+            if (tdlib!!.isUserChat(msg!!.chatId) && messageReactions.getReactions() != null && (count == 1 || messageReactions.getReactions()
                     .reactionTypesCount() > 1)
             ) {
                 count = 0
@@ -7295,7 +7295,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                         user =
                             if (m.forwardInfo!!.origin.getConstructor() == MessageOriginUser.CONSTRUCTOR) (this@TGMessage.forwardInfo as TGSourceUser).getUser() else null
                     } else {
-                        user = if (sender.isUser()) tdlib.cache().user(sender.getUserId()) else null
+                        user = if (sender.isUser()) tdlib!!.cache().user(sender.getUserId()) else null
                     }
                     messagesController().sendCommand(
                         command,
@@ -7442,7 +7442,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                 }
             }, timeoutMs)
         }
-        tdlib.send<MessageReadDate?>(GetMessageReadDate(msg!!.chatId, msg!!.id), Tdlib.ResultHandler { readDate: MessageReadDate?, error: TdApi.Error? ->
+        tdlib!!.send<MessageReadDate?>(GetMessageReadDate(msg!!.chatId, msg!!.id), Tdlib.ResultHandler { readDate: MessageReadDate?, error: TdApi.Error? ->
             if (readDate != null) {
                 this.readDate = readDate
             }
@@ -7454,7 +7454,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     }
 
     fun loadAvailableReactions(after: Runnable) {
-        tdlib.send<AvailableReactions?>(
+        tdlib!!.send<AvailableReactions?>(
             GetMessageAvailableReactions(
                 msg!!.chatId,
                 this.smallestId, 25
@@ -7462,7 +7462,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                 if (error != null) {
                     runOnUiThreadOptional(after)
                 } else {
-                    tdlib.ensureReactionsAvailable(availableReactions!!, RunnableBool { reactionsUpdated: Boolean ->
+                    tdlib!!.ensureReactionsAvailable(availableReactions!!, RunnableBool { reactionsUpdated: Boolean ->
                         messageAvailableReactions = availableReactions
                         computeQuickButtons()
                         runOnUiThreadOptional(after)
@@ -7475,11 +7475,11 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     fun lastMessageProperties(messageId: Long): MessageProperties {
         var properties = if (cachedProperties != null) cachedProperties!!.get(messageId) else null
         if (properties == null) {
-            if (tdlib.inTdlibThread()) {
+            if (tdlib!!.inTdlibThread()) {
                 onTdlibHandlerError(AssertionError("Can't access message properties here"))
                 throw IllegalStateException()
             }
-            properties = tdlib.getMessagePropertiesSync(this.chatId, messageId)
+            properties = tdlib!!.getMessagePropertiesSync(this.chatId, messageId)
             cacheMessageProperties(messageId, properties)
         }
         return properties
@@ -7549,7 +7549,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         }
 
     fun getMessageAvailableReactions(): Array<AvailableReaction?>? {
-        val hasPremium = tdlib.hasPremium()
+        val hasPremium = tdlib!!.hasPremium()
         val availableReactions: AvailableReactions? = messageAvailableReactions
         if (availableReactions == null) return null
         val addedReactions: MutableSet<String?> = HashSet<String?>()
@@ -7576,7 +7576,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             return null
         }
         val sortedReactions: MutableList<AvailableReaction?> = ArrayList<AvailableReaction?>(reactions)
-        val activeEmojiReactions = tdlib.getActiveEmojiReactions()
+        val activeEmojiReactions = tdlib!!.getActiveEmojiReactions()
         if (activeEmojiReactions != null && !activeEmojiReactions.isEmpty()) {
             Collections.sort<AvailableReaction?>(sortedReactions, Comparator { a: AvailableReaction?, b: AvailableReaction? ->
                 val aPriority: Int = getPriority(a!!.type)
@@ -7613,14 +7613,14 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
     // Utils
     fun runOnUiThread(act: Runnable) {
-        tdlib.ui().post(act)
+        tdlib!!.ui().post(act)
     }
 
     fun runOnUiThread(act: Runnable, delayMillis: Long) {
         if (delayMillis > 0) {
-            tdlib.ui().postDelayed(act, delayMillis)
+            tdlib!!.ui().postDelayed(act, delayMillis)
         } else {
-            tdlib.ui().post(act)
+            tdlib!!.ui().post(act)
         }
     }
 
@@ -7662,12 +7662,12 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     }
 
     private fun canSendReaction(reactionType: ReactionType): Boolean {
-        return canBeReacted() && !tdlib.isSelfChat(msg!!.chatId) && messageAvailableReactions!!.isAvailable(reactionType)
+        return canBeReacted() && !tdlib!!.isSelfChat(msg!!.chatId) && messageAvailableReactions!!.isAvailable(reactionType)
     }
 
     private fun computeQuickButtons() {
         if (!UI.inUiThread()) {
-            tdlib.ui().post(Runnable { this.computeQuickButtons() })
+            tdlib!!.ui().post(Runnable { this.computeQuickButtons() })
             return
         }
 
@@ -7709,7 +7709,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             val reactionString = quickReactions[a]
             val reactionType = TD.toReactionType(reactionString)
             val canReact = canSendReaction(reactionType)
-            val reactionObj = tdlib.getReaction(reactionType)
+            val reactionObj = tdlib!!.getReaction(reactionType)
             if (reactionObj != null && canReact) {
                 val reactionDrawable = ReactionDrawable(reactionObj, Screen.dp(48f), Screen.dp(48f))
                 reactionDrawable.setComplexReceiver(currentComplexReceiver)
@@ -7717,7 +7717,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
                 val isOdd = a % 2 == 1
                 val quickReaction = SwipeQuickAction(reactionObj.getTitle(), reactionDrawable, Runnable {
                     val hasReaction = messageReactions!!.hasReaction(reactionType)
-                    if (Config.DISABLE_ANONYMOUS_NON_OWNER_REACTIONS && !hasReaction && tdlib.isAnonymousAdminNonCreator(msg!!.chatId)) {
+                    if (Config.DISABLE_ANONYMOUS_NON_OWNER_REACTIONS && !hasReaction && tdlib!!.isAnonymousAdminNonCreator(msg!!.chatId)) {
                         showContentHint(findCurrentView(), null, R.string.error_ANONYMOUS_REACTIONS_DISABLED)
                     } else if (!Config.PROTECT_ANONYMOUS_REACTIONS || hasReaction || !canGetAddedReactions() || messagesController().callNonAnonymousProtection(
                             this.id + reactionObj.hashCode(), null
@@ -7806,7 +7806,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             }
 
             val headerEnabled = hasFlag(flags, FLAG_HEADER_ENABLED)
-            val isUserChat = tdlib.isUserChat(this.chatId)
+            val isUserChat = tdlib!!.isUserChat(this.chatId)
 
             if (!useBubbles() && (this.isChannel || (!headerEnabled && !isUserChat))) {
                 return REACTIONS_DRAW_MODE_ONLY_ICON
@@ -7853,7 +7853,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             .build()
 
         var count = messageReactions!!.getTotalCount()
-        if (tdlib.isUserChat(msg!!.chatId) && messageReactions.getReactions() != null && (count == 1 || messageReactions.getReactions()
+        if (tdlib!!.isUserChat(msg!!.chatId) && messageReactions.getReactions() != null && (count == 1 || messageReactions.getReactions()
                 .reactionTypesCount() > 1)
         ) {
             count = 0
@@ -8094,7 +8094,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
     fun startReactionBubbleAnimation(reactionType: ReactionType?) {
         val view = findCurrentView()
-        val tgReaction = tdlib.getReaction(reactionType)
+        val tgReaction = tdlib!!.getReaction(reactionType)
         if (tgReaction == null || view == null) {
             return
         }
@@ -8122,7 +8122,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         if (overlaySticker != null && !Config.TEST_GENERIC_REACTION_EFFECTS) {
             act.runWithData(overlaySticker)
         } else {
-            tdlib.pickRandomGenericOverlaySticker(RunnableData { sticker: Sticker? ->
+            tdlib!!.pickRandomGenericOverlaySticker(RunnableData { sticker: Sticker? ->
                 if (sticker != null) {
                     val genericOverlaySticker = TGStickerObj(tdlib, sticker, null, sticker.fullType)
                         .setReactionType(tgReaction.type)
@@ -8253,9 +8253,9 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     private fun handler(v: View?, entry: MessageReactionEntry?, onSuccess: Runnable): Client.ResultHandler {
         return Client.ResultHandler { `object`: TdApi.Object? ->
             when (`object`!!.getConstructor()) {
-                TdApi.Ok.CONSTRUCTOR -> tdlib.ui().post(onSuccess)
+                TdApi.Ok.CONSTRUCTOR -> tdlib!!.ui().post(onSuccess)
                 TdApi.Error.CONSTRUCTOR -> {
-                    tdlib.ui().post(Runnable { onSendError(v, entry, `object` as TdApi.Error) })
+                    tdlib!!.ui().post(Runnable { onSendError(v, entry, `object` as TdApi.Error) })
                     cancelScheduledSetReactionAnimation()
                 }
             }
@@ -8409,7 +8409,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         initPaints()
 
         this.manager = manager
-        this.tdlib = manager.controller().tdlib()
+        this.tdlib = manager.controller().tdlib()!!
 
         this.mTranslationsManager = TranslationsManager(
             tdlib,
@@ -8433,7 +8433,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             TGReactions(this, tdlib, if (msg.interactionInfo != null) msg.interactionInfo!!.reactions else null, object : MessageReactionsDelegate {
                 override fun onClick(v: View?, entry: MessageReactionEntry) {
                     val hasReaction = messageReactions!!.hasReaction(entry.getReactionType())
-                    if (Config.DISABLE_ANONYMOUS_NON_OWNER_REACTIONS && !hasReaction && tdlib.isAnonymousAdminNonCreator(msg.chatId)) {
+                    if (Config.DISABLE_ANONYMOUS_NON_OWNER_REACTIONS && !hasReaction && tdlib!!.isAnonymousAdminNonCreator(msg.chatId)) {
                         showReactionBubbleTooltip(v, entry, Lang.getString(R.string.error_ANONYMOUS_REACTIONS_DISABLED))
                     } else if (!Config.PROTECT_ANONYMOUS_REACTIONS || hasReaction || messagesController().callNonAnonymousProtection(
                             this@TGMessage.id + entry.hashCode(), this@TGMessage, getReactionBubbleLocationProvider(entry)
@@ -8480,7 +8480,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         } else {
             var sender = msg.senderId
             requireNotNull(sender)
-            if (tdlib.isSelfChat(msg.chatId)) {
+            if (tdlib!!.isSelfChat(msg.chatId)) {
                 flags = flags or FLAG_SELF_CHAT
                 if (msg.forwardInfo != null) {
                     when (msg.forwardInfo!!.origin.getConstructor()) {
@@ -8538,7 +8538,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         if (msg.isChannelPost || (msg.forwardInfo != null && (msg.forwardInfo!!.origin.getConstructor() == MessageOriginChannel.CONSTRUCTOR || TD.getViewCount(
                 msg.interactionInfo
             ) > 1 ||
-                    tdlib.isChannel(msg.forwardInfo!!.source) ||
+                    tdlib!!.isChannel(msg.forwardInfo!!.source) ||
                     this.sender.isChannel()
                     ))
         ) {
@@ -8603,7 +8603,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         this.time = genTime()
 
         if (msg.viaBotUserId != 0L) {
-            val viaBot = tdlib.cache().user(msg.viaBotUserId)
+            val viaBot = tdlib!!.cache().user(msg.viaBotUserId)
             if (viaBot != null && viaBot.hasUsername()) {
                 this.viaBotUsername = "@" + viaBot.primaryUsername()
             } else {
@@ -8768,20 +8768,20 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         if (reaction.usedSenderId.equalsTo(sender)) {
             return true
         }
-        if (tdlib.isSelfSender(sender)
+        if (tdlib!!.isSelfSender(sender)
             || this.chatId == sender.getSenderId() || sender.equalsTo(this.inReplyToSender)
         ) {
             return true
         }
 
         val userId = sender.getSenderUserId()
-        val user = if (userId != 0L) tdlib.cache().user(userId) else null
+        val user = if (userId != 0L) tdlib!!.cache().user(userId) else null
         if (user != null && (user.isContact || user.isCloseFriend || TD.containsMention(messageText, user))) {
             return true
         }
 
-        val supergroup = tdlib.chatToSupergroup(currentChatId)
-        if (tdlib.chatMemberCount(currentChatId) < 50 && (supergroup == null || (!supergroup.hasLocation && !supergroup.hasLinkedChat && supergroup.usernames.isEmpty()))) {
+        val supergroup = tdlib!!.chatToSupergroup(currentChatId)
+        if (tdlib!!.chatMemberCount(currentChatId) < 50 && (supergroup == null || (!supergroup.hasLocation && !supergroup.hasLinkedChat && supergroup.usernames.isEmpty()))) {
             return true
         }
 
@@ -8795,7 +8795,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
     fun trackSponsoredMessageClicked() {
         if (isSponsoredMessage()) {
-            tdlib.client().send(ClickChatSponsoredMessage(msg!!.chatId, sponsoredMessage!!.messageId, false, false), tdlib.silentHandler())
+            tdlib!!.client().send(ClickChatSponsoredMessage(msg!!.chatId, sponsoredMessage!!.messageId, false, false), tdlib!!.silentHandler())
         }
     }
 
@@ -8817,7 +8817,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
         if (onFinishProgress != null) {
             openParameters.openPromptCancellationCallback = onFinishProgress
         }
-        tdlib.ui().openUrl(this, sponsoredMessage!!.sponsor.url, openParameters, after)
+        tdlib!!.ui().openUrl(this, sponsoredMessage!!.sponsor.url, openParameters, after)
     }
 
 
@@ -9499,16 +9499,16 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
         // Other
         fun toFakeMessage(manager: MessagesManager, inChatId: Long, sponsoredMessage: SponsoredMessage): TdApi.Message {
-            val tdlib = manager.controller().tdlib()
+            val tdlib = manager.controller().tdlib()!!
             val fakeMessage = TdApi.Message()
             fakeMessage.chatId = inChatId
             fakeMessage.id = sponsoredMessage.messageId
             fakeMessage.canBeSaved = true
             fakeMessage.content = sponsoredMessage.content
             fakeMessage.authorSignature = Lang.getString(if (sponsoredMessage.isRecommended) R.string.RecommendedSign else R.string.SponsoredSign)
-            fakeMessage.isChannelPost = tdlib.isChannel(inChatId)
+            fakeMessage.isChannelPost = tdlib!!.isChannel(inChatId)
             val type: InlineKeyboardButtonType?
-            if (tdlib.isTmeUrl(sponsoredMessage.sponsor.url)) {
+            if (tdlib!!.isTmeUrl(sponsoredMessage.sponsor.url)) {
                 type = InlineKeyboardButtonTypeCallback()
             } else {
                 type = InlineKeyboardButtonTypeUrl()
@@ -9636,8 +9636,8 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
                 val allowAnimatedEmoji = !Settings.instance().getNewSetting(Settings.SETTING_FLAG_NO_ANIMATED_EMOJI)
                 val allowNonBubbleEmoji = Settings.instance().useBigEmoji()
-                val pendingMedia = tdlib.getPendingMessageMedia(msg.chatId, msg.id)
-                val pendingContent = tdlib.getPendingMessageText(msg.chatId, msg.id)
+                val pendingMedia = tdlib!!.getPendingMessageMedia(msg.chatId, msg.id)
+                val pendingContent = tdlib!!.getPendingMessageText(msg.chatId, msg.id)
 
                 if (pendingMedia != null && pendingMedia.getFile() != null) {
                     if (pendingMedia.isPhoto()) {
@@ -9975,10 +9975,10 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             b.append("Screen: ").append(Screen.widestSide()).append("x").append(Screen.smallestSide()).append("x").append(Screen.density()).append("\n")
 
             val tdlib = context.controller().tdlib()
-            val chat = tdlib.chat(msg.chatId)
+            val chat = tdlib!!.chat(msg.chatId)
             if (chat != null) {
                 if (chat.type.getConstructor() == ChatTypeSupergroup.CONSTRUCTOR) {
-                    val supergroup = tdlib.chatToSupergroup(msg.chatId)
+                    val supergroup = tdlib!!.chatToSupergroup(msg.chatId)
                     if (supergroup != null && supergroup.hasUsername()) {
                         b.append("Public post: t.me/").append(supergroup.primaryUsername()).append('/').append(msg.id shr 20).append("\n")
                     }

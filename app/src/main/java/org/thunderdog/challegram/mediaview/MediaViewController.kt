@@ -473,13 +473,13 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     override fun provideInlineSearchChat(v: InputView?): Chat? {
         val chatId = getArgumentsStrict().receiverChatId
         if (chatId != 0L) {
-            return tdlib.chat(chatId)
+            return tdlib!!.chat(chatId)
         }
         return null
     }
 
     override fun provideInlineSearchChatUserId(v: InputView?): Long {
-        val chat = tdlib.chat(provideInlineSearchChatId(v))
+        val chat = tdlib!!.chat(provideInlineSearchChatId(v))
         return if (chat != null) TD.getUserId(chat) else 0
     }
 
@@ -652,7 +652,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
 
                 emojiLayout = keyboardFrameLayout!!.contentView.emojiLayout
                 emojiLayout!!.initWithMediasEnabled(this, false, this, this, false) // FIXME shall we use dark mode?
-                emojiLayout!!.setAllowPremiumFeatures(tdlib.isSelfChat(getOutputChatId()))
+                emojiLayout!!.setAllowPremiumFeatures(tdlib!!.isSelfChat(getOutputChatId()))
                 emojiLayout!!.setLayoutParams(newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
                 bottomWrap!!.addView(keyboardFrameLayout)
             }
@@ -1511,7 +1511,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
 
     private fun canEdit(): Boolean {
         val current = stack!!.getCurrent()
-        return (mode == MODE_MESSAGES || mode == MODE_SIMPLE) && current != null && !current.isVideo() && !current.isGifType() && (current.canBeShared() && current.canBeSaved() && !tdlib.hasRestriction(
+        return (mode == MODE_MESSAGES || mode == MODE_SIMPLE) && current != null && !current.isVideo() && !current.isGifType() && (current.canBeShared() && current.canBeSaved() && !tdlib!!.hasRestriction(
             current.getSourceChatId(),
             RightId.SEND_PHOTOS
         ))
@@ -1557,10 +1557,10 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
 
         val item = stack!!.getCurrent()
 
-        val chat = tdlib.chat(item.getSourceChatId())
+        val chat = tdlib!!.chat(item.getSourceChatId())
         val message = item.getMessage()
 
-        if (message != null && tdlib.canEditMedia(message, tdlib.getMessagePropertiesSync(message), true)) {
+        if (message != null && tdlib!!.canEditMedia(message, tdlib!!.getMessagePropertiesSync(message), true)) {
             ids.append(R.id.btn_replace)
             strings.append(if (item.isVideo()) R.string.ReplaceVideo else R.string.ReplaceImage)
         }
@@ -1584,7 +1584,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             strings.append(R.string.SaveGif)
         }
 
-        if (!isEmpty(getArgumentsStrict().copyLink) || (chat != null && tdlib.canCopyPostLink(item.getMessage()))) {
+        if (!isEmpty(getArgumentsStrict().copyLink) || (chat != null && tdlib!!.canCopyPostLink(item.getMessage()))) {
             ids.append(R.id.btn_copyLink)
             strings.append(R.string.CopyLink)
         }
@@ -1599,10 +1599,10 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             strings.append(R.string.Report)
         }
 
-        val isSelfProfile = mode == MODE_PROFILE && tdlib.isSelfSender(item.getSourceSender())
+        val isSelfProfile = mode == MODE_PROFILE && tdlib!!.isSelfSender(item.getSourceSender())
         var canDelete = isSelfProfile
         if (!canDelete && mode == MODE_CHAT_PROFILE) {
-            canDelete = chat != null && tdlib.canChangeInfo(chat)
+            canDelete = chat != null && tdlib!!.canChangeInfo(chat)
         }
         if (isSelfProfile && stack!!.getCurrentIndex() != 0) {
             ids.append(R.id.btn_setProfilePhoto)
@@ -1643,7 +1643,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         val item = stack!!.getCurrent()
         if (id == R.id.btn_saveToGallery) {
             val file = item.getTargetFile()
-            tdlib.files().isFileLoadedAndExists(file, RunnableBool { isLoadedAndExists: Boolean ->
+            tdlib!!.files().isFileLoadedAndExists(file, RunnableBool { isLoadedAndExists: Boolean ->
                 if (isLoadedAndExists) {
                     runOnUiThreadOptional(Runnable {
                         U.copyToGallery(
@@ -1657,7 +1657,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         } else if (id == R.id.btn_saveGif) {
             val file = item.getTargetFile()
             if (file != null) {
-                tdlib.ui().saveGif(file.id)
+                tdlib!!.ui().saveGif(file.id)
             }
         } else if (id == R.id.btn_messageReport) {
             val message = item.getMessage()
@@ -1667,13 +1667,13 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                 val chatId = item.getSourceSender().getSenderId()
                 val act = RunnableData { photoSize: PhotoSize? ->
                     if (photoSize != null) {
-                        tdlib.ui().post(Runnable { TdlibUi.reportChatPhoto(this, chatId, photoSize.photo.id, null, this@MediaViewController.forcedTheme) }
+                        tdlib!!.ui().post(Runnable { TdlibUi.reportChatPhoto(this, chatId, photoSize.photo.id, null, this@MediaViewController.forcedTheme) }
                         )
                     }
                 }
                 when (getType(chatId)) {
                     TdApi.ChatTypeBasicGroup.CONSTRUCTOR -> {
-                        tdlib.cache().basicGroupFull(toBasicGroupId(chatId), RunnableData { groupFull: BasicGroupFullInfo? ->
+                        tdlib!!.cache().basicGroupFull(toBasicGroupId(chatId), RunnableData { groupFull: BasicGroupFullInfo? ->
                             if (groupFull != null && groupFull.photo != null) {
                                 act.runWithData(groupFull.photo!!.sizes.findBiggest())
                             }
@@ -1681,8 +1681,8 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                     }
 
                     TdApi.ChatTypePrivate.CONSTRUCTOR, TdApi.ChatTypeSecret.CONSTRUCTOR -> {
-                        val userId = tdlib.chatUserId(chatId)
-                        tdlib.cache().userFull(userId, RunnableData { userFull: UserFullInfo? ->
+                        val userId = tdlib!!.chatUserId(chatId)
+                        tdlib!!.cache().userFull(userId, RunnableData { userFull: UserFullInfo? ->
                             if (userFull != null && userFull.photo != null) {
                                 act.runWithData(userFull.photo!!.sizes.findBiggest())
                             }
@@ -1690,7 +1690,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                     }
 
                     TdApi.ChatTypeSupergroup.CONSTRUCTOR -> {
-                        tdlib.cache().supergroupFull(toSupergroupId(chatId), RunnableData { supergroupFull: SupergroupFullInfo? ->
+                        tdlib!!.cache().supergroupFull(toSupergroupId(chatId), RunnableData { supergroupFull: SupergroupFullInfo? ->
                             if (supergroupFull != null && supergroupFull.photo != null) {
                                 act.runWithData(supergroupFull.photo!!.sizes.findBiggest())
                             }
@@ -1702,8 +1702,8 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             if (!isEmpty(getArgumentsStrict().copyLink)) {
                 UI.copyText(getArgumentsStrict().copyLink, R.string.CopiedLink)
             } else if (item.getSourceChatId() != 0L) {
-                if (tdlib.canCopyPostLink(item.getMessage())) {
-                    tdlib.getMessageLink(
+                if (tdlib!!.canCopyPostLink(item.getMessage())) {
+                    tdlib!!.getMessageLink(
                         item.getMessage(),
                         false,
                         topicId.messageThreadId() != 0L,
@@ -1745,7 +1745,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                             isSecret(item.getSourceChatId())
                         )
                         UI.post(Runnable {
-                            tdlib.editMessageMedia(item.getSourceChatId(), item.getSourceMessageId(), content, LocalPickedFile(file.imageGalleryFile, null))
+                            tdlib!!.editMessageMedia(item.getSourceChatId(), item.getSourceMessageId(), content, LocalPickedFile(file.imageGalleryFile, null))
                             forceClose()
 
                             val c = context.navigation().getCurrentStackItem()
@@ -1779,28 +1779,28 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                 when (mode) {
                     MODE_PROFILE -> {
                         val userId = stack!!.getCurrent().getSourceSender().getSenderUserId()
-                        val userName = tdlib.cache().userName(userId)
+                        val userName = tdlib!!.cache().userName(userId)
                         if (!isEmpty(userName)) {
                             exportCaption = Lang.getString(R.string.ShareTextProfile, userName)
                         }
-                        val username = tdlib.cache().userUsername(userId)
+                        val username = tdlib!!.cache().userUsername(userId)
                         if (!isEmpty(username)) {
-                            exportCaption = Lang.getString(R.string.format_ShareTextSignature, exportCaption, tdlib.tMeUrl(username))
+                            exportCaption = Lang.getString(R.string.format_ShareTextSignature, exportCaption, tdlib!!.tMeUrl(username))
                         }
                     }
 
                     MODE_CHAT_PROFILE -> {
                         val chatId = stack!!.getCurrent().getSourceChatId()
-                        val chatTitle = tdlib.chatTitle(chatId)
+                        val chatTitle = tdlib!!.chatTitle(chatId)
                         if (!isEmpty(chatTitle)) {
-                            if (tdlib.isChannel(chatId)) {
+                            if (tdlib!!.isChannel(chatId)) {
                                 exportCaption = Lang.getString(R.string.ShareTextChannel, chatTitle)
                             } else {
                                 exportCaption = Lang.getString(R.string.ShareTextChat, chatTitle)
                             }
-                            val username = tdlib.chatUsername(chatId)
+                            val username = tdlib!!.chatUsername(chatId)
                             if (!isEmpty(username)) {
-                                exportCaption = Lang.getString(R.string.format_ShareTextSignature, exportCaption, tdlib.tMeUrl(username))
+                                exportCaption = Lang.getString(R.string.format_ShareTextSignature, exportCaption, tdlib!!.tMeUrl(username))
                             }
                         }
                     }
@@ -1826,19 +1826,19 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             if (c is MessagesController && c.compareChat(item.getSourceChatId(), topicId)) {
                 c.highlightMessage(MessageId(item.getSourceChatId(), item.getSourceMessageId()))
             } else {
-                tdlib.ui().openMessage(this, item.getSourceChatId(), MessageId(item.getSourceChatId(), item.getSourceMessageId()), null)
+                tdlib!!.ui().openMessage(this, item.getSourceChatId(), MessageId(item.getSourceChatId(), item.getSourceMessageId()), null)
             }
 
             close()
         } else if (id == R.id.btn_setProfilePhoto) {
             val photoId = item.getPhotoId()
-            tdlib.send<TdApi.Ok?>(SetProfilePhoto(InputChatPhotoPrevious(photoId), false), tdlib.typedOkHandler())
+            tdlib!!.send<TdApi.Ok?>(SetProfilePhoto(InputChatPhotoPrevious(photoId), false), tdlib!!.typedOkHandler())
             close()
         } else if (id == R.id.btn_deleteProfilePhoto) {
             if (mode == MODE_PROFILE) {
-                tdlib.send<TdApi.Ok?>(DeleteProfilePhoto(item.getPhotoId()), tdlib.typedOkHandler())
+                tdlib!!.send<TdApi.Ok?>(DeleteProfilePhoto(item.getPhotoId()), tdlib!!.typedOkHandler())
             } else if (mode == MODE_CHAT_PROFILE) {
-                tdlib.send<TdApi.Ok?>(SetChatPhoto(item.getSourceChatId(), null), tdlib.typedOkHandler())
+                tdlib!!.send<TdApi.Ok?>(SetChatPhoto(item.getSourceChatId(), null), tdlib!!.typedOkHandler())
             }
             forceAnimationType = ANIMATION_TYPE_FADE
             close()
@@ -2047,9 +2047,9 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
 
     private fun getAuthorText(item: MediaItem): String? {
         if (item.getSourceSender() != null) {
-            return tdlib.senderName(item.getSourceSender())
+            return tdlib!!.senderName(item.getSourceSender())
         } else if (item.getSourceChatId() != 0L) {
-            val chat = tdlib.chat(item.getSourceChatId())
+            val chat = tdlib!!.chat(item.getSourceChatId())
             if (chat != null) {
                 return chat.title
             }
@@ -2110,7 +2110,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                         R.string.BotPhoto
                     )
                 } else if (mode == MODE_CHAT_PROFILE) {
-                    resId = (if (tdlib.isChannel(stack!!.getCurrent().getSourceChatId())) R.string.ChannelPhoto else R.string.GroupPhoto)
+                    resId = (if (tdlib!!.isChannel(stack!!.getCurrent().getSourceChatId())) R.string.ChannelPhoto else R.string.GroupPhoto)
                 } else {
                     resId = R.string.ProfilePhoto
                 }
@@ -2172,7 +2172,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                         initialFromMessageId, 0,
                         LOAD_COUNT, searchFilter()
                     )
-                    tdlib.client().send(searchFunction, foundChatMessagesHandler(chatId, topicId, initialFromMessageId, LOAD_COUNT))
+                    tdlib!!.client().send(searchFunction, foundChatMessagesHandler(chatId, topicId, initialFromMessageId, LOAD_COUNT))
                 }
             }
 
@@ -2187,7 +2187,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                         initialFromMessageId, 0,
                         LOAD_COUNT_PROFILE, searchFilter()
                     )
-                    tdlib.client().send(searchFunction, foundChatMessagesHandler(chatId, topicId, initialFromMessageId, LOAD_COUNT_PROFILE))
+                    tdlib!!.client().send(searchFunction, foundChatMessagesHandler(chatId, topicId, initialFromMessageId, LOAD_COUNT_PROFILE))
                 }
             }
 
@@ -2200,7 +2200,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                         if (loadedInitialChunk) stack!!.getCurrentSize() else 0,
                         LOAD_COUNT_PROFILE
                     )
-                    tdlib.client().send(searchFunction, Client.ResultHandler { result: TdApi.Object? ->
+                    tdlib!!.client().send(searchFunction, Client.ResultHandler { result: TdApi.Object? ->
                         when (result!!.getConstructor()) {
                             ChatPhotos.CONSTRUCTOR -> {
                                 runOnUiThreadOptional(Runnable { addItems(result as ChatPhotos) }
@@ -2257,11 +2257,11 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     private fun subscribeToChatId(chatId: Long) {
         if (this.subscribedToChatId != chatId) {
             if (this.subscribedToChatId != 0L) {
-                tdlib.listeners().unsubscribeFromMessageUpdates(this.subscribedToChatId, this)
+                tdlib!!.listeners().unsubscribeFromMessageUpdates(this.subscribedToChatId, this)
             }
             this.subscribedToChatId = chatId
             if (chatId != 0L) {
-                tdlib.listeners().subscribeToMessageUpdates(chatId, this)
+                tdlib!!.listeners().subscribeToMessageUpdates(chatId, this)
             }
         }
     }
@@ -2290,7 +2290,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                 messages.nextFromMessageId, 0,
                 loadCount, searchFilter()
             )
-            tdlib.client().send(retryFunction, foundChatMessagesHandler(chatId, topicId, messages.nextFromMessageId, loadCount))
+            tdlib!!.client().send(retryFunction, foundChatMessagesHandler(chatId, topicId, messages.nextFromMessageId, loadCount))
             return
         }
         isLoading = false
@@ -3073,7 +3073,6 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     private var receiverView: LinearLayout? = null
 
     private var headerCell: DoubleHeaderView? = null
-    private var headerView: HeaderView? = null
 
     private var filtersView: RecyclerView? = null
     private var filtersAdapter: MediaFiltersAdapter? = null
@@ -4964,10 +4963,10 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             headerCell!!.initWithMargin(measureButtonsPadding(), true)
             if (mode == MODE_PROFILE) {
                 val item = stack!!.getCurrent()
-                headerCell!!.setTitle(tdlib.senderName(item.getSourceSender()))
+                headerCell!!.setTitle(tdlib!!.senderName(item.getSourceSender()))
             } else if (mode == MODE_CHAT_PROFILE) {
                 val item = stack!!.getCurrent()
-                val chat = tdlib.chat(item.getSourceChatId())
+                val chat = tdlib!!.chat(item.getSourceChatId())
                 headerCell!!.setTitle(if (chat != null) chat.title else "Chat#" + item.getSourceChatId())
             }
             onMediaStackChanged(false)
@@ -5167,7 +5166,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         loadMoreIfNeeded()
 
         TGLegacyManager.instance().addEmojiListener(this)
-        tdlib.context().calls().addCurrentCallListener(this)
+        tdlib!!.context().calls().addCurrentCallListener(this)
         if (stack!!.getCurrent().getSourceChatId() != 0L) {
             subscribeToChatId(stack!!.getCurrent().getSourceChatId())
         }
@@ -5312,7 +5311,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         if (secretView != null) {
             secretView!!.destroy()
         }
-        tdlib.context().calls().removeCurrentCallListener(this)
+        tdlib!!.context().calls().removeCurrentCallListener(this)
         context.removeFullScreenView(this, true)
         context.removeHideNavigationView(this)
         if (captionView is Destroyable) {
@@ -5450,7 +5449,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         if (item != null && item.getFiltersState() != null && !item.getFiltersState().isEmpty()) {
             val state = item.getFiltersState()
             item.setFiltersState(null)
-            tdlib.filegen().removeFilteredBitmap(ImageFilteredFile.getPath(state))
+            tdlib!!.filegen().removeFilteredBitmap(ImageFilteredFile.getPath(state))
         }
     }
 
@@ -7021,7 +7020,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                 if (currentFiltersState!!.isEmpty()) {
                     val file = stack!!.getCurrent().getFilteredFile()
                     if (file != null) {
-                        tdlib.filegen().removeFilteredBitmap(file.getFilePath())
+                        tdlib!!.filegen().removeFilteredBitmap(file.getFilePath())
                     }
                     stack!!.getCurrent().setFiltersState(null)
                     applyFilteredBitmap(currentTargetImageFile, sourceBitmap)
@@ -7161,7 +7160,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             setUIBlocked(false)
             if (bitmap != null) {
                 val filteredFile = stack!!.getCurrent().setFiltersState(currentFiltersState)
-                tdlib.filegen().saveFilteredBitmap(filteredFile, bitmap)
+                tdlib!!.filegen().saveFilteredBitmap(filteredFile, bitmap)
                 applyFilteredBitmap(filteredFile, bitmap)
                 changeSectionImpl(futureSection)
             } else {
@@ -7690,7 +7689,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         } else if (viewId == R.id.btn_send) {
             if (currentSection != SECTION_CAPTION) {
                 changeSection(SECTION_CAPTION, MODE_OK)
-            } else if (inputView != null && !tdlib.isSelfChat(getOutputChatId()) && !tdlib.hasPremium() && inputView!!.hasOnlyPremiumFeatures()) {
+            } else if (inputView != null && !tdlib!!.isSelfChat(getOutputChatId()) && !tdlib!!.hasPremium() && inputView!!.hasOnlyPremiumFeatures()) {
                 context().tooltipManager().builder(sendButton)
                     .show(tdlib, Strings.buildMarkdown(this, Lang.getString(R.string.MessageContainsPremiumFeatures), null)).hideDelayed()
             } else if (needShowCropSectionInsteadSend()) {
@@ -7867,7 +7866,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     // TTL
     private fun showTTLOptions() {
         val item = stack!!.getCurrent()
-        tdlib.ui().showTTLPicker(
+        tdlib!!.ui().showTTLPicker(
             context(),
             item.getSelfDestructType(),
             !isSecret(item.getSourceChatId()),
@@ -7991,7 +7990,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         }
 
         if (initialSendOptions.schedulingState == null && getArgumentsStrict().areOnlyScheduled) {
-            tdlib.ui()
+            tdlib!!.ui()
                 .showScheduleOptions(this, getOutputChatId(), false, SimpleSendCallback { modifiedSendOptions: MessageSendOptions?, disableMarkdown1: Boolean ->
                     send(view, modifiedSendOptions!!, disableMarkdown, asFiles)
                 }, initialSendOptions, this@MediaViewController.forcedTheme)
@@ -8043,11 +8042,11 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     private fun openSetSenderPopup(chat: Chat?) {
         if (chat == null) return
 
-        tdlib().send<ChatMessageSenders?>(GetChatAvailableMessageSenders(chat.id), Tdlib.ResultHandler { result: ChatMessageSenders?, error: TdApi.Error? ->
+        tdlib()!!.send<ChatMessageSenders?>(GetChatAvailableMessageSenders(chat.id), Tdlib.ResultHandler { result: ChatMessageSenders?, error: TdApi.Error? ->
             UI.post(
                 Runnable {
                     if (result != null) {
-                        val c = SetSenderController(context, tdlib())
+                        val c = SetSenderController(context, tdlib()!!)
                         c.setArguments(SetSenderController.Args(chat, result.senders, chat.messageSenderId))
                         c.setShowOverEverything(true)
                         c.setDelegate(SetSenderControllerPage.Delegate { s: ChatMessageSender? -> setNewMessageSender(chat, s!!) })
@@ -8058,7 +8057,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
     }
 
     private fun setNewMessageSender(chat: Chat, sender: ChatMessageSender) {
-        tdlib().send<TdApi.Ok?>(SetChatMessageSender(chat.id, sender.sender), tdlib.typedOkHandler())
+        tdlib()!!.send<TdApi.Ok?>(SetChatMessageSender(chat.id, sender.sender), tdlib!!.typedOkHandler())
     }
 
     private fun setEmojiShown(emojiShown: Boolean) {
@@ -8114,7 +8113,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             return false
         }
 
-        val restriction = tdlib().getSlowModeRestrictionText(selectDelegate!!.getOutputChatId())
+        val restriction = tdlib()!!.getSlowModeRestrictionText(selectDelegate!!.getOutputChatId())
         if (restriction != null) {
             context().tooltipManager().builder(v).show(tdlib, restriction).hideDelayed()
             return true
@@ -8172,7 +8171,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         stopFullScreenTemporarily(true)
 
         val chatId = context.navigation().getCurrentStackItem()!!.getChatId()
-        val hasRestriction = tdlib.hasRestriction(chatId, RightId.SEND_PHOTOS)
+        val hasRestriction = tdlib!!.hasRestriction(chatId, RightId.SEND_PHOTOS)
 
         replaceArguments(
             Args.Companion.fromGallery(
@@ -8241,7 +8240,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                                 } else {
                                     m.showRestriction(
                                         sendButton,
-                                        Lang.getString(if (tdlib.isChannel(chatId)) R.string.RestrictSavingChannelInfo else R.string.RestrictSavingGroupInfo)
+                                        Lang.getString(if (tdlib!!.isChannel(chatId)) R.string.RestrictSavingChannelInfo else R.string.RestrictSavingGroupInfo)
                                     )
                                 }
                                 return false
@@ -8253,7 +8252,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                             }
 
                             context.forceCloseCamera()
-                            val restriction = tdlib.getDefaultRestrictionText(m.chat!!, rightId)
+                            val restriction = tdlib!!.getDefaultRestrictionText(m.chat!!, rightId)
                             if (restriction != null) {
                                 if (canShare) {
                                     openShareControllerForItem(MediaItem(context, tdlib, file))
@@ -8392,7 +8391,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         val attachedViews = ArrayList<View?>(7)
         val args = getArgumentsStrict()
 
-        val chat = if (args.receiverChatId != 0L) tdlib.chat(args.receiverChatId) else null
+        val chat = if (args.receiverChatId != 0L) tdlib!!.chat(args.receiverChatId) else null
 
         mediaView!!.setOffsets(0, 0, 0, 0, 0) // Screen.dp(56f)
         editWrap = FrameLayoutFix(context)
@@ -8419,7 +8418,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         editWrap!!.addView(sendButton)
 
         if (chat != null && !hasFlag(Args.Companion.FLAG_DISALLOW_SEND_BUTTON_HAPTIC_MENU)) {
-            tdlib.ui().createSimpleHapticMenu(
+            tdlib!!.ui().createSimpleHapticMenu(
                 this,
                 chat.id,
                 object : me.vkryl.core.lambda.FutureBool {
@@ -8557,7 +8556,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         adjustOrTextButton!!.setLayoutParams(LinearLayout.LayoutParams(Screen.dp(56f), ViewGroup.LayoutParams.MATCH_PARENT))
         editButtons!!.addView(adjustOrTextButton)
 
-        if (chat != null && chat.type.getConstructor() == TdApi.ChatTypePrivate.CONSTRUCTOR && !tdlib.isBotChat(chat) && !hasFlag(Args.Companion.FLAG_DISALLOW_SET_DESTRUCTION_TIMER)) {
+        if (chat != null && chat.type.getConstructor() == TdApi.ChatTypePrivate.CONSTRUCTOR && !tdlib!!.isBotChat(chat) && !hasFlag(Args.Companion.FLAG_DISALLOW_SET_DESTRUCTION_TIMER)) {
             stopwatchButton = StopwatchHeaderButton(context)
             stopwatchButton!!.setBackgroundResource(R.drawable.bg_btn_header_light)
             stopwatchButton!!.forceValue(null, true)
@@ -8627,7 +8626,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         captionView.setHighlightColor(alphaColor(0.2f, Theme.fillingTextSelectionColor()))
         captionView.setHighlightColor(this@MediaViewController.forcedTheme.getColor(ColorId.textSelectionHighlight))
         // addThemeHighlightColorListener(captionView, ColorId.textSelectionHighlight);
-        captionView.setMaxCodePointCount(tdlib.maxCaptionLength())
+        captionView.setMaxCodePointCount(tdlib!!.maxCaptionLength())
         captionView.setIgnoreCustomStuff(false)
         captionView.getInlineSearchContext().setIsCaption(true)
         captionView.setInputListener(this)
@@ -8873,7 +8872,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         }
 
         @DrawableRes val icon = if (args.receiverRowIcon != 0) args.receiverRowIcon else R.drawable.baseline_arrow_upward_18
-        val text = if (isEmpty(args.receiverRowText)) (if (chat != null) tdlib.chatTitle(chat) else null) else args.receiverRowText
+        val text = if (isEmpty(args.receiverRowText)) (if (chat != null) tdlib!!.chatTitle(chat) else null) else args.receiverRowText
 
         val fp = newParams(ViewGroup.LayoutParams.WRAP_CONTENT, Screen.getStatusBarHeight())
         if (topOffset > 0) {
@@ -9176,7 +9175,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         @JvmStatic
         fun openFromChat(context: ViewController<*>, chat: Chat, delegate: MediaCollectorDelegate?) {
             if (isUserChat(chat.id)) {
-                Companion.openFromProfile(context, context.tdlib().chatUser(chat.id)!!, delegate)
+                Companion.openFromProfile(context, context.tdlib()!!.chatUser(chat.id)!!, delegate)
                 return
             }
 
@@ -9185,19 +9184,19 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             }
 
             val item: MediaItem?
-            val chatPhotoFull = context.tdlib().chatPhoto(chat.id)
+            val chatPhotoFull = context.tdlib()!!.chatPhoto(chat.id)
             if (chatPhotoFull != null) {
-                item = MediaItem(context.context(), context.tdlib(), chat.id, 0, chatPhotoFull)
+                item = MediaItem(context.context(), context.tdlib()!!, chat.id, 0, chatPhotoFull)
             } else {
                 val chatPhotoInfo = chat.photo
                 if (chatPhotoInfo != null) {
-                    item = MediaItem(context.context(), context.tdlib(), chat.id, chatPhotoInfo)
+                    item = MediaItem(context.context(), context.tdlib()!!, chat.id, chatPhotoInfo)
                 } else {
                     return
                 }
             }
 
-            val stack = MediaStack(context.context(), context.tdlib())
+            val stack = MediaStack(context.context(), context.tdlib()!!)
             stack.set(item)
 
             val args = Args(context, MODE_CHAT_PROFILE, stack)

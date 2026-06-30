@@ -47,7 +47,7 @@ fun <T> ViewController<T>.reportChatSponsoredMessage (
   after: RunnableBool? = null
 ) {
   tdlib.send(ReportChatSponsoredMessage(chatId, sponsoredMessage.messageId, optionId)) { reportResult, error ->
-    runOnUiThreadOptional {
+    runOnUiThreadOptional({
       error?.let {
         UI.showError(error)
       } ?: reportResult?.let { result ->
@@ -107,6 +107,6 @@ fun <T> ViewController<T>.reportChatSponsoredMessage (
           }
         }
       }
-    }
+    })
   }
 }

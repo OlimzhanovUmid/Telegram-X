@@ -24,7 +24,9 @@ import org.thunderdog.challegram.navigation.ViewController
 import org.thunderdog.challegram.telegram.ForumTopicInfoListener
 import org.thunderdog.challegram.telegram.Tdlib
 import org.thunderdog.challegram.telegram.TdlibUi
+import org.thunderdog.challegram.util.OptionDelegate
 import org.thunderdog.challegram.v.CustomRecyclerView
+import org.thunderdog.challegram.widget.MaterialEditTextGroup
 
 /**
  * Forum topic list for a single forum supergroup chat: browse, paginate, open a topic
@@ -53,7 +55,7 @@ class TopicsController(context: Context, tdlib: Tdlib) :
 
   override fun getId (): Int = R.id.controller_topics
 
-  override fun getName (): CharSequence = tdlib.chatTitle(chatId) ?: ""
+  override fun getName (): CharSequence = tdlib!!.chatTitle(chatId) ?: ""
 
   override fun getMenuId (): Int = R.id.menu_more
 
@@ -61,7 +63,7 @@ class TopicsController(context: Context, tdlib: Tdlib) :
     val ids = ArrayList<Int>()
     val titles = ArrayList<String>()
     val icons = ArrayList<Int>()
-    if (tdlib.canManageTopics(chatId)) {
+    if (tdlib!!.canManageTopics(chatId)) {
       ids.add(R.id.btn_createTopic)
       titles.add(Lang.getString(R.string.NewTopic))
       icons.add(R.drawable.baseline_add_24)
@@ -69,13 +71,13 @@ class TopicsController(context: Context, tdlib: Tdlib) :
     ids.add(R.id.btn_viewAsMessages)
     titles.add(Lang.getString(R.string.ViewAsMessages))
     icons.add(R.drawable.baseline_forum_24)
-    showOptions(null, ids.toIntArray(), titles.toTypedArray(), null, icons.toIntArray()) { _, id ->
+    showOptions(null, ids.toIntArray(), titles.toTypedArray(), null, icons.toIntArray(), OptionDelegate { _, id ->
       when (id) {
         R.id.btn_createTopic -> promptCreateTopic()
-        R.id.btn_viewAsMessages -> tdlib.ui().openChat(this, chatId, TdlibUi.ChatOpenParameters().forceMessagesView())
+        R.id.btn_viewAsMessages -> tdlib!!.ui().openChat(this, chatId, TdlibUi.ChatOpenParameters().forceMessagesView())
       }
       true
-    }
+    })
   }
 
   override fun setArguments (args: Args) {
@@ -107,8 +109,8 @@ class TopicsController(context: Context, tdlib: Tdlib) :
     val offsetDate = if (reset) 0 else nextOffsetDate
     val offsetMessageId = if (reset) 0L else nextOffsetMessageId
     val offsetForumTopicId = if (reset) 0 else nextOffsetForumTopicId
-    tdlib.getForumTopics(chatId, null, offsetDate, offsetMessageId, offsetForumTopicId, LOAD_LIMIT, { result ->
-      runOnUiThreadOptional {
+    tdlib!!.getForumTopics(chatId, null, offsetDate, offsetMessageId, offsetForumTopicId, LOAD_LIMIT, { result ->
+      runOnUiThreadOptional({
         loading = false
         if (result == null) return@runOnUiThreadOptional
         if (reset) {
@@ -126,8 +128,8 @@ class TopicsController(context: Context, tdlib: Tdlib) :
           subscribe(loaded)
         }
         adapter.notifyDataSetChanged()
-      }
-    }, { runOnUiThreadOptional { loading = false } })
+      })
+    }, { runOnUiThreadOptional({ loading = false }) })
   }
 
   private fun subtitleOf (topic: TdApi.ForumTopic): CharSequence {
@@ -167,7 +169,7 @@ class TopicsController(context: Context, tdlib: Tdlib) :
     // General topic (#400 "Threads can't be used in General topic"), so all topics — General and
     // regular alike — are opened by topic id. The loader filters history with SearchChatMessages
     // over this MessageTopicForum.
-    tdlib.ui().openChat(
+    tdlib!!.ui().openChat(
       this, chatId,
       TdlibUi.ChatOpenParameters()
         .keepStack()
@@ -178,7 +180,7 @@ class TopicsController(context: Context, tdlib: Tdlib) :
   // Management
 
   private fun showTopicOptions (topic: TdApi.ForumTopic): Boolean {
-    if (!tdlib.canManageTopics(chatId)) {
+    if (!tdlib!!.canManageTopics(chatId)) {
       return false
     }
     val info = topic.info
@@ -214,23 +216,23 @@ class TopicsController(context: Context, tdlib: Tdlib) :
       icons.add(if (info.isHidden) R.drawable.baseline_visibility_24 else R.drawable.baseline_block_24)
     }
 
-    showOptions(info.name, ids.toIntArray(), titles.toTypedArray(), colors.toIntArray(), icons.toIntArray()) { _, id ->
+    showOptions(info.name, ids.toIntArray(), titles.toTypedArray(), colors.toIntArray(), icons.toIntArray(), OptionDelegate { _, id ->
       when (id) {
         R.id.btn_editTopic -> promptEditTopic(topic)
-        R.id.btn_pinTopic -> tdlib.toggleForumTopicIsPinned(chatId, info.forumTopicId, !topic.isPinned) { reload() }
-        R.id.btn_closeTopic -> tdlib.toggleForumTopicIsClosed(chatId, info.forumTopicId, !info.isClosed) { reload() }
-        R.id.btn_hideTopic -> tdlib.toggleGeneralForumTopicIsHidden(chatId, !info.isHidden) { reload() }
+        R.id.btn_pinTopic -> tdlib!!.toggleForumTopicIsPinned(chatId, info.forumTopicId, !topic.isPinned) { reload() }
+        R.id.btn_closeTopic -> tdlib!!.toggleForumTopicIsClosed(chatId, info.forumTopicId, !info.isClosed) { reload() }
+        R.id.btn_hideTopic -> tdlib!!.toggleGeneralForumTopicIsHidden(chatId, !info.isHidden) { reload() }
         R.id.btn_deleteTopic -> confirmDeleteTopic(topic)
       }
       true
-    }
+    })
     return true
   }
 
   private fun promptCreateTopic () {
-    val c = CreateTopicController(context, tdlib)
+    val c = CreateTopicController(context, tdlib!!)
     c.setArguments(CreateTopicController.Args(chatId) { name, icon ->
-      tdlib.createForumTopic(chatId, name, false, icon, { runOnUiThreadOptional { reload() } }, null)
+      tdlib!!.createForumTopic(chatId, name, false, icon, { runOnUiThreadOptional({ reload() }) }, null)
     })
     navigateTo(c)
   }
@@ -242,14 +244,14 @@ class TopicsController(context: Context, tdlib: Tdlib) :
       R.string.Done,
       R.string.Cancel,
       topic.info.name,
-      { _, result ->
+      object : ViewController.InputAlertCallback { override fun onAcceptInput(inputView: MaterialEditTextGroup?, result: String?): Boolean {
         val name = result?.trim() ?: ""
         if (name.isEmpty()) {
-          return@openInputAlert false
+          return false
         }
-        tdlib.editForumTopic(chatId, topic.info.forumTopicId, name, false, 0L) { reload() }
-        true
-      },
+        tdlib!!.editForumTopic(chatId, topic.info.forumTopicId, name, false, 0L) { reload() }
+        return true
+      }},
       true
     )
   }
@@ -260,17 +262,18 @@ class TopicsController(context: Context, tdlib: Tdlib) :
       intArrayOf(R.id.btn_deleteTopic, R.id.btn_cancel),
       arrayOf(Lang.getString(R.string.DeleteTopic), Lang.getString(R.string.Cancel)),
       intArrayOf(ViewController.OptionColor.RED, ViewController.OptionColor.NORMAL),
-      intArrayOf(R.drawable.baseline_delete_24, R.drawable.baseline_cancel_24)
-    ) { _, id ->
-      if (id == R.id.btn_deleteTopic) {
-        tdlib.deleteForumTopic(chatId, topic.info.forumTopicId) { reload() }
+      intArrayOf(R.drawable.baseline_delete_24, R.drawable.baseline_cancel_24),
+      OptionDelegate { _, id ->
+        if (id == R.id.btn_deleteTopic) {
+          tdlib!!.deleteForumTopic(chatId, topic.info.forumTopicId) { reload() }
+        }
+        true
       }
-      true
-    }
+    )
   }
 
   private fun reload () {
-    runOnUiThreadOptional { loadTopics(true) }
+    runOnUiThreadOptional({ loadTopics(true) })
   }
 
   // Live updates
@@ -279,7 +282,7 @@ class TopicsController(context: Context, tdlib: Tdlib) :
     for (topic in newTopics) {
       val forumTopicId = topic.info.forumTopicId
       if (subscribedTopicIds.add(forumTopicId)) {
-        tdlib.listeners().subscribeToForumTopicUpdates(chatId, forumTopicId.toLong(), this)
+        tdlib!!.listeners().subscribeToForumTopicUpdates(chatId, forumTopicId.toLong(), this)
       }
     }
   }
@@ -288,20 +291,20 @@ class TopicsController(context: Context, tdlib: Tdlib) :
     if (info.chatId != chatId) {
       return
     }
-    runOnUiThreadOptional {
+    runOnUiThreadOptional({
       val index = indexOfTopic(info.forumTopicId)
       if (index >= 0) {
         topics[index].info = info
         adapter.notifyItemChanged(index)
       }
-    }
+    })
   }
 
   override fun onForumTopicUpdated (chatId: Long, messageThreadId: Long, isPinned: Boolean, lastReadInboxMessageId: Long, lastReadOutboxMessageId: Long, notificationSettings: TdApi.ChatNotificationSettings) {
     if (chatId != this.chatId) {
       return
     }
-    runOnUiThreadOptional {
+    runOnUiThreadOptional({
       val index = indexOfTopic(messageThreadId.toInt())
       if (index >= 0) {
         val topic = topics[index]
@@ -311,20 +314,20 @@ class TopicsController(context: Context, tdlib: Tdlib) :
         topic.notificationSettings = notificationSettings
         adapter.notifyItemChanged(index)
       }
-    }
+    })
   }
 
   override fun destroy () {
     super.destroy()
     for (forumTopicId in subscribedTopicIds) {
-      tdlib.listeners().unsubscribeFromForumTopicUpdates(chatId, forumTopicId.toLong(), this)
+      tdlib!!.listeners().unsubscribeFromForumTopicUpdates(chatId, forumTopicId.toLong(), this)
     }
     subscribedTopicIds.clear()
   }
 
   private inner class TopicAdapter : RecyclerView.Adapter<TopicHolder>() {
     override fun onCreateViewHolder (parent: ViewGroup, viewType: Int): TopicHolder {
-      val view = TopicView(parent.context, tdlib)
+      val view = TopicView(parent.context, tdlib!!)
       addThemeInvalidateListener(view)
       val holder = TopicHolder(view)
       view.setOnClickListener {

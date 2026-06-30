@@ -199,10 +199,10 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                         }
                     }
                 })
-                .setOnSettingItemClick(OnSettingItemClick { view: View?, settingsId: Int, item: ListItem?, doneButton: TextView?, settingsAdapter: SettingsAdapter?, window: PopupLayout? ->
+                .setOnSettingItemClick(object : ViewController.OnSettingItemClick { override fun onSettingItemClick(view: View?, settingsId: Int, item: ListItem?, doneButton: TextView?, settingsAdapter: SettingsAdapter?, window: PopupLayout?) {
                     headerItem.setString(getBlockString(chatId, senderId, settingsAdapter!!.getCheckIntResults().get(R.id.btn_restrictMember) != 0))
                     settingsAdapter.updateValuedSettingByPosition(settingsAdapter.indexOfView(headerItem))
-                })
+                }})
                 .setRawItems(
                     arrayOf<ListItem>(
                         ListItem(ListItem.TYPE_CHECKBOX_OPTION, R.id.btn_restrictMember, 0, R.string.BanMember, true)
@@ -232,7 +232,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 return
             }
 
-            val tdlib = context.tdlib()
+            val tdlib = context.tdlib()!!
             val chatId = messages.findUniqueChatId()
 
             var allScheduled = true
@@ -689,7 +689,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
 
             if (tdlib.isSelfUserId(user.id)) {
                 if (!user.hasUsername()) {
-                    context.navigationController().navigateTo(EditUsernameController(context.context(), context.tdlib()))
+                    context.navigationController()!!.navigateTo(EditUsernameController(context.context(), context.tdlib()))
                     return true
                 }
 
@@ -794,13 +794,13 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             return false
         }
         if (id == R.id.btn_username_edit) {
-            context.navigationController().navigateTo(EditUsernameController(context.context(), context.tdlib()))
+            context.navigationController()!!.navigateTo(EditUsernameController(context.context(), context.tdlib()))
             return true
         } else if (id == R.id.btn_username_copy) {
             UI.copyText('@'.toString() + user.primaryUsername(), R.string.CopiedUsername)
             return true
         } else if (id == R.id.btn_username_copy_link) {
-            UI.copyText(context.tdlib().tMeUrl(user.usernames!!), R.string.CopiedLink)
+            UI.copyText(context.tdlib()!!.tMeUrl(user.usernames!!), R.string.CopiedLink)
             return true
         } else if (id == R.id.btn_username_share) {
             shareUsername(context, user)
@@ -815,7 +815,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             Intents.openNumber('+'.toString() + user.phoneNumber)
             return true
         } else if (id == R.id.btn_changePhoneNumber) {
-            context.navigationController().navigateTo(SettingsPhoneController(context.context(), context.tdlib()))
+            context.navigationController()!!.navigateTo(SettingsPhoneController(context.context(), context.tdlib()))
             return true
         }
         return false
@@ -825,7 +825,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         if (id == R.id.more_btn_edit) {
             if (user != null) {
                 val c = EditNameController(context.context(), context.tdlib())
-                if (context.tdlib().isSelfUserId(user.id)) {
+                if (context.tdlib()!!.isSelfUserId(user.id)) {
                     c.setMode(EditNameController.Mode.RENAME_SELF)
                 } else {
                     if (TD.canEditBot(user)) {
@@ -835,7 +835,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                     }
                     c.setUser(user)
                 }
-                context.navigationController().navigateTo(c)
+                context.navigationController()!!.navigateTo(c)
             }
             return true
         } else if (id == R.id.more_btn_addToContacts) {
@@ -867,7 +867,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             val controller = PhoneController(context.context(), context.tdlib())
             controller.setMode(PhoneController.MODE_ADD_CONTACT)
             controller.setInitialData(contact.phoneNumber, contact.firstName, contact.lastName)
-            context.navigationController().navigateTo(controller)
+            context.navigationController()!!.navigateTo(controller)
         }
     }
 
@@ -885,7 +885,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         controller.setMode(EditNameController.Mode.ADD_CONTACT)
         controller.setUser(user)
         controller.setKnownPhoneNumber(knownPhoneNumber)
-        context.navigationController().navigateTo(controller)
+        context.navigationController()!!.navigateTo(controller)
 
         /*if (!TD.hasPhoneNumber(user)) {
 
@@ -893,7 +893,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
       PhoneController controller = new PhoneController(context.context(), context.tdlib());
       controller.setMode(PhoneController.MODE_ADD_CONTACT);
       controller.setInitialData(user.id, user.phoneNumber, user.firstName, user.lastName);
-      context.navigationController().navigateTo(controller);
+      context.navigationController()!!.navigateTo(controller);
     }*/
     }
 
@@ -970,7 +970,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
     }
 
     fun shareLanguageUrl(context: TdlibDelegate, languagePackInfo: LanguagePackInfo) {
-        val url = context.tdlib().tMeLanguageUrl(languagePackInfo.id)
+        val url = context.tdlib()!!.tMeLanguageUrl(languagePackInfo.id)
         val text = Lang.getString(R.string.ShareTextLanguageLink, languagePackInfo.name, url)
         val c = ShareController(context.context(), context.tdlib())
         c.setArguments(ShareController.Args(text).setShare(text, Lang.getString(R.string.ShareBtnLanguage)))
@@ -1067,7 +1067,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
     private fun newStickerSetHandler(context: TdlibDelegate, openParameters: UrlOpenParameters?): Client.ResultHandler {
         val currentController = context.context().navigation().getCurrentStackItem()
         return Client.ResultHandler { `object`: TdApi.Object? ->
-            context.tdlib().ui().post(Runnable {
+            context.tdlib()!!.ui().post(Runnable {
                 if (currentController == null || currentController.isDestroyed()) {
                     return@Runnable
                 }
@@ -1419,7 +1419,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                     } else {
                         tdlib.ui().post(Runnable {
                             showLinkTooltip(
-                                context.tdlib(),
+                                context.tdlib()!!,
                                 R.drawable.baseline_warning_24,
                                 Lang.getString(if (TD.isChannel(chatFinal.type)) R.string.PostNotFound else R.string.MessageNotFound),
                                 params.urlOpenParameters
@@ -1649,7 +1649,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             if (after != null) {
                 after.runWithLong(chat.id)
             }
-            context.tdlib().context().changePreferredAccountId(context.tdlib().id(), TdlibManager.SWITCH_REASON_CHAT_OPEN, RunnableBool { success: Boolean ->
+            context.tdlib()!!.context().changePreferredAccountId(context.tdlib()!!.id(), TdlibManager.SWITCH_REASON_CHAT_OPEN, RunnableBool { success: Boolean ->
                 if (success) {
                     controller.setResetOnFocus()
                 }
@@ -1690,8 +1690,8 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             }
             return
         }
-        if (view.getParent() != null) {
-            (view.getParent() as ViewGroup).removeView(controller.getValue())
+        if (view?.parent != null) {
+            (view.parent as ViewGroup).removeView(view)
         }
 
         if (navigation!!.isEmpty()) {
@@ -1935,7 +1935,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             val messageId = MessageId(messageLink.message!!.chatId, messageLink.message!!.id)
             if (messageLink.topicId.messageThreadId() != 0L) {
                 // FIXME TDLib/Server: need GetMessageThread alternative that accepts (chatId, messageThreadId)
-                context.tdlib().send<MessageThreadInfo?>(
+                context.tdlib()!!.send<MessageThreadInfo?>(
                     GetMessageThread(messageId.chatId, messageId.messageId),
                     Tdlib.ResultHandler { messageThreadInfo: MessageThreadInfo?, error: TdApi.Error? ->
                         if (error != null) {
@@ -2351,7 +2351,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                         ColorId.textLink
                                     ) else Lang.newBoldSpan(needFakeBold)
                                 },
-                                context.tdlib().accountName(),
+                                context.tdlib()!!.accountName(),
                                 confirm.domain
                             ),
                             true
@@ -2363,7 +2363,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                 ListItem.TYPE_CHECKBOX_OPTION_MULTILINE,
                                 R.id.btn_allowWriteAccess,
                                 0,
-                                Lang.getString(R.string.AllowWriteAccess, Lang.boldCreator(), context.tdlib().cache().userName(confirm.botUserId)),
+                                Lang.getString(R.string.AllowWriteAccess, Lang.boldCreator(), context.tdlib()!!.cache().userName(confirm.botUserId)),
                                 true
                             )
                         )
@@ -2390,7 +2390,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                     val needSignIn = items.get(0)!!.isSelected()
                                     val needWriteAccess = items.size > 1 && items.get(1)!!.isSelected()
                                     if (needSignIn) {
-                                        context.tdlib().send<TdApi.HttpUrl?>(
+                                        context.tdlib()!!.send<TdApi.HttpUrl?>(
                                             GetExternalLink(originalUrl, needWriteAccess),
                                             Tdlib.ResultHandler { httpUrl: TdApi.HttpUrl?, error1: TdApi.Error? ->
                                                 val destinationUrl = if (error1 != null) originalUrl else httpUrl!!.url
@@ -2407,7 +2407,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                         ) as CheckBoxView).setChecked(item.isSelected(), isUpdate)
                                     }
                                 })
-                                .setOnSettingItemClick(if (confirm.requestWriteAccess) OnSettingItemClick { itemView: View?, settingsId: Int, item: ListItem?, doneButton: TextView?, settingsAdapter: SettingsAdapter?, window: PopupLayout? ->
+                                .setOnSettingItemClick(if (confirm.requestWriteAccess) object : ViewController.OnSettingItemClick { override fun onSettingItemClick(itemView: View?, settingsId: Int, item: ListItem?, doneButton: TextView?, settingsAdapter: SettingsAdapter?, window: PopupLayout?) {
                                     val itemId = item!!.getId()
                                     if (itemId == R.id.btn_signIn) {
                                         val needSignIn = settingsAdapter!!.getCheckIntResults().get(R.id.btn_signIn) == R.id.btn_signIn
@@ -2422,7 +2422,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                             settingsAdapter.updateValuedSettingById(R.id.btn_signIn)
                                         }
                                     }
-                                } else null)
+                                }} else null)
                                 .setSaveStr(R.string.Open)
                                 .setRawItems(items)
                         )
@@ -3008,7 +3008,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
 
             InternalLinkTypePhoneNumberConfirmation.CONSTRUCTOR -> {
                 val confirmPhone = linkType as InternalLinkTypePhoneNumberConfirmation
-                val authenticationSettings = context.tdlib().phoneNumberAuthenticationSettings(context.context())
+                val authenticationSettings = context.tdlib()!!.phoneNumberAuthenticationSettings(context.context())
                 // TODO progress?
                 val currentController = context.context().navigation().getCurrentStackItem()
                 tdlib.send<AuthenticationCodeInfo?>(
@@ -3510,7 +3510,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                         post(Runnable {
                             val c = context.context().navigation().getCurrentStackItem()
                             if (c != null) {
-                                c.processDeepLinkInfo(deepLink)
+                                c.processDeepLinkInfo(deepLink!!)
                             }
                             if (after != null) {
                                 after.runWithBool(true)
@@ -3550,7 +3550,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
     }
 
     fun editLoginEmail(context: ViewController<*>) {
-        context.tdlib().send<PasswordState?>(GetPasswordState(), Tdlib.ResultHandler { passwordState: PasswordState?, error: TdApi.Error? ->
+        context.tdlib()!!.send<PasswordState?>(GetPasswordState(), Tdlib.ResultHandler { passwordState: PasswordState?, error: TdApi.Error? ->
             if (passwordState != null) {
                 context.runOnUiThreadOptional(Runnable {
                     editLoginEmail(context, passwordState)
@@ -3847,7 +3847,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                         .qrModeSubtitle(R.string.ScanQRFullSubtitleProxy).mode(
                         CameraController.MODE_QR
                     ).qrCodeListener(QrCodeListener { qrCode: String? ->
-                        context.tdlib().send<InternalLinkType?>(
+                        context.tdlib()!!.send<InternalLinkType?>(
                             GetInternalLinkType(qrCode),
                             Tdlib.ResultHandler { internalLinkType: InternalLinkType?, error: TdApi.Error? ->
                                 if (internalLinkType != null && internalLinkType.getConstructor() == InternalLinkTypeProxy.CONSTRUCTOR) {
@@ -4745,7 +4745,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         onLinkDeleted: Runnable?,
         onLinkRevoked: RunnableData<ChatInviteLinks?>?
     ) {
-        context.tdlib()
+        context.tdlib()!!
             .send<ChatInviteLink?>(GetChatInviteLink(chatId, link.inviteLink), Tdlib.ResultHandler { inviteLink: ChatInviteLink?, error: TdApi.Error? ->
                 context.runOnUiThreadOptional(
                     Runnable {
@@ -4840,7 +4840,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                         link.creatorUserId
                     ) else null
                 }),
-                context.tdlib().cache().userName(link.creatorUserId),
+                context.tdlib()!!.cache().userName(link.creatorUserId),
                 Lang.getRelativeTimestamp(link.date.toLong(), TimeUnit.SECONDS)
             )
         )
@@ -4873,7 +4873,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 cc.setArguments(
                     ChatLinksController.Args(
                         chatId,
-                        context.tdlib().myUserId(),
+                        context.tdlib()!!.myUserId(),
                         null,
                         null,
                         tdlib.chatStatus(chatId)!!.getConstructor() == ChatMemberStatusCreator.CONSTRUCTOR
@@ -4883,9 +4883,9 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             } else if (id == R.id.btn_copyLink) {
                 UI.copyText(link.inviteLink, R.string.CopiedLink)
             } else if (id == R.id.btn_shareLink) {
-                val chatName = context.tdlib().chatTitle(chatId)
+                val chatName = context.tdlib()!!.chatTitle(chatId)
                 val exportText = Lang.getString(
-                    if (context.tdlib().isChannel(chatId)) R.string.ShareTextChannelLink else R.string.ShareTextChatLink,
+                    if (context.tdlib()!!.isChannel(chatId)) R.string.ShareTextChannelLink else R.string.ShareTextChatLink,
                     chatName,
                     link.inviteLink
                 )
@@ -4903,14 +4903,14 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                     OptionDelegate { itemView2: View?, id2: Int ->
                         if (id2 == R.id.btn_deleteLink) {
                             if (onLinkDeleted != null) onLinkDeleted.run()
-                            context.tdlib().send<TdApi.Ok?>(DeleteRevokedChatInviteLink(chatId, link.inviteLink), tdlib.typedOkHandler())
+                            context.tdlib()!!.send<TdApi.Ok?>(DeleteRevokedChatInviteLink(chatId, link.inviteLink), tdlib.typedOkHandler())
                         }
                         true
                     })
             } else if (id == R.id.btn_revokeLink) {
                 context.showOptions(
                     Lang.getString(
-                        if (context.tdlib().isChannel(chatId)) R.string.AreYouSureRevokeInviteLinkChannel else R.string.AreYouSureRevokeInviteLinkGroup
+                        if (context.tdlib()!!.isChannel(chatId)) R.string.AreYouSureRevokeInviteLinkChannel else R.string.AreYouSureRevokeInviteLinkGroup
                     ),
                     intArrayOf(R.id.btn_revokeLink, R.id.btn_cancel),
                     arrayOf<String?>(
@@ -4920,7 +4920,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                     intArrayOf(R.drawable.baseline_link_off_24, R.drawable.baseline_cancel_24),
                     OptionDelegate { itemView2: View?, id2: Int ->
                         if (id2 == R.id.btn_revokeLink) {
-                            context.tdlib().client().send(RevokeChatInviteLink(chatId, link.inviteLink), Client.ResultHandler { result: TdApi.Object? ->
+                            context.tdlib()!!.client().send(RevokeChatInviteLink(chatId, link.inviteLink), Client.ResultHandler { result: TdApi.Object? ->
                                 if (result!!.getConstructor() == ChatInviteLinks.CONSTRUCTOR && onLinkRevoked != null) {
                                     context.runOnUiThreadOptional(Runnable { onLinkRevoked.runWithData(result as ChatInviteLinks) })
                                 }
@@ -4973,7 +4973,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             .setSettingProcessor(CustomSettingProcessor { item: ListItem?, view: SettingView?, isUpdate: Boolean ->
                 view!!.setIconColorId(if (item!!.getId() == R.id.btn_createNewFolder) ColorId.inlineIcon else ColorId.NONE)
             })
-            .setOnSettingItemClick(OnSettingItemClick { view: View?, id: Int, item: ListItem?, done: TextView?, adapter: SettingsAdapter?, window: PopupLayout? ->
+            .setOnSettingItemClick(object : ViewController.OnSettingItemClick { override fun onSettingItemClick(view: View?, id: Int, item: ListItem?, done: TextView?, adapter: SettingsAdapter?, window: PopupLayout?) {
                 settings[0]!!.window.hideWindow(true)
                 if (item!!.getId() == R.id.btn_createNewFolder) {
                     val chatFolder = TD.newChatFolder(chatIds)
@@ -4985,7 +4985,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 if (after != null) {
                     after.run()
                 }
-            })
+            }})
         )
     }
 
@@ -5721,9 +5721,9 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             strings.size,
             null
         )
-        c.tdlib().client().send(SetCustomLanguagePack(info, strings), Client.ResultHandler { result: TdApi.Object? ->
+        c.tdlib()!!.client().send(SetCustomLanguagePack(info, strings), Client.ResultHandler { result: TdApi.Object? ->
             when (result!!.getConstructor()) {
-                TdApi.Ok.CONSTRUCTOR -> c.tdlib().applyLanguage(info, RunnableBool { boolResult: Boolean ->
+                TdApi.Ok.CONSTRUCTOR -> c.tdlib()!!.applyLanguage(info, RunnableBool { boolResult: Boolean ->
                     if (boolResult) {
                         UI.showToast(R.string.LocalisationApplied, Toast.LENGTH_SHORT)
                         // exitToChatScreen(c, c.getChatId());
@@ -5787,7 +5787,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         }
 
         val after = RunnableData { author: String? -> exportThemeImpl(context, theme.getId(), themeName, author, includeDefault, asJava) }
-        val currentUsername = if (!isEmpty(originalAuthor)) originalAuthor else context.tdlib().myUserUsername()
+        val currentUsername = if (!isEmpty(originalAuthor)) originalAuthor else context.tdlib()!!.myUserUsername()
         context.openInputAlert(
             Lang.getString(R.string.ThemeExportAddAuthorTitle),
             Lang.getString(R.string.ThemeExportAddAuthorInfo),
@@ -5795,7 +5795,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             R.string.Cancel,
             currentUsername,
             null,
-            InputAlertCallback { v: MaterialEditTextGroup?, resultAuthor: String? ->
+            object : ViewController.InputAlertCallback { override fun onAcceptInput(v: MaterialEditTextGroup?, resultAuthor: String?): Boolean {
                 var resultAuthor = resultAuthor
                 if (resultAuthor!!.startsWith("@")) {
                     resultAuthor = resultAuthor.substring(1)
@@ -5803,18 +5803,18 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                     var i = resultAuthor.indexOf("://")
                     if (i != -1) resultAuthor = resultAuthor.substring(i + 3)
                     i = resultAuthor.indexOf('/')
-                    if (i == -1) return@InputAlertCallback false
+                    if (i == -1) return false
                     resultAuthor = resultAuthor.substring(i + 1)
                 }
                 if (!isEmpty(resultAuthor)) {
-                    if (!TD.matchUsername(resultAuthor) || resultAuthor.length > MAX_USERNAME_LENGTH) return@InputAlertCallback false
+                    if (!TD.matchUsername(resultAuthor) || resultAuthor.length > MAX_USERNAME_LENGTH) return false
                 } else {
                     resultAuthor = null
                 }
                 val result = resultAuthor
                 tdlib.ui().postDelayed(Runnable { after.runWithData(result) }, 100)
-                true
-            },
+                return true
+            }},
             true,
             RunnableData { arg: ViewGroup? ->
                 val textView = SettingHolder.createDescription(context.context(), ListItem.TYPE_DESCRIPTION, ColorId.textLight, null, context)
@@ -5847,7 +5847,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
           after.run(null);
           return;
         }
-        String currentUsername = !Strings.isEmpty(originalAuthor) ? originalAuthor : context.tdlib().myUserUsername();
+        String currentUsername = !Strings.isEmpty(originalAuthor) ? originalAuthor : context.tdlib()!!.myUserUsername();
         context.openInputAlert(Lang.getString(R.string.ThemeExportAddAuthorTitle), Lang.getString(R.string.ThemeExportAddAuthorInfo), R.string.ThemeExportDone, R.string.Cancel, currentUsername, (v, resultAuthor) -> {
           if (resultAuthor.startsWith("@")) {
             resultAuthor = resultAuthor.substring(1);
@@ -6179,7 +6179,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                         context.showOptions(info, ids.get(), strings.get(), colors.get(), icons.get(), OptionDelegate { itemView: View?, id: Int ->
                             if (id == R.id.btn_done) {
                                 tdlib.wallpaper().loadWallpaper(theme.wallpaper, 1000, Runnable {
-                                    context.tdlib().ui().installTheme(context, theme)
+                                    context.tdlib()!!.ui().installTheme(context, theme)
                                 })
                             } else if (id == R.id.btn_open) {
                                 U.run(onError)
@@ -6208,13 +6208,13 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
 
     fun eraseLocalData(context: ViewController<*>, tdlibAvailable: Boolean, callback: EraseCallback) {
         val info = Lang.getMarkdownString(context, R.string.EraseDatabaseWarn)
-        val hint = if (context.tdlib().context().isMultiUser()) Lang.getMarkdownString(context, R.string.EraseDatabaseMultiUser) else null
+        val hint = if (context.tdlib()!!.context().isMultiUser()) Lang.getMarkdownString(context, R.string.EraseDatabaseMultiUser) else null
         context.showWarning(if (hint != null) TextUtils.concat(info, "\n\n", hint) else info, RunnableBool { success: Boolean ->
             if (success) {
                 context.showWarning(Lang.getMarkdownString(context, R.string.EraseDatabaseWarn2), RunnableBool { success2: Boolean ->
                     if (success2 && !context.isDestroyed() && context.isFocused() && context.navigationController() != null) {
                         UI.showToast(R.string.EraseDatabaseProgress, Toast.LENGTH_SHORT)
-                        context.navigationController().getStack().setIsLocked(true)
+                        context.navigationController()!!.getStack().setIsLocked(true)
                         callback.onPrepareEraseData()
 
                         UI.showToast(R.string.EraseDatabaseProgress, Toast.LENGTH_SHORT)
@@ -6223,7 +6223,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                 val after = Runnable {
                                     tdlib.ui().post(Runnable {
                                         if (!context.isDestroyed() && context.navigationController() != null) {
-                                            context.navigationController().getStack().setIsLocked(false)
+                                            context.navigationController()!!.getStack().setIsLocked(false)
                                             callback.onEraseDataCompleted()
                                         }
                                         UI.showToast(R.string.EraseDatabaseDone, Toast.LENGTH_SHORT)
@@ -7362,7 +7362,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 } else if (id == R.id.btn_birthdate) {
                     showBirthdatePicker(context, currentBirthdate)
                 } else if (id == R.id.btn_delete) {
-                    context.tdlib().send<TdApi.Ok?>(SetBirthdate(null), Tdlib.ResultHandler { ok: TdApi.Ok?, setError: TdApi.Error? ->
+                    context.tdlib()!!.send<TdApi.Ok?>(SetBirthdate(null), Tdlib.ResultHandler { ok: TdApi.Ok?, setError: TdApi.Error? ->
                         if (setError != null) {
                             context.runOnUiThreadOptional(Runnable {
                                 context.showErrorTooltip(view, TD.toErrorString(setError))
@@ -7370,7 +7370,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                         }
                     })
                 } else if (id == R.id.btn_suggestion) {
-                    context.tdlib().send<TdApi.Ok?>(HideSuggestedAction(SuggestedActionSetBirthdate()), tdlib.typedOkHandler())
+                    context.tdlib()!!.send<TdApi.Ok?>(HideSuggestedAction(SuggestedActionSetBirthdate()), tdlib.typedOkHandler())
                 }
                 true
             })
@@ -7382,7 +7382,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             return
         }
 
-        context.tdlib().send<UserPrivacySettingRules?>(
+        context.tdlib()!!.send<UserPrivacySettingRules?>(
             GetUserPrivacySettingRules(UserPrivacySettingShowBirthdate()),
             Tdlib.ResultHandler { rules: UserPrivacySettingRules?, error: TdApi.Error? ->
                 context.runOnUiThreadOptional(
@@ -7419,7 +7419,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             month,
             year,
             true,
-            CalendarDatePickerListener { picker: ColumnDataPicker?, commitButtonView: View?, newDay: Int, newMonth: Int, newYear: Int ->
+            object : ViewController.CalendarDatePickerListener { override fun onCommitDate(picker: ColumnDataPicker?, commitButtonView: View?, newDay: Int, newMonth: Int, newYear: Int): Boolean {
                 val setBirthdate = RunnableData { birthdate: Birthdate? ->
                     tdlib.send<TdApi.Ok?>(SetBirthdate(birthdate), Tdlib.ResultHandler { ok: TdApi.Ok?, error: TdApi.Error? ->
                         controller.runOnUiThreadOptional(
@@ -7445,15 +7445,15 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                     intArrayOf(R.drawable.baseline_check_24, R.drawable.baseline_cancel_24),
                     Text.LINE_COUNT_UNLIMITED
                 )
-                options.setIgnoreOtherPopUps(true)
+                options.ignoreOtherPopUps = true
                 controller.showOptions(options, OptionDelegate { optionItemView: View?, id: Int ->
                     if (id == R.id.btn_send) {
                         setBirthdate.runWithData(newBirthdate)
                     }
                     true
                 })
-                false
-            }
+                return false
+            }}
         )
     }
 
@@ -7530,12 +7530,12 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
 
         // Unsorted UI-related common stuff
         private fun deleteSuperGroupMessages(context: ViewController<*>, deletingMessages: Array<MessageWithProperties>?, after: Runnable?): Boolean {
-            val tdlib = context.tdlib()
+            val tdlib = context.tdlib()!!
             if (deletingMessages == null || deletingMessages.size == 0) {
                 return false
             }
             val chatId = deletingMessages.findUniqueChatId()
-            if (chatId == 0L || !context.tdlib().isSupergroup(chatId)) {
+            if (chatId == 0L || !context.tdlib()!!.isSupergroup(chatId)) {
                 // Chat is not supergroup
                 return false
             }
@@ -7545,7 +7545,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 return false
             }
             val senderId = deletingMessages.findUniqueSenderId()
-            if (senderId == null || context.tdlib().isSelfSender(senderId)) {
+            if (senderId == null || context.tdlib()!!.isSelfSender(senderId)) {
                 // No need in "delete all" for outgoing messages
                 return false
             }
@@ -7593,7 +7593,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                 context.runOnUiThreadOptional(Runnable {
                                     val myStatus = tdlib.chatStatus(chatId)
                                     if (myStatus != null) {
-                                        val editController = EditRightsController(context.context(), context.tdlib())
+                                        val editController = EditRightsController(context.context(), context.tdlib()!!)
                                         editController.setArguments(EditRightsController.Args(chatId, senderId, true, myStatus, member))
                                         context.navigateTo(editController)
                                     }
@@ -7689,7 +7689,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         private fun deleteWithRevoke(context: ViewController<*>, deletingMessages: Array<MessageWithProperties>?, after: Runnable?): Boolean {
             if (deletingMessages == null || deletingMessages.size == 0) return false
 
-            val tdlib = context.tdlib()
+            val tdlib = context.tdlib()!!
             val singleChatId = deletingMessages.findUniqueChatId()
             if (tdlib.isSelfChat(singleChatId)) {
                 return false
@@ -8061,7 +8061,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             invite: InternalLinkTypeChatFolderInvite,
             openParameters: UrlOpenParameters?
         ) {
-            context.tdlib().send<ChatFolderInviteLinkInfo?>(
+            context.tdlib()!!.send<ChatFolderInviteLinkInfo?>(
                 CheckChatFolderInviteLink(invite.inviteLink),
                 Tdlib.ResultHandler { result: ChatFolderInviteLinkInfo?, error: TdApi.Error? ->
                     if (error != null) {
@@ -8074,7 +8074,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
 
         private fun showChatFolderInviteLinkInfo(context: TdlibDelegate, inviteLinkUrl: String, inviteLinkInfo: ChatFolderInviteLinkInfo) {
             if (TdlibManager.inBackgroundThread()) {
-                context.tdlib().ui().post(Runnable {
+                context.tdlib()!!.ui().post(Runnable {
                     showChatFolderInviteLinkInfo(context, inviteLinkUrl, inviteLinkInfo)
                 })
                 return
@@ -8396,7 +8396,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         }
 
         fun reportChatPhoto(context: ViewController<*>, chatId: Long, fileId: Int, after: Runnable?, forcedTheme: ThemeDelegate?) {
-            val tdlib = context.tdlib()
+            val tdlib = context.tdlib()!!
             val title = Lang.getStringBold(R.string.ReportChatPhoto, tdlib.chatTitle(chatId))
 
             val ids: IntList = IntList(REPORT_REASON_COUNT)
@@ -8433,7 +8433,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             after: Runnable?,
             needConfirmation: Boolean
         ) {
-            val tdlib = context.tdlib()
+            val tdlib = context.tdlib()!!
             val messageIds: LongArray?
             val title: CharSequence?
             if (messages != null && messages.size > 0) {
@@ -8501,7 +8501,8 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             val reportText = AtomicReference<String?>()
 
             //TODO(?): catch popup dismissal and call `after.run();`
-            tdlib.send<ReportChatResult?>(ReportChat(chatId, null, messageIds, null), object : Tdlib.ResultHandler<ReportChatResult?> {
+            lateinit var reportChatHandler: Tdlib.ResultHandler<ReportChatResult?>
+            reportChatHandler = object : Tdlib.ResultHandler<ReportChatResult?> {
                 override fun onResult(result: ReportChatResult?, error: TdApi.Error?) {
                     if (error != null) {
                         UI.showError(error)
@@ -8539,7 +8540,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                 val popup = context.showOptions(b.build(), OptionDelegate { optionItemView: View?, id: Int ->
                                     val optionId = idToOptionId.get(id)
                                     if (optionId != null) {
-                                        tdlib.send<ReportChatResult?>(ReportChat(chatId, optionId, messageIds, reportText.get()), this)
+                                        tdlib.send<ReportChatResult?>(ReportChat(chatId, optionId, messageIds, reportText.get()), reportChatHandler)
                                         return@OptionDelegate true
                                     }
                                     false
@@ -8564,16 +8565,16 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                                     R.string.Cancel,
                                     null,
                                     null,
-                                    InputAlertCallback { inputView: MaterialEditTextGroup?, userInput: String? ->
+                                    object : ViewController.InputAlertCallback { override fun onAcceptInput(inputView: MaterialEditTextGroup?, userInput: String?): Boolean {
                                         val text = trim(userInput)
                                         if (isEmpty(text) && !textRequired.isOptional) {
-                                            return@InputAlertCallback false
+                                            return false
                                         } else {
                                             reportText.set(text)
-                                            tdlib.send<ReportChatResult?>(ReportChat(chatId, textRequired.optionId, messageIds, text), this)
-                                            return@InputAlertCallback true
+                                            tdlib.send<ReportChatResult?>(ReportChat(chatId, textRequired.optionId, messageIds, text), reportChatHandler)
+                                            return true
                                         }
-                                    },
+                                    }},
                                     textRequired.isOptional,
                                     null,
                                     forcedTheme
@@ -8592,7 +8593,8 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                         }
                     }
                 }
-            })
+            }
+            tdlib.send<ReportChatResult?>(ReportChat(chatId, null, messageIds, null), reportChatHandler)
         }
 
         @JvmStatic

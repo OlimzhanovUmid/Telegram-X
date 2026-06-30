@@ -59,7 +59,7 @@ class CreateTopicController(context: Context, tdlib: Tdlib) :
       }
 
       override fun initCustom (parent: ViewGroup): SettingHolder {
-        val picker = TopicIconPickerView(context, tdlib)
+        val picker = TopicIconPickerView(context, tdlib!!)
         pickerView = picker
         picker.load()
         val scroll = HorizontalScrollView(context)
