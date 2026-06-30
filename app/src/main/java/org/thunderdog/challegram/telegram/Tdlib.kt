@@ -4277,7 +4277,7 @@ class Tdlib internal constructor(account: TdlibAccount, @field:Mode @param:Mode 
     }
 
     fun isUserChat(chatId: Long): Boolean {
-        return isUserChat(chatId)
+        return tgx.td.isUserChat(chatId)
     }
 
     fun isDirectMessagesChat(chatId: Long): Boolean {
@@ -4295,7 +4295,7 @@ class Tdlib internal constructor(account: TdlibAccount, @field:Mode @param:Mode 
     }
 
     fun hasMessageThreads(chatId: Long): Boolean {
-        return isSupergroup(chatId) && !isMonoforumChat(chatId) && !isChannel(chatId)
+        return tgx.td.isSupergroup(chatId) && !isMonoforumChat(chatId) && !isChannel(chatId)
     }
 
     fun isServiceNotificationsChat(chatId: Long): Boolean {
@@ -6925,7 +6925,7 @@ class Tdlib internal constructor(account: TdlibAccount, @field:Mode @param:Mode 
         if (!isEmpty(username)) {
             return tMeUrl(username)
         }
-        if (isSupergroup(chatId)) {
+        if (tgx.td.isSupergroup(chatId)) {
             return tMeUrl("c/" + toSupergroupId(chatId))
         }
         return null
