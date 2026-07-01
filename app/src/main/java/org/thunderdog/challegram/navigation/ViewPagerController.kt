@@ -519,7 +519,7 @@ abstract class ViewPagerController<T>(context: Context, tdlib: Tdlib?) : Telegra
         if (super.shouldDisallowScreenshots()) {
             return true
         }
-        if (isSearchAntagonistHidden()) {
+        if (isSearchAntagonistHidden) {
             return false
         }
         val controller = this.currentPagerItem
