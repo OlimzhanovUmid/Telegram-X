@@ -356,7 +356,7 @@ public class MessageOptionsPagerController extends BottomSheetViewController<Opt
     }
     currentMediaPosition = position;
     currentPositionOffset = positionOffset;
-    setIgnoreAnyPagerScrollEventsBecauseOfMovements(positionOffset != 0f);
+    ignoreAnyPagerScrollEventsBecauseOfMovements = positionOffset != 0f;
 
     if (headerCell != null) {
       headerCell.onPageScrolled(position, positionOffset);

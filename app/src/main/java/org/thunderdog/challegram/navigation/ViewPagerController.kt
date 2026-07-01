@@ -512,8 +512,8 @@ abstract class ViewPagerController<T>(context: Context, tdlib: Tdlib?) : Telegra
     val currentPagerItem: ViewController<*>?
         get() = getCachedControllerForPosition(this.currentPagerItemPosition)
 
-    internal var currentPosition = 0
-    internal var currentPositionOffset = 0f
+    private var currentPosition = 0
+    private var currentPositionOffset = 0f
 
     override fun shouldDisallowScreenshots(): Boolean {
         if (super.shouldDisallowScreenshots()) {
