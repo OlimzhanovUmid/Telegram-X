@@ -273,14 +273,14 @@ public class SearchManager {
 
   private boolean isPrepared;
 
-  public void onPrepare (@NonNull TdApi.ChatList chatList, @NonNull String initialQuery) {
+  public void onPrepare (@Nullable TdApi.ChatList chatList, @NonNull String initialQuery) {
     if (!isPrepared) {
       isPrepared = true;
       performSearch(chatList, initialQuery, FORCE_MODE_TOP);
     }
   }
 
-  public void onQueryChanged (@NonNull TdApi.ChatList chatList, @NonNull String query) {
+  public void onQueryChanged (@Nullable TdApi.ChatList chatList, @NonNull String query) {
     performSearch(chatList, query, FORCE_MODE_NONE);
   }
 

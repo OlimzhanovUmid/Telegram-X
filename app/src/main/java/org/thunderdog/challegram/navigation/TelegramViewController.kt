@@ -873,7 +873,7 @@ abstract class TelegramViewController<T>(context: Context, tdlib: Tdlib?) : View
 
     parent?.addView(chatSearchView)
     if (needChatSearchManagerPreparation()) {
-      chatSearchManager!!.onPrepare(this.chatMessagesSearchChatList!!, this.chatSearchInitialQuery!!)
+      chatSearchManager!!.onPrepare(this.chatMessagesSearchChatList, this.chatSearchInitialQuery!!)
     }
     return chatSearchView
   }
@@ -1045,7 +1045,7 @@ abstract class TelegramViewController<T>(context: Context, tdlib: Tdlib?) : View
   }
 
   protected fun forceSearchChats(query: String) {
-    chatSearchManager?.onQueryChanged(this.chatMessagesSearchChatList!!, query)
+    chatSearchManager?.onQueryChanged(this.chatMessagesSearchChatList, query)
   }
 
   private var needPreventKeyboardLag = false
@@ -1127,7 +1127,7 @@ abstract class TelegramViewController<T>(context: Context, tdlib: Tdlib?) : View
   @CallSuper
   override fun onSearchInputChanged(query: String) {
     super.onSearchInputChanged(query)
-    chatSearchManager?.onQueryChanged(this.chatMessagesSearchChatList!!, query)
+    chatSearchManager?.onQueryChanged(this.chatMessagesSearchChatList, query)
   }
 
   @CallSuper
