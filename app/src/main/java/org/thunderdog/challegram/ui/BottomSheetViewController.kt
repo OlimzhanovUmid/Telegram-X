@@ -476,7 +476,7 @@ if (headerView != null) {
     addThemeInvalidateListener(recyclerView)
     checkContentScrollY(controller)
     if (canHideByScroll()) {
-      UI.post(Runnable { recyclerView.scrollBy(0, this.contentMinHeight + getHeaderHeight()) })
+      UI.post { recyclerView.scrollBy(0, this.contentMinHeight + getHeaderHeight()) }
     }
   }
 
