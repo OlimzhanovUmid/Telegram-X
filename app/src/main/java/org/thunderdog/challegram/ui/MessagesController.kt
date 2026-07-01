@@ -1932,13 +1932,13 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             val files = ArrayList<String?>()
 
             for (result in selectedItems) {
-                when (result.getType()) {
+                when (result.type) {
                     InlineResult.TYPE_AUDIO -> {
                         musicEntries.add(((result as InlineResultCommon).getTag() as MusicEntry?)!!)
                     }
 
                     InlineResult.TYPE_DOCUMENT -> {
-                        files.add(result.getId())
+                        files.add(result.id)
                     }
                 }
             }
