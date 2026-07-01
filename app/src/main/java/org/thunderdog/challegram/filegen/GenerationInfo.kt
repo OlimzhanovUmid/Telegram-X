@@ -19,55 +19,55 @@ import org.thunderdog.challegram.U
 import org.thunderdog.challegram.config.Config
 
 abstract class GenerationInfo(@JvmField val generationId: Long, @JvmField val originalPath: String, @JvmField val destinationPath: String?, @JvmField val conversion: String?, hasThumb: Boolean) {
-    val key: String
-        get() {
-            val b = StringBuilder(originalPath)
-            if (conversion != null) {
-                b.append('?')
-                b.append(conversion)
-            }
-            return b.toString()
-        }
-
-    override fun toString(): String {
-        return this.key
+  val key: String
+    get() {
+      val b = StringBuilder(originalPath)
+      if (conversion != null) {
+        b.append('?')
+        b.append(conversion)
+      }
+      return b.toString()
     }
 
-    private var onCancel: Runnable? = null
+  override fun toString(): String {
+    return this.key
+  }
 
-    fun setOnCancel(onCancel: Runnable?) {
-        synchronized(this) {
-            this.onCancel = onCancel
-        }
+  private var onCancel: Runnable? = null
+
+  fun setOnCancel(onCancel: Runnable?) {
+    synchronized(this) {
+      this.onCancel = onCancel
+    }
+  }
+
+  fun cancel() {
+    synchronized(this) {
+      if (onCancel != null) {
+        onCancel!!.run()
+        onCancel = null
+      }
+    }
+  }
+
+  companion object {
+    const val TYPE_PHOTO: String = "photo"
+    const val TYPE_PHOTO_THUMB: String = "pthumb"
+    const val TYPE_VIDEO_THUMB: String = "vthumb"
+    const val TYPE_MUSIC_THUMB: String = "mthumb"
+    const val TYPE_VIDEO: String = "video"
+    const val TYPE_AVATAR: String = "avatar"
+    const val TYPE_LOTTIE_STICKER_PREVIEW: String = "asthumb"
+    const val TYPE_VIDEO_STICKER_PREVIEW: String = "vsthumb"
+
+    @JvmStatic
+    fun randomStamp(): String {
+      return SystemClock.uptimeMillis().toString() + "_" + System.currentTimeMillis() + "_" + Math.random()
     }
 
-    fun cancel() {
-        synchronized(this) {
-            if (onCancel != null) {
-                onCancel!!.run()
-                onCancel = null
-            }
-        }
+    @JvmStatic
+    fun lastModified(path: String?): Long {
+      return if (Config.DISABLE_SENDING_MEDIA_CACHE) System.currentTimeMillis() else if (Config.WORKAROUND_NEED_MODIFY) U.getLastModifiedTime(path) else 0
     }
-
-    companion object {
-        const val TYPE_PHOTO: String = "photo"
-        const val TYPE_PHOTO_THUMB: String = "pthumb"
-        const val TYPE_VIDEO_THUMB: String = "vthumb"
-        const val TYPE_MUSIC_THUMB: String = "mthumb"
-        const val TYPE_VIDEO: String = "video"
-        const val TYPE_AVATAR: String = "avatar"
-        const val TYPE_LOTTIE_STICKER_PREVIEW: String = "asthumb"
-        const val TYPE_VIDEO_STICKER_PREVIEW: String = "vsthumb"
-
-        @JvmStatic
-        fun randomStamp(): String {
-            return SystemClock.uptimeMillis().toString() + "_" + System.currentTimeMillis() + "_" + Math.random()
-        }
-
-        @JvmStatic
-        fun lastModified(path: String?): Long {
-            return if (Config.DISABLE_SENDING_MEDIA_CACHE) System.currentTimeMillis() else if (Config.WORKAROUND_NEED_MODIFY) U.getLastModifiedTime(path) else 0
-        }
-    }
+  }
 }
