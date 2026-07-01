@@ -17,9 +17,7 @@ package org.thunderdog.challegram.filegen;
 import static tgx.flavor.VideoTransformer.getVideoFrameRate;
 import static tgx.flavor.VideoTransformer.legacyConvertVideoComplex;
 
-import android.annotation.TargetApi;
 import android.media.MediaMetadataRetriever;
-import android.os.Build;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
@@ -211,14 +209,14 @@ public class VideoGen {
   @WorkerThread
   private void startConversion (final VideoGenerationInfo info) {
     final Entry entry = new Entry(this, info.generationId);
-    entries.put(info.getDestinationPath(), entry);
+    entries.put(info.destinationPath, entry);
     convertVideo(info, entry);
   }
 
   @WorkerThread
   private void convertVideo (final VideoGenerationInfo info, final Entry entry) {
-    final String sourcePath = info.getOriginalPath();
-    final String destinationPath = info.getDestinationPath();
+    final String sourcePath = info.originalPath;
+    final String destinationPath = info.destinationPath;
 
     boolean sendOriginalInCaseFileSizeGrows = !Config.MODERN_VIDEO_TRANSCODING_ENABLED && info.canTakeSimplePath();
 
@@ -507,9 +505,9 @@ public class VideoGen {
   }
 
   public void sendOriginal (VideoGenerationInfo info, Entry entry) {
-    final long generationId = info.getGenerationId();
-    final String sourcePath = info.getOriginalPath();
-    final String destinationPath = info.getDestinationPath();
+    final long generationId = info.generationId;
+    final String sourcePath = info.originalPath;
+    final String destinationPath = info.destinationPath;
 
     entry.transcodeFinished.set(false);
 

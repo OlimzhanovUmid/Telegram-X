@@ -1170,15 +1170,15 @@ public class TD {
   }
 
   public static TdApi.InputMessageContent toInputMessageContent (TdApi.FormattedText caption, InlineResult<?> result, boolean showCaptionAboveMedia, boolean hasSpoiler, boolean allowDocument, boolean allowAudio, boolean allowVideo, boolean allowAnimation) {
-    if (result.getType() == InlineResult.TYPE_AUDIO) {
+    if (result.type == InlineResult.TYPE_AUDIO) {
       final MediaBottomFilesController.MusicEntry musicFile = (MediaBottomFilesController.MusicEntry) ((InlineResultCommon) result).getTag();
       if (allowAudio) {
         return new TdApi.InputMessageAudio(TD.createInputFile(musicFile.getPath(), musicFile.getMimeType()), null, (int) (musicFile.getDuration() / 1000L), musicFile.getTitle(), musicFile.getArtist(), caption);
       } else if (allowDocument) {
         return new TdApi.InputMessageDocument(TD.createInputFile(musicFile.getPath(), musicFile.getMimeType()), null, true, caption);
       }
-    } else if (result.getType() == InlineResult.TYPE_DOCUMENT) {
-      final String path = result.getId();
+    } else if (result.type == InlineResult.TYPE_DOCUMENT) {
+      final String path = result.id;
       final TD.FileInfo info = new TD.FileInfo();
       final TdApi.InputFile inputFile = TD.createInputFile(path, null, info);
       return TD.toInputMessageContent(path, inputFile, info, caption, allowAudio, allowAnimation, allowVideo, allowDocument, showCaptionAboveMedia, hasSpoiler);

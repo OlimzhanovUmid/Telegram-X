@@ -278,9 +278,9 @@ public class PageBlockRichText extends PageBlock {
         context.tdlib().ui().openPublicChat(context, chatLink.username, openParameters);
       }
     });
-    if (block.getConstructor() == TdApi.PageBlockChatLink.CONSTRUCTOR) {
+    if (getOriginalBlock().getConstructor() == TdApi.PageBlockChatLink.CONSTRUCTOR) {
       long time = SystemClock.uptimeMillis();
-      context.tdlib().client().send(new TdApi.SearchPublicChat(((TdApi.PageBlockChatLink) block).username), result -> {
+      context.tdlib().client().send(new TdApi.SearchPublicChat(((TdApi.PageBlockChatLink) getOriginalBlock()).username), result -> {
         if (result.getConstructor() == TdApi.Chat.CONSTRUCTOR) {
           TdApi.Chat publicChat = ((TdApi.Chat) result);
           if (ChatId.isUserChat(publicChat.id))
@@ -499,7 +499,7 @@ public class PageBlockRichText extends PageBlock {
   private static final float QUOTE_OFFSET = 12f;
 
   private int getTextPaddingLeft () {
-    return Math.max(getMinimumContentPadding(true), !isPost && listItemInfo != null ? 0 : Screen.dp(textHorizontalOffset)) + (needAvatar ? Screen.dp(40f) + Screen.dp(14f) : 0) + (detailsOpened != null ? Screen.dp(24f) : 0);
+    return Math.max(getMinimumContentPadding(true), !isPost && getListItem() != null ? 0 : Screen.dp(textHorizontalOffset)) + (needAvatar ? Screen.dp(40f) + Screen.dp(14f) : 0) + (detailsOpened != null ? Screen.dp(24f) : 0);
   }
 
   private int getTextPaddingRight () {

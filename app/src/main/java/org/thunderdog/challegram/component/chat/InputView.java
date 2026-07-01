@@ -21,7 +21,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -1453,7 +1452,7 @@ public class InputView extends NoClipEditText implements InlineSearchContext.Cal
   @Override
   public void onInlineQueryResultPick (InlineResult<?> result) {
     if (controller != null) {
-      controller.sendInlineQueryResult(result.getQueryId(), result.getId(), true, true, Td.newSendOptions());
+      controller.sendInlineQueryResult(result.queryId, result.id, true, true, Td.newSendOptions());
     }
   }
 

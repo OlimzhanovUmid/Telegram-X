@@ -1390,7 +1390,7 @@ public class TGPlayerController implements GlobalMessageListener, ProximityManag
   }
 
   private static boolean matchesFilter (InlineResult<?> result, @TdApi.MessageContent.Constructors int contentType) {
-    switch (result.getType()) {
+    switch (result.type) {
       case InlineResult.TYPE_AUDIO:
         return contentType == TdApi.MessageAudio.CONSTRUCTOR;
       case InlineResult.TYPE_VOICE:

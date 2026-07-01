@@ -731,7 +731,7 @@ public class InlineSearchContext implements LocationHelper.LocationChangeListene
       InlineResult<?> resultItem = InlineResult.valueOf(context, tdlib, inlineQuery, result, builder);
       if (resultItem != null) {
         resultItem.setBoundList(items);
-        resultItem.setQueryId(results.inlineQueryId);
+        resultItem.queryId = results.inlineQueryId;
         items.add(resultItem);
       }
     }

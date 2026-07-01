@@ -234,7 +234,7 @@ public class MediaToReplacePickerManager extends MediaLayoutManager {
     }
 
     public boolean isMusic () {
-      return inlineResult != null && inlineResult.getType() == InlineResult.TYPE_AUDIO;
+      return inlineResult != null && inlineResult.type == InlineResult.TYPE_AUDIO;
     }
 
     @Nullable

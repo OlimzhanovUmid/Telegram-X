@@ -14,7 +14,6 @@
  */
 package org.thunderdog.challegram.component.attach;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
@@ -784,7 +783,7 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
         continue;
       }
       InlineResultCommon inlineResult = (InlineResultCommon) item.getData();
-      if (inlineResult.getType() == InlineResult.TYPE_AUDIO) {
+      if (inlineResult.type == InlineResult.TYPE_AUDIO) {
         TdApi.Message fakeMessage = inlineResult.getPlayPauseMessage();
         if (fakeMessage == null) {
           continue;
@@ -1052,7 +1051,7 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
       } else if (itemId == R.id.btn_bucket) {
         navigateInside(v, KEY_BUCKET, result);
       } else {
-        String path = result.getId();
+        String path = result.id;
         boolean isMusic = KEY_MUSIC.equals(path);
         if (mediaLayout.getFilesControllerDelegate().showRestriction(v, isMusic ? RightId.SEND_AUDIO : RightId.SEND_DOCS)) {
           return;
@@ -1110,7 +1109,7 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
   }
 
   private void navigateTo (View view, InlineResultCommon result) {
-    String path = result.getId();
+    String path = result.id;
     if (path != null) {
       if (KEY_GALLERY.equals(path) || KEY_MUSIC.equals(path) || KEY_DOWNLOADS.equals(path) || KEY_BUCKET.equals(path) || path.startsWith(KEY_FOLDER)) {
         navigateInside(view, path, result);
@@ -1219,13 +1218,13 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
     ArrayList<String> files = new ArrayList<>();
 
     for (InlineResult<?> result : selectedItems) {
-      switch (result.getType()) {
+      switch (result.type) {
         case InlineResult.TYPE_AUDIO: {
           musicEntries.add((MusicEntry) ((InlineResultCommon) result).getTag());
           break;
         }
         case InlineResult.TYPE_DOCUMENT: {
-          files.add(result.getId());
+          files.add(result.id);
           break;
         }
       }

@@ -124,7 +124,7 @@ public class PlaybackController extends ViewController<Void> implements Menu, Mo
     while (--remaining >= 0) {
       TdApi.Message track = trackList.get(reverseOrder ? remaining : trackList.size() - 1 - remaining);
       InlineResult<?> result = InlineResult.valueOf(context, tdlib, track);
-      if (!(result instanceof InlineResultCommon) || result.getType() != InlineResult.TYPE_AUDIO) {
+      if (!(result instanceof InlineResultCommon) || result.type != InlineResult.TYPE_AUDIO) {
         out.clear();
         return -1;
       }
@@ -992,7 +992,7 @@ public class PlaybackController extends ViewController<Void> implements Menu, Mo
   @Override
   public void onTrackListItemAdded (Tdlib tdlib, TdApi.Message newTrack, int position) {
     InlineResult<?> result = InlineResult.valueOf(context, tdlib, newTrack);
-    if (!(result instanceof InlineResultCommon) || result.getType() != InlineResult.TYPE_AUDIO) {
+    if (!(result instanceof InlineResultCommon) || result.type != InlineResult.TYPE_AUDIO) {
       return;
     }
     InlineResultCommon common = (InlineResultCommon) result;
@@ -1014,7 +1014,7 @@ public class PlaybackController extends ViewController<Void> implements Menu, Mo
     while (--remaining >= 0) {
       TdApi.Message addedTrack = addedItems.get(reverseOrder ? remaining : addedItems.size() - 1 - remaining);
       InlineResult<?> result = InlineResult.valueOf(context, tdlib, addedTrack);
-      if (!(result instanceof InlineResultCommon) || result.getType() != InlineResult.TYPE_AUDIO) {
+      if (!(result instanceof InlineResultCommon) || result.type != InlineResult.TYPE_AUDIO) {
         return;
       }
       InlineResultCommon common = (InlineResultCommon) result;

@@ -486,7 +486,7 @@ public final class TdlibFileGenerationManager {
 
   @AnyThread
   public void failGeneration (GenerationInfo info, int errorCode, String message) {
-    finishGenerationImpl(info.getOriginalPath(), info.conversion, info.generationId, new TdApi.Error(errorCode, message));
+    finishGenerationImpl(info.originalPath, info.conversion, info.generationId, new TdApi.Error(errorCode, message));
   }
 
   @AnyThread
@@ -496,7 +496,7 @@ public final class TdlibFileGenerationManager {
 
   @AnyThread
   public void finishGeneration (GenerationInfo info) {
-    finishGenerationImpl(info.getOriginalPath(), info.conversion, info.getGenerationId(), null);
+    finishGenerationImpl(info.originalPath, info.conversion, info.generationId, null);
   }
 
   @AnyThread
@@ -1007,7 +1007,7 @@ public final class TdlibFileGenerationManager {
 
   private void compress (GenerationInfo info, Bitmap bitmap, int quality, boolean transparent) {
     boolean failed = true;
-    try (FileOutputStream out = new FileOutputStream(info.getDestinationPath())) {
+    try (FileOutputStream out = new FileOutputStream(info.destinationPath)) {
       failed = !bitmap.compress(U.compressFormat(transparent), quality, out);
     } catch (Throwable t) {
       Log.e("Cannot compress image", t);
@@ -1022,7 +1022,7 @@ public final class TdlibFileGenerationManager {
   // Photo
 
   private void generatePhoto (PhotoGenerationInfo info) throws Throwable {
-    final String originalPath = info.getOriginalPath();
+    final String originalPath = info.originalPath;
     Uri uri = originalPath.startsWith("content://") ? Uri.parse(originalPath) : null;
     final boolean applyLessCompression = U.isScreenshotFolder(originalPath);
     boolean isTransparent = info.getAllowTransparency() || (!applyLessCompression && isTransparent(originalPath, uri));
@@ -1148,7 +1148,7 @@ public final class TdlibFileGenerationManager {
   private static final int COMPRESSION_LEVEL = Device.IS_SAMSUNG ? 92 : 89;
 
   private void generateAvatar (SimpleGenerationInfo info) throws Throwable {
-    final String originalPath = info.getOriginalPath();
+    final String originalPath = info.originalPath;
     final int maxSize = 640;
 
     BitmapFactory.Options opts = new BitmapFactory.Options();

@@ -17,7 +17,6 @@ package org.thunderdog.challegram.component.chat;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -129,7 +128,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
     gridManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
       @Override
       public int getSpanSize (int position) {
-        return position == 0 || currentItems == null || !InlineResult.isGridType(currentItems.get(position - 1).getType()) ? spanCount : 1;
+        return position == 0 || currentItems == null || !InlineResult.isGridType(currentItems.get(position - 1).type) ? spanCount : 1;
       }
     });
 
@@ -139,7 +138,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
       @Override
       protected Size getSizeForItem (int i) {
         InlineResult<?> result = layoutMode == LAYOUT_MODE_FLOW && i != 0 && currentItems != null ? currentItems.get(i - 1) : null;
-        if (result != null && InlineResult.isFlowType(result.getType())) {
+        if (result != null && InlineResult.isFlowType(result.type)) {
           size.width = result.getCellWidth();
           size.height = result.getCellHeight();
         } else {
@@ -151,7 +150,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
     flowManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
       @Override
       public int getSpanSize (int position) {
-        return layoutMode == LAYOUT_MODE_FLOW && position > 0 && currentItems != null && InlineResult.isFlowType(currentItems.get(position - 1).getType()) ? flowManager.getSpanSizeForItem(position) : 100;
+        return layoutMode == LAYOUT_MODE_FLOW && position > 0 && currentItems != null && InlineResult.isFlowType(currentItems.get(position - 1).type) ? flowManager.getSpanSizeForItem(position) : 100;
         // return layoutMode == LAYOUT_MODE_FLOW && position > 0 && currentItems != null && InlineResult.isFlowType(currentItems.get(position - 1).getType()) ? flowManager.getSpanSizeForItem(position) : 100;
       }
     });
@@ -220,7 +219,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
         }
         int i = parent.getChildAdapterPosition(view);
         outRect.right = i == -1 || flowManager.isLastInRow(i) ? 0 : Screen.dp(3f);
-        outRect.bottom = i == 0 && currentItems != null && !currentItems.isEmpty() && currentItems.get(0).getType() == InlineResult.TYPE_BUTTON ? 0 : Screen.dp(3f);
+        outRect.bottom = i == 0 && currentItems != null && !currentItems.isEmpty() && currentItems.get(0).type == InlineResult.TYPE_BUTTON ? 0 : Screen.dp(3f);
       }
     });
     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -360,7 +359,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
       return false;
     }
     InlineResult<?> result = (InlineResult<?>) tag;
-    switch (result.getType()) {
+    switch (result.type) {
       case InlineResult.TYPE_PHOTO:
       case InlineResult.TYPE_GIF:
         return true;
@@ -381,7 +380,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
     }
     InlineResult<?> result = (InlineResult<?>) tag;
     SimpleMediaViewController.Args args = null;
-    switch (result.getType()) {
+    switch (result.type) {
       case InlineResult.TYPE_PHOTO: {
         InlineResultPhoto photo = (InlineResultPhoto) result;
         args = new SimpleMediaViewController.Args(photo.data().photo, photo.getPreview() != null ? photo.getPreview() : photo.getMiniThumbnail(), photo.getImage());
@@ -698,13 +697,13 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
   }
 
   private void setItems (ArrayList<InlineResult<?>> items) {
-    int lastType = items != null && !items.isEmpty() ? items.get(items.size() - 1).getType() : -1;
+    int lastType = items != null && !items.isEmpty() ? items.get(items.size() - 1).type : -1;
 
     if (InlineResult.isFlowType(lastType)) {
       int headerItemCount = 1;
       if (items != null) {
         for (InlineResult<?> item : items) {
-          if (InlineResult.isFlowType(item.getType())) {
+          if (InlineResult.isFlowType(item.type)) {
             break;
           }
           headerItemCount++;
@@ -769,7 +768,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
         int headerHeight = 0;
         int headerItemCount = 0;
         for (InlineResult<?> item : currentItems) {
-          if (InlineResult.isFlowType(item.getType())) {
+          if (InlineResult.isFlowType(item.type)) {
             break;
           }
           headerHeight += item.getHeight();
@@ -782,7 +781,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
         int headerHeight = 0;
         int headerItemCount = 0;
         for (InlineResult<?> item : currentItems) {
-          if (InlineResult.isGridType(item.getType())) {
+          if (InlineResult.isGridType(item.type)) {
             break;
           }
           headerHeight += item.getHeight();
@@ -992,7 +991,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
         if (listener == null) {
           return;
         }
-        switch (result.getType()) {
+        switch (result.type) {
           case InlineResult.TYPE_HASHTAG: {
             InlineResultHashtag hashtag = (InlineResultHashtag) result;
             listener.onHashtagPick(hashtag);
@@ -1033,7 +1032,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
       InlineResult<?> result = (InlineResult<?>) tag;
       MessagesController c = findMessagesController();
       if (c != null) {
-        c.sendInlineQueryResult(result.getQueryId(), result.getId(), true, true, sendOptions);
+        c.sendInlineQueryResult(result.queryId, result.id, true, true, sendOptions);
       }
     }
     return false;
@@ -1055,7 +1054,7 @@ public class InlineResultsWrap extends FrameLayoutFix implements View.OnClickLis
     if (currentItems != null) {
       int i = 0;
       for (InlineResult<?> item : currentItems) {
-        if (item.getType() == InlineResult.TYPE_STICKER && ((InlineResultSticker) item).getSticker().equals(sticker)) {
+        if (item.type == InlineResult.TYPE_STICKER && ((InlineResultSticker) item).getSticker().equals(sticker)) {
           final View childView = gridManager.findViewByPosition(i + 1);
           if (childView instanceof StickerSmallView) {
             ((StickerSmallView) childView).setStickerPressed(isPressed);

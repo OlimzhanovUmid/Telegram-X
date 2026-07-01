@@ -16,7 +16,6 @@ package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -27,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.thunderdog.challegram.BuildConfig;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.U;
 import org.thunderdog.challegram.component.emoji.GifView;
@@ -216,7 +214,7 @@ public class InlineResultsAdapter extends RecyclerView.Adapter<InlineResultsAdap
     if (position-- == 0) {
       return ViewHolder.TYPE_HEADER;
     }
-    switch (items.get(position).getType()) {
+    switch (items.get(position).type) {
       case InlineResult.TYPE_STICKER: {
         return ViewHolder.TYPE_STICKER;
       }

@@ -121,7 +121,7 @@ public class SharedCommonController extends SharedBaseController<InlineResult<?>
       }
       
       InlineResult<?> result = (InlineResult<?>) item.getData();
-      switch (result.getType()) {
+      switch (result.type) {
         case InlineResult.TYPE_AUDIO:
         case InlineResult.TYPE_VOICE: {
           tdlib.context().player().playPauseMessage(tdlib, result.getMessage(), this);
@@ -132,7 +132,7 @@ public class SharedCommonController extends SharedBaseController<InlineResult<?>
           break;
         }
         case InlineResult.TYPE_ARTICLE: {
-          tdlib.ui().openMessage(this, chatId, new MessageId(chatId, result.getQueryId()), new TdlibUi.UrlOpenParameters().tooltip(context().tooltipManager().builder(v)));
+          tdlib.ui().openMessage(this, chatId, new MessageId(chatId, result.queryId), new TdlibUi.UrlOpenParameters().tooltip(context().tooltipManager().builder(v)));
           break;
         }
       }
@@ -157,7 +157,7 @@ public class SharedCommonController extends SharedBaseController<InlineResult<?>
       result = InlineResult.valueOf(context, tdlib, message);
     }
     if (result != null) {
-      result.setQueryId(message.id);
+      result.queryId = message.id;
       result.setDate(message.date);
       if (result instanceof InlineResultCommon && Td.isAudio(message.content)) {
         ((InlineResultCommon) result).setIsTrack(false);
@@ -253,7 +253,7 @@ public class SharedCommonController extends SharedBaseController<InlineResult<?>
     final int count = data.size();
     for (int i = count - 1; i >= 0; i--) {
       InlineResult<?> result = data.get(i);
-      if (result.getType() != desiredType) {
+      if (result.type != desiredType) {
         continue;
       }
       if (result instanceof InlineResultCommon) {

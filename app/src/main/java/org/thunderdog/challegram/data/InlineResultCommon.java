@@ -695,7 +695,7 @@ public class InlineResultCommon extends InlineResult<TdApi.InlineQueryResult> im
   }
 
   private void updateDescription () {
-    switch (getType()) {
+    switch (type) {
       case TYPE_AUDIO: {
         String progress = FileComponent.buildProgressSubtitle(audio.audio, fileProgress != null && fileProgress.isLoading(), false);
         setDescription(progress != null ? progress : TD.getSubtitle(audio));

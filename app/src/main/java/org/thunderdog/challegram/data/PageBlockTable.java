@@ -196,7 +196,7 @@ public class PageBlockTable extends PageBlock implements Destroyable {
 
   @Override
   protected int getContentTop () {
-    return Screen.dp(Td.isEmpty(((TdApi.PageBlockTable) block).caption) ? 6f : 2f);
+    return Screen.dp(Td.isEmpty(((TdApi.PageBlockTable) getOriginalBlock()).caption) ? 6f : 2f);
   }
 
   @Override
@@ -206,7 +206,7 @@ public class PageBlockTable extends PageBlock implements Destroyable {
 
   @Override
   protected <T extends View & DrawableProvider> void drawInternal (T view, Canvas c, Receiver preview, Receiver receiver, @Nullable ComplexReceiver iconReceiver) {
-    final TdApi.PageBlockTable table = (TdApi.PageBlockTable) this.block;
+    final TdApi.PageBlockTable table = (TdApi.PageBlockTable) this.getOriginalBlock();
     for (Cell cell : cellsList) {
       if (cell.cell.isHeader || (table.isStriped && cell.cellPositionStartY() % 2 == 0)) {
         c.drawRect(cell.bounds, Paints.fillingPaint(Theme.backgroundColor()));

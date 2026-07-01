@@ -543,7 +543,7 @@ public class InstantViewController extends ViewController<InstantViewController.
     for (int i = count - 1; i >= 0; i--) {
       PageBlock pageBlock = (PageBlock) adapter.getItems().get(i).getData();
       InlineResultCommon result = pageBlock instanceof PageBlockFile ? ((PageBlockFile) pageBlock).getFile() : null;
-      if (result == null || result.getType() != desiredType) {
+      if (result == null || result.type != desiredType) {
         continue;
       }
       TdApi.Message msg = result.getPlayPauseMessage();
