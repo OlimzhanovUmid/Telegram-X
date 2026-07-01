@@ -1500,7 +1500,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingHolder> impleme
         editText.setText(item.getStringValue());
         EditBaseController.SimpleEditorActionListener editorActionListener = item.getOnEditorActionListener();
         if (editorActionListener != null) {
-          editText.getEditText().setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI | editorActionListener.getImeAction());
+          editText.getEditText().setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI | editorActionListener.imeAction);
           editText.getEditText().setOnEditorActionListener(editorActionListener.hasContext() ? editorActionListener : null);
         } else {
           editText.getEditText().setOnEditorActionListener(null);

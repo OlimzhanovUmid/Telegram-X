@@ -33,8 +33,7 @@ import org.thunderdog.challegram.util.CharacterStyleFilter
 import org.thunderdog.challegram.v.EditText
 import org.thunderdog.challegram.widget.DoneButton
 import org.thunderdog.challegram.widget.MaterialEditTextGroup
-import java.util.ArrayList
-import java.util.Collections
+import java.util.*
 
 abstract class EditTextController<T>(context: Context, tdlib: Tdlib) : EditBaseController<T>(context, tdlib) {
   interface Delegate {
@@ -96,7 +95,7 @@ abstract class EditTextController<T>(context: Context, tdlib: Tdlib) : EditBaseC
     items.add(item)
 
     val description = localDelegate.getDescription()
-    if (!description.isNullOrEmpty()) {
+    if (description.isNotEmpty()) {
       items.add(ListItem(ListItem.TYPE_DESCRIPTION, R.id.description, 0, description, false).setTextColorId(ColorId.textLight))
     }
 
