@@ -145,49 +145,9 @@ import org.thunderdog.challegram.widget.ForceTouchView.ForceTouchContext
 import org.thunderdog.challegram.widget.ForceTouchView.PreviewDelegate
 import org.thunderdog.challegram.widget.WallpaperParametersView.WallpaperParametersListener
 import org.thunderdog.challegram.widget.rtl.RtlViewPager
-import tgx.td.MAX_MESSAGE_GROUP_SIZE
-import tgx.td.MessageId
-import tgx.td.assertCanSendMessageToUserResult_15fb1d0f
-import tgx.td.assertChatActionBar_eedc82ed
-import tgx.td.assertInputMessageReplyTo_acef6f3a
-import tgx.td.assertMessageContent_baa076bf
-import tgx.td.assertMessageReadDate_5a6e5fbf
-import tgx.td.constructChatAction
-import tgx.td.copyOf
-import tgx.td.customEmojiId
+import tgx.td.*
 import tgx.td.data.MessageWithProperties
-import tgx.td.equalsTo
-import tgx.td.fromSupergroupId
-import tgx.td.fromUserId
-import tgx.td.getSenderId
-import tgx.td.getType
-import tgx.td.hasRestriction
-import tgx.td.hasUsername
-import tgx.td.isBasicGroup
-import tgx.td.isEmpty
-import tgx.td.isMultiChat
-import tgx.td.isPinnedFilter
-import tgx.td.isPremium
-import tgx.td.isPrivate
-import tgx.td.isSecret
-import tgx.td.isText
-import tgx.td.isUserChat
-import tgx.td.matchesScope
-import tgx.td.matchesTopic
-import tgx.td.newSendOptions
-import tgx.td.primaryUsername
-import tgx.td.put
-import tgx.td.reset
-import tgx.td.restoreMessageSender
-import tgx.td.restoreMessageTopic
-import tgx.td.restoreSearchMessagesFilter
-import tgx.td.showCaptionAboveMedia
-import tgx.td.textOrCaption
-import tgx.td.toBasicGroupId
-import tgx.td.toSupergroupId
-import tgx.td.toUserId
 import tgx.td.ui.reportChatSponsoredMessage
-import tgx.td.unsupported
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -1406,7 +1366,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 items.add(
                     ViewPagerTopView.Item(
                         c.getName().toString().uppercase(Locale.getDefault()),
-                        c.getIcon(),
+                        c.icon,
                         null
                     )
                 )
@@ -3666,7 +3626,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 val adapter = pagerContentAdapter!!
                 val c = adapter.cachedItems.get(pagerScrollPosition)
                 if (c != null) {
-                    val messageId = c.getSingularMessageId()
+                    val messageId = c.singularMessageId
                     if (messageId != null) {
                         highlightMessage(messageId)
                         c.setInMediaSelectMode(false)
@@ -5167,7 +5127,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         if (pagerScrollPosition != 0 && pagerContentAdapter != null) {
             val adapter = pagerContentAdapter!!
             val c = adapter.cachedItems.get(pagerScrollPosition)
-            return c != null && c.getSelectedMediaCount() == 1
+            return c != null && c.selectedMediaCount == 1
         }
         return false
     }
