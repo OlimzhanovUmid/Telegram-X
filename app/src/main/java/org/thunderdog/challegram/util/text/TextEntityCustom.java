@@ -378,7 +378,7 @@ public class TextEntityCustom extends TextEntity {
     if (StringUtils.isEmpty(copyLink)) {
       if (linkType == LINK_TYPE_NONE || StringUtils.isEmpty(link) || ((linkType == LINK_TYPE_ANCHOR || linkType == LINK_TYPE_REFERENCE) && (openParameters == null || StringUtils.isEmpty(openParameters.refererUrl)))) {
         if (isMonospace()) {
-          String content = text.getText().substring(getStart(), getEnd());
+          String content = text.getText().substring(start, end);
           context.showOptions(content, new int[] {R.id.btn_copyText}, new String[] {Lang.getString(R.string.Copy)}, null, new int[] {R.drawable.baseline_content_copy_24}, Config.MAX_COPY_TEXT_LINE_COUNT, (itemView, id) -> {
             if (id == R.id.btn_copyText) {
               UI.copyText(content, R.string.CopiedText);

@@ -2862,7 +2862,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     }
 
     private fun onNameClick(view: View?, text: Text?, part: TextPart, openParameters: UrlOpenParameters?): Boolean {
-        if (part.getEntity() != null && part.getEntity()!!.getTag() is Long) {
+        if (part.getEntity() != null && part.getEntity()!!.tag is Long) {
             manager.controller().setInputInlineBot(msg!!.viaBotUserId, viaBotUsername)
             return true
         } else if (needDrawChannelIconInHeader()) {
@@ -2889,7 +2889,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
 
     private fun onForwardClick(view: View?, text: Text, part: TextPart, openParameters: UrlOpenParameters?): Boolean {
         if (part.getEntity() == null && text.getEntityCount() == 1) return false
-        if (part.getEntity() != null && part.getEntity()!!.getTag() is Long) {
+        if (part.getEntity() != null && part.getEntity()!!.tag is Long) {
             manager.controller().setInputInlineBot(msg!!.viaBotUserId, viaBotUsername)
         } else {
             forwardInfo!!.open(view, text, part, openParameters, null)

@@ -14,7 +14,6 @@
  */
 package org.thunderdog.challegram.util.text;
 
-import android.net.Uri;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
@@ -608,7 +607,7 @@ public class TextEntityMessage extends TextEntity {
           Object[] spans = TD.toSpans(entity, TD.TextEntityOption.ALLOW_INTERNAL | BitwiseUtils.optional(TD.TextEntityOption.DISABLE_ANIMATIONS, forceDisableAnimations()), false);
           if (spans != null) {
             for (Object span : spans) {
-              sb.setSpan(span, entity.getStart(), entity.getEnd(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+              sb.setSpan(span, entity.start, entity.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
           }
         }
