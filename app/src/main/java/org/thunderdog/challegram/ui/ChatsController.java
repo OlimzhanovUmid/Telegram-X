@@ -1242,7 +1242,7 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
   }
 
   @Override
-  protected int getSelectMenuId () {
+  public int getSelectMenuId () {
     return R.id.menu_chatBulkActions;
   }
 

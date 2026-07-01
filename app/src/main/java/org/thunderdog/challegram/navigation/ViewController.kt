@@ -532,7 +532,9 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
     }
   }
 
-  protected open fun onEnterSelectMode() {
+  // NB: public (not protected) — same-package siblings call this cross-instance
+  // (e.g. ViewPagerController on its current pager item); Kotlin protected is subclass-only.
+  open fun onEnterSelectMode() {
   }
 
   open fun onLeaveSelectMode() {
@@ -801,8 +803,9 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
     return true
   }
 
+  // NB: public (not protected) — same-package siblings call this cross-instance; see onEnterSelectMode.
   @IdRes
-  protected open fun getSelectMenuId(): Int {
+  open fun getSelectMenuId(): Int {
     return 0
   }
 
@@ -3242,7 +3245,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
   open fun onCleanAfterHide() {
   }
 
-  interface AttachListener {
+  fun interface AttachListener {
     fun onAttachStateChanged(context: ViewController<*>?, navigation: NavigationController?, isAttached: Boolean)
   }
 
@@ -3326,7 +3329,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
 
   protected open fun onFocusStateChanged() {}
 
-  interface FocusStateListener {
+  fun interface FocusStateListener {
     fun onFocusStateChanged(c: ViewController<*>, isFocused: Boolean)
   }
 

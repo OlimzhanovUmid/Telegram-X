@@ -1556,7 +1556,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         }
     }
 
-    protected override fun onEnterSelectMode() {
+    override fun onEnterSelectMode() {
         if (pagerContentView != null) {
             pagerContentView!!.setPagingEnabled(false)
         }
@@ -1674,7 +1674,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
             if (inPreviewSearchMode()) {
                 val parent = getParentOrSelf()
                 if (parent is ViewPagerController<*>) {
-                    val index = if (parent.getCurrentPagerItemPosition() == 1) 0 else 1
+                    val index = if (parent.currentPagerItemPosition == 1) 0 else 1
                     parent.onPagerItemClick(index)
                 }
             } else {
@@ -3359,7 +3359,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         return 0
     }
 
-    protected override fun getSelectMenuId(): Int {
+    override fun getSelectMenuId(): Int {
         return R.id.menu_messageActions
     }
 
