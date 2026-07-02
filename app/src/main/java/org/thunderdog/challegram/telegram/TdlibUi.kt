@@ -1083,7 +1083,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                     }
 
                     TdApi.Error.CONSTRUCTOR -> {
-                        showLinkTooltip(context.tdlib(), R.drawable.baseline_warning_24, TD.toErrorString(`object`), openParameters)
+                        showLinkTooltip(context.tdlib()!!, R.drawable.baseline_warning_24, TD.toErrorString(`object`), openParameters)
                     }
                 }
             })
@@ -1471,7 +1471,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         if (accessState < Tdlib.CHAT_ACCESS_OK) {
             if (params != null && params.inviteLinkInfo != null && params.inviteLinkInfo!!.createsJoinRequest) {
                 showLinkTooltip(
-                    context.tdlib(),
+                    context.tdlib()!!,
                     R.drawable.baseline_warning_24,
                     Lang.getString(
                         if (TD.isChannel(params.inviteLinkInfo!!.type)) R.string.RequestJoinChannelSent else R.string.RequestJoinGroupSent,
@@ -1590,7 +1590,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         if (tdlib.isForum(chat.id)
             && messageThread == null && messageTopicId == null && highlightMode != MessagesManager.HIGHLIGHT_MODE_NORMAL && shareItem == null && voiceChatInvitation == null && forceDraft == null && filter == null && !onlyScheduled && (options and CHAT_OPTION_FORCE_MESSAGES_VIEW) == 0 && (options and CHAT_OPTION_OPEN_PROFILE_IF_DUPLICATE) == 0
         ) {
-            val topicsController = TopicsController(context.context(), context.tdlib())
+            val topicsController = TopicsController(context.context(), context.tdlib()!!)
             topicsController.setArguments(TopicsController.Args(chat.id))
             navigation!!.navigateTo(topicsController)
             if (after != null) {
@@ -1839,12 +1839,12 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 Chat.CONSTRUCTOR -> {
                     val chat = tdlib.objectToChat(`object`)!!
                     if (!tdlib.isBotChat(chat)) {
-                        showLinkTooltip(context.tdlib(), R.drawable.baseline_warning_24, Lang.getStringBold(R.string.BotNotFound, botUsername), openParameters)
+                        showLinkTooltip(context.tdlib()!!, R.drawable.baseline_warning_24, Lang.getStringBold(R.string.BotNotFound, botUsername), openParameters)
                         return@ResultHandler
                     }
                     val user = tdlib.chatUser(chat)
                     if (user == null || user.type.getConstructor() != TdApi.UserTypeBot.CONSTRUCTOR) {
-                        showLinkTooltip(context.tdlib(), R.drawable.baseline_warning_24, Lang.getStringBold(R.string.BotNotFound, botUsername), openParameters)
+                        showLinkTooltip(context.tdlib()!!, R.drawable.baseline_warning_24, Lang.getStringBold(R.string.BotNotFound, botUsername), openParameters)
                         return@ResultHandler
                     }
                     /* commented out because it's possible that bot is a member of the selected group
@@ -1880,7 +1880,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 }
 
                 TdApi.Error.CONSTRUCTOR -> showLinkTooltip(
-                    context.tdlib(),
+                    context.tdlib()!!,
                     R.drawable.baseline_warning_24,
                     Lang.getStringBold(R.string.BotNotFound, botUsername),
                     openParameters
@@ -1942,7 +1942,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                             openMessage(context, messageLink.chatId, messageId, openParameters)
                         } else {
                             val messageThread = ThreadInfo.openedFromMessage(
-                                context.tdlib(),
+                                context.tdlib()!!,
                                 messageThreadInfo!!,
                                 if (openParameters != null) openParameters.messageId else null
                             )
@@ -2113,7 +2113,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         // TODO progress
         tdlib.send<LanguagePackInfo?>(GetLanguagePackInfo(languagePackId), Tdlib.ResultHandler { info: LanguagePackInfo?, error: TdApi.Error? ->
             if (error != null) {
-                showLinkTooltip(context.tdlib(), R.drawable.baseline_warning_24, TD.toErrorString(error), openParameters)
+                showLinkTooltip(context.tdlib()!!, R.drawable.baseline_warning_24, TD.toErrorString(error), openParameters)
             } else {
                 tdlib.ui().post(Runnable {
                     if (context.context().getActivityState() != UI.State.DESTROYED) {
@@ -5640,10 +5640,10 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             intArrayOf(R.drawable.baseline_language_24, R.drawable.baseline_cancel_24),
             OptionDelegate { itemView: View?, id: Int ->
                 if (id == R.id.btn_done) {
-                    c.tdlib().client().send(AddCustomServerLanguagePack(info.id), Client.ResultHandler { result: TdApi.Object? ->
+                    c.tdlib()!!.client().send(AddCustomServerLanguagePack(info.id), Client.ResultHandler { result: TdApi.Object? ->
                         when (result!!.getConstructor()) {
                             TdApi.Ok.CONSTRUCTOR -> {
-                                c.tdlib().applyLanguage(info, RunnableBool { boolResult: Boolean ->
+                                c.tdlib()!!.applyLanguage(info, RunnableBool { boolResult: Boolean ->
                                     if (boolResult) {
                                         UI.showToast(R.string.LanguageChangeSuccess, Toast.LENGTH_SHORT)
                                     }
@@ -6272,9 +6272,9 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                             }
 
                             c.showOptions(bankCardInfo.title, ids.get(), strings.get(), null, icons, object : OptionDelegate {
-                                override fun onOptionItemPressed(optionItemView: View, id: Int): Boolean {
+                                override fun onOptionItemPressed(optionItemView: View?, id: Int): Boolean {
                                     if (id == R.id.btn_openLink) {
-                                        Intents.openUri(optionItemView.getTag() as String?)
+                                        Intents.openUri(optionItemView!!.getTag() as String?)
                                     } else if (id == R.id.btn_copyLink) {
                                         UI.copyText(cardNumber, R.string.CopiedBankCard)
                                     }
@@ -8018,7 +8018,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 Tdlib.CHAT_ACCESS_FAIL -> res = R.string.ChatAccessFailed
                 else -> res = R.string.ChatAccessFailed
             }
-            showLinkTooltip(context.tdlib(), R.drawable.baseline_warning_24, Lang.getString(res), urlOpenParameters)
+            showLinkTooltip(context.tdlib()!!, R.drawable.baseline_warning_24, Lang.getString(res), urlOpenParameters)
         }
 
         private const val CHAT_OPTION_KEEP_STACK = 1
@@ -8065,7 +8065,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 CheckChatFolderInviteLink(invite.inviteLink),
                 Tdlib.ResultHandler { result: ChatFolderInviteLinkInfo?, error: TdApi.Error? ->
                     if (error != null) {
-                        showLinkTooltip(context.tdlib(), R.drawable.baseline_error_24, TD.toErrorString(error), openParameters)
+                        showLinkTooltip(context.tdlib()!!, R.drawable.baseline_error_24, TD.toErrorString(error), openParameters)
                     } else {
                         Companion.showChatFolderInviteLinkInfo(context, inviteLinkUrl, result!!)
                     }

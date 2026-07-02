@@ -335,7 +335,7 @@ abstract class ViewPagerController<T>(context: Context, tdlib: Tdlib?) : Telegra
         }
     }
 
-    override fun fillMenuItems(id: Int, header: HeaderView?, menu: LinearLayout?) {
+    override fun fillMenuItems(id: Int, header: HeaderView, menu: LinearLayout) {
         val c = this.currentPagerItem
         if (c is Menu) {
             (c as Menu).fillMenuItems(id, header, menu)

@@ -283,7 +283,22 @@ callers (`{Bar,StackBar,Linear,StackLinear,DoubleLinear}ChartView.java`, `PieCha
 subclassed) — `LineViewData` itself needs a public non-abstract ctor.
 Files: charts/view_data/{LineViewData, BarViewData, StackBarViewData, StackLinearViewData}.
 
-### T-L3+ (not yet scoped)
-Deferred: multi-default/high-fanout interfaces (`Watcher`, `TextColorSetThemed`, `ConnectionStateListener`,
-`StretchyHeaderView`, `GlobalMessageListener`), the 7 `@IntDef` annotation defs, then stateful concrete leaves
-(need device-test). ~230 leaf candidates remain in the pool. Scope when reached.
+### T-L3a — remaining pure top-level interfaces — **scoped, executing via Workflow**
+Recomputed leaf pool fresh against current tree (~971 `.java` remain in org.thunderdog.challegram):
+518 files ≤220 LOC. Of those, 73 are pure top-level `interface Foo` declarations (same shape as T-L1,
+which did the first 11) — the single largest homogeneous, lowest-risk category left, so highest
+files-converted-per-unit-risk. Absorbs the previously-deferred multi-default/high-fanout set (`Watcher`,
+`TextColorSetThemed`, `ConnectionStateListener`, `StretchyHeaderView`, `GlobalMessageListener`) plus 68
+more. Fanout mostly low (0-6 implementers); outliers needing extra caller-check: `AttachDelegate` (18),
+`TextColorSet`/`ChatListener` (13), `RtlCheckListener` (12), `DrawableProvider`/`ThemeDelegate`/
+`MoreDelegate`/`DrawModifier` (9-10), `Watcher`/`Receiver` (8).
+Playbook: same as T-L1 — SAM → `fun interface`; multi-method/all-default → plain `interface`; `int`
+constants → `companion object { const val }`; preserve `@ColorId`/`@ColorInt`/etc annotations; agents
+self-discover implementers via grep before choosing shape (73 files too many to pre-analyze by hand).
+Dirs: telegram/ (25), util/ (20, incl. util/text/*), navigation/ (8), loader/ (5), theme/ (4),
+mediaview/ (3), component/ (2), emoji/ (2), widget/ (1), voip/ (1), ui/camera/ (1), data/ (1).
+
+### T-L3b+ (not yet scoped)
+After T-L3a: the 7 `@IntDef` annotation defs, then stateful concrete leaves (need device-test).
+~157 more leaf candidates (≤220 LOC, non-interface) remain in the pool before moving past T-L3. Scope
+when reached.

@@ -1152,7 +1152,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             }
 
             ANIMATOR_PRIVACY -> {
-                mediaView!!.getBaseReceiver().setAlpha(1f - factor)
+                mediaView!!.getBaseReceiver().alpha = 1f - factor
             }
 
             ANIMATOR_SLIDE -> {
@@ -1704,7 +1704,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             } else if (item.getSourceChatId() != 0L) {
                 if (tdlib!!.canCopyPostLink(item.getMessage())) {
                     tdlib!!.getMessageLink(
-                        item.getMessage(),
+                        item.getMessage()!!,
                         false,
                         topicId.messageThreadId() != 0L,
                         RunnableData { link: Tdlib.MessageLink? ->
@@ -1766,8 +1766,8 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             val c: ShareController?
             if (item.getMessage() != null) {
                 c = ShareController(context, tdlib)
-                if (item.getMessage().content.isText()) {
-                    val linkPreview = (item.getMessage().content as MessageText).linkPreview
+                if (item.getMessage()!!.content.isText()) {
+                    val linkPreview = (item.getMessage()!!.content as MessageText).linkPreview
                     c.setArguments(ShareController.Args(item, linkPreview!!.displayUrl, linkPreview.displayUrl))
                 } else {
                     c.setArguments(ShareController.Args(item.getMessage()))
@@ -2388,7 +2388,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             val index = stack!!.indexOfMessage(chatId, messageId)
             if (index != -1) {
                 val oldItem = stack!!.get(index)
-                val message = oldItem.getMessage()
+                val message = oldItem.getMessage()!!
                 message.content = newContent
                 val newItem = MediaItem.valueOf(context(), tdlib, message)
                 if (newItem != null) {
@@ -3634,7 +3634,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             }
             thumbsAnimator!!.setValue(needThumbs, commonFactor > 0f)
         } else if (needThumbs && mode == MODE_MESSAGES && !getArgumentsStrict().forceThumbs && thumbsAdapter!!.items!!.mediaGroupId != stack!!.getCurrent()
-                .getMessage().mediaAlbumId
+                .getMessage()!!.mediaAlbumId
         ) {
             fillThumbItems()
         }
@@ -3688,12 +3688,12 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         } else if (mode == MODE_MESSAGES) {
             items = ArrayList<MediaItem?>(MAX_MESSAGE_GROUP_SIZE)
             val currentItem = stack!!.getCurrent()
-            val mediaGroupId = currentItem.getMessage().mediaAlbumId
+            val mediaGroupId = currentItem.getMessage()!!.mediaAlbumId
             check(mediaGroupId != 0L)
             var index = stack!!.getCurrentIndex()
             while (index - 1 >= 0) {
                 val item = stack!!.get(index - 1)
-                if (item.getMessage().mediaAlbumId != mediaGroupId) {
+                if (item.getMessage()!!.mediaAlbumId != mediaGroupId) {
                     break
                 }
                 index--
@@ -3702,7 +3702,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             val stackSize = stack!!.getCurrentSize()
             while (index < stackSize) {
                 val item = stack!!.get(index)
-                if (item.getMessage().mediaAlbumId != mediaGroupId) {
+                if (item.getMessage()!!.mediaAlbumId != mediaGroupId) {
                     break
                 }
                 if (item === focusItem) {
@@ -4409,7 +4409,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             layoutImage()
         }
 
-        fun drawImage(c: Canvas?, centerX: Int, startY: Int, alpha: Float, expandAllowance: Float) {
+        fun drawImage(c: Canvas, centerX: Int, startY: Int, alpha: Float, expandAllowance: Float) {
             layoutImage()
 
             if (thumbStartWidth == 0 || thumbHeight == 0) {
@@ -4421,7 +4421,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
 
             val preview = this.previewReceiver
             if (alpha != 1f) {
-                preview.setPaintAlpha(alpha)
+                preview.paintAlpha = alpha
             }
             val startX = centerX - thumbWidth / 2
             preview.setBounds(startX, startY, startX + thumbWidth, startY + thumbHeight)
@@ -4461,7 +4461,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
         }
 
         val mediaGroupId: Long
-            get() = items!!.get(0)!!.getMessage().mediaAlbumId
+            get() = items!!.get(0)!!.getMessage()!!.mediaAlbumId
 
         fun indexOf(item: MediaItem?): Int {
             return items!!.indexOf(item)
@@ -4514,13 +4514,13 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             if (checkMediaGroupId) {
                 var addItems: ArrayList<MediaItem>? = null
 
-                val mediaGroupId = this.items!!.get(0)!!.getMessage().mediaAlbumId
+                val mediaGroupId = this.items!!.get(0)!!.getMessage()!!.mediaAlbumId
                 val estimatedSize = max(1, MAX_MESSAGE_GROUP_SIZE - this.items.size)
                 if (onTop) {
                     val size = items.size
                     for (i in size - 1 downTo 0) {
                         val item = items.get(i)
-                        if (item.getMessage().mediaAlbumId != mediaGroupId) {
+                        if (item.getMessage()!!.mediaAlbumId != mediaGroupId) {
                             break
                         }
                         if (addItems == null) {
@@ -4530,7 +4530,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                     }
                 } else {
                     for (item in items) {
-                        if (item.getMessage().mediaAlbumId != mediaGroupId) {
+                        if (item.getMessage()!!.mediaAlbumId != mediaGroupId) {
                             break
                         }
                         if (addItems == null) {

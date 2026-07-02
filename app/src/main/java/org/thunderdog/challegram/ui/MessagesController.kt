@@ -2959,7 +2959,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         }
     }
 
-    override fun onChatDefaultMessageSenderIdChanged(chatId: Long, senderId: MessageSender?) {
+    override fun onChatDefaultMessageSenderIdChanged(chatId: Long, senderId: MessageSender) {
         runOnUiThreadOptional(Runnable {
             if (getChatId() == chatId) {
                 updateInputHint()
@@ -6566,7 +6566,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 object : MediaSpoilerSendDelegate() {
                     override fun sendSelectedItems(
                         view: View?,
-                        images: ArrayList<ImageFile?>?,
+                        images: ArrayList<ImageFile?>,
                         options: MessageSendOptions?,
                         disableMarkdown: Boolean,
                         asFiles: Boolean,
@@ -10158,7 +10158,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                                 object : MediaSpoilerSendDelegate() {
                                     override fun sendSelectedItems(
                                         view: View?,
-                                        images: ArrayList<ImageFile?>?,
+                                        images: ArrayList<ImageFile?>,
                                         options: MessageSendOptions?,
                                         disableMarkdown: Boolean,
                                         asFiles: Boolean,
@@ -10834,7 +10834,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         })
     }
 
-    override fun onChatPendingJoinRequestsChanged(chatId: Long, pendingJoinRequests: ChatJoinRequestsInfo?) {
+    override fun onChatPendingJoinRequestsChanged(chatId: Long, pendingJoinRequests: ChatJoinRequestsInfo) {
         runOnUiThreadOptional(Runnable {
             if (getChatId() == chatId) {
                 checkJoinRequests(pendingJoinRequests)
@@ -10842,7 +10842,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         })
     }
 
-    override fun onChatActionBarChanged(chatId: Long, actionBar: ChatActionBar?) {
+    override fun onChatActionBarChanged(chatId: Long, actionBar: ChatActionBar) {
         runOnUiThreadOptional(Runnable {
             if (getChatId() == chatId) {
                 checkActionBar()
@@ -10860,7 +10860,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         })
     }
 
-    override fun onChatTitleChanged(chatId: Long, title: String?) {
+    override fun onChatTitleChanged(chatId: Long, title: String) {
         runOnUiThreadOptional(Runnable {
             if (this.headerChatId == chatId) {
                 headerCell!!.setTitle(title)
@@ -10889,7 +10889,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         })
     }
 
-    override fun onChatPermissionsChanged(chatId: Long, permissions: ChatPermissions?) {
+    override fun onChatPermissionsChanged(chatId: Long, permissions: ChatPermissions) {
         tdlib!!.ui().post(Runnable {
             if (getChatId() == chatId) {
                 updateBottomBar(true)
@@ -11182,7 +11182,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         })
     }
 
-    override fun onNotificationSettingsChanged(scope: NotificationSettingsScope, settings: ScopeNotificationSettings?) {
+    override fun onNotificationSettingsChanged(scope: NotificationSettingsScope, settings: ScopeNotificationSettings) {
         tdlib!!.ui().post(Runnable {
             if (tdlib!!.chatType(getChatId())!!.matchesScope(scope)) {
                 updateCounters(true)
@@ -11190,7 +11190,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         })
     }
 
-    override fun onNotificationSettingsChanged(chatId: Long, settings: ChatNotificationSettings?) {
+    override fun onNotificationSettingsChanged(chatId: Long, settings: ChatNotificationSettings) {
         tdlib!!.ui().post(Runnable {
             if (this.headerChatId == chatId) {
                 headerCell!!.setShowMute(TD.needMuteIcon(settings, tdlib!!.scopeNotificationSettings(chatId)))

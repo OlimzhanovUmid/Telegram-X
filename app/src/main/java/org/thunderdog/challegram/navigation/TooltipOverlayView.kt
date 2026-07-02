@@ -909,7 +909,7 @@ class TooltipOverlayView(context: Context?) : ViewGroup(context) {
 
         if (imageReceiver != null && (gifReceiver == null || gifReceiver.needPlaceholder())) {
           imageReceiver.setBounds(iconCenterX - imageSize / 2, iconCenterY - imageSize / 2, iconCenterX + imageSize / 2, iconCenterY + imageSize / 2)
-          imageReceiver.setPaintAlpha(alpha)
+          imageReceiver.paintAlpha = alpha
           imageReceiver.draw(c)
           imageReceiver.restorePaintAlpha()
         }

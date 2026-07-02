@@ -890,7 +890,7 @@ abstract class SharedBaseController<T : MessageSourceProvider>(context: Context,
             return
         }
 
-        val message = data.getMessage()
+        val message = data.getMessage()!!
         val isSelected: Boolean
         val key = message.chatId.toString() + "_" + message.id
         if (selectedMessages == null) {
@@ -1295,7 +1295,7 @@ abstract class SharedBaseController<T : MessageSourceProvider>(context: Context,
 
         val index = indexOfMessage(messageId)
         if (index != -1) {
-            data!!.get(index)!!.getMessage().content = content
+            data!!.get(index)!!.getMessage()!!.content = content
         }
     }
 
@@ -1453,7 +1453,7 @@ abstract class SharedBaseController<T : MessageSourceProvider>(context: Context,
             if (items == null) {
                 items = ArrayList<MediaItem?>()
             }
-            if (foundIndex == -1 && copy.sourceMessageId == fromMessageId) {
+            if (foundIndex == -1 && copy.getSourceMessageId() == fromMessageId) {
                 foundIndex = index
             }
             items.add(copy)
@@ -1483,7 +1483,7 @@ abstract class SharedBaseController<T : MessageSourceProvider>(context: Context,
     }
 
     override fun getTargetLocation(indexInStack: Int, item: MediaItem): MediaViewThumbLocation? {
-        val i = adapter!!.indexOfViewByLongId(item.sourceMessageId)
+        val i = adapter!!.indexOfViewByLongId(item.getSourceMessageId())
         if (i == -1) {
             return null
         }

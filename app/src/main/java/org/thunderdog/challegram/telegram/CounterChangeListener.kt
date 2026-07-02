@@ -10,26 +10,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 17/02/2018
+ * File created on 13/12/2019
  */
 package org.thunderdog.challegram.telegram
 
+import androidx.annotation.NonNull
 import org.drinkless.tdlib.TdApi
-import org.thunderdog.challegram.util.UserProvider
-import java.util.Comparator
 
-class UserProviderComparator (
-  private val defaultComparator: Comparator<TdApi.User>
-) : Comparator<UserProvider> {
-  override fun compare (left: UserProvider?, right: UserProvider?): Int {
-    return if (left == null && right == null) {
-      0
-    } else if (left == null) {
-      -1
-    } else if (right == null) {
-      1
-    } else {
-      defaultComparator.compare(left.getTdUser(), right.getTdUser())
-    }
-  }
+interface CounterChangeListener {
+  fun onChatCounterChanged (@NonNull chatList: TdApi.ChatList, counter: TdlibCounter, availabilityChanged: Boolean, totalCount: Int, unreadCount: Int, unreadUnmutedCount: Int) { }
+  fun onMessageCounterChanged (@NonNull chatList: TdApi.ChatList, counter: TdlibCounter, unreadCount: Int, unreadUnmutedCount: Int) { }
 }
