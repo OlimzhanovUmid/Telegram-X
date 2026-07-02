@@ -283,7 +283,12 @@ callers (`{Bar,StackBar,Linear,StackLinear,DoubleLinear}ChartView.java`, `PieCha
 subclassed) — `LineViewData` itself needs a public non-abstract ctor.
 Files: charts/view_data/{LineViewData, BarViewData, StackBarViewData, StackLinearViewData}.
 
-### T-L3a — remaining pure top-level interfaces — **scoped, executing via Workflow**
+### T-L3a — remaining pure top-level interfaces — **DONE (73 files, commit `d5a6fd0f`, gate GREEN + 3-lens verify)**
+Verify found 2 real issues beyond the gate, fixed post-commit-check: `Watcher`/`PrivacySettingsListener`
+left as plain `interface` despite qualifying as `fun interface`; `Receiver`'s `getAlpha/setAlpha`,
+`getTag/setTag`, `getPaintAlpha/setPaintAlpha` pairs converted to plain funs instead of real Kotlin
+properties (Java implementers unaffected either way — identical bytecode — but silently dropped
+`.alpha =`-style property sugar for Kotlin callers). Both fixed, re-gated green, included in the commit.
 Recomputed leaf pool fresh against current tree (~971 `.java` remain in org.thunderdog.challegram):
 518 files ≤220 LOC. Of those, 73 are pure top-level `interface Foo` declarations (same shape as T-L1,
 which did the first 11) — the single largest homogeneous, lowest-risk category left, so highest
