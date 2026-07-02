@@ -2959,7 +2959,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         }
     }
 
-    override fun onChatDefaultMessageSenderIdChanged(chatId: Long, senderId: MessageSender) {
+    override fun onChatDefaultMessageSenderIdChanged(chatId: Long, senderId: MessageSender?) {
         runOnUiThreadOptional(Runnable {
             if (getChatId() == chatId) {
                 updateInputHint()
@@ -10834,7 +10834,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         })
     }
 
-    override fun onChatPendingJoinRequestsChanged(chatId: Long, pendingJoinRequests: ChatJoinRequestsInfo) {
+    override fun onChatPendingJoinRequestsChanged(chatId: Long, pendingJoinRequests: ChatJoinRequestsInfo?) {
         runOnUiThreadOptional(Runnable {
             if (getChatId() == chatId) {
                 checkJoinRequests(pendingJoinRequests)
@@ -10842,7 +10842,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         })
     }
 
-    override fun onChatActionBarChanged(chatId: Long, actionBar: ChatActionBar) {
+    override fun onChatActionBarChanged(chatId: Long, actionBar: ChatActionBar?) {
         runOnUiThreadOptional(Runnable {
             if (getChatId() == chatId) {
                 checkActionBar()

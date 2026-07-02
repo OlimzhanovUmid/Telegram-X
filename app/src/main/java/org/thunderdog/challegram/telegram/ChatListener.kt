@@ -25,7 +25,7 @@ interface ChatListener : ForumTopicInfoListener {
   fun onChatRemovedFromList (chatId: Long, chatList: TdApi.ChatList) { }
   fun onChatPermissionsChanged (chatId: Long, permissions: TdApi.ChatPermissions) { }
   fun onChatTitleChanged (chatId: Long, title: String) { }
-  fun onChatThemeChanged (chatId: Long, theme: TdApi.ChatTheme) { }
+  fun onChatThemeChanged (chatId: Long, @Nullable theme: TdApi.ChatTheme?) { }
 
   fun onChatBackgroundChanged (chatId: Long, @Nullable background: TdApi.ChatBackground?) { }
   fun onChatAccentColorsChanged (
@@ -36,7 +36,7 @@ interface ChatListener : ForumTopicInfoListener {
   fun onChatEmojiStatusChanged (chatId: Long, @Nullable emojiStatus: TdApi.EmojiStatus?) { }
 
   fun onChatBackgroundCustomEmojiChanged (chatId: Long, customEmojiId: Long) { }
-  fun onChatActionBarChanged (chatId: Long, actionBar: TdApi.ChatActionBar) { }
+  fun onChatActionBarChanged (chatId: Long, @Nullable actionBar: TdApi.ChatActionBar?) { }
   fun onChatBusinessBotManageBarChanged (chatId: Long, @Nullable botManageBar: TdApi.BusinessBotManageBar?) { }
   fun onChatPhotoChanged (chatId: Long, @Nullable photo: TdApi.ChatPhotoInfo?) { }
   fun onChatReadInbox (chatId: Long, lastReadInboxMessageId: Long, unreadCount: Int, availabilityChanged: Boolean) { }
@@ -51,14 +51,14 @@ interface ChatListener : ForumTopicInfoListener {
   fun onChatActiveStoriesChanged (@NonNull activeStories: TdApi.ChatActiveStories) { }
   fun onChatVideoChatChanged (chatId: Long, videoChat: TdApi.VideoChat) { }
   fun onChatViewAsTopics (chatId: Long, viewAsTopics: Boolean) { }
-  fun onChatPendingJoinRequestsChanged (chatId: Long, pendingJoinRequests: TdApi.ChatJoinRequestsInfo) { }
+  fun onChatPendingJoinRequestsChanged (chatId: Long, @Nullable pendingJoinRequests: TdApi.ChatJoinRequestsInfo?) { }
   fun onChatReplyMarkupChanged (chatId: Long, @Nullable replyMarkupMessage: TdApi.Message?) { }
   fun onChatDraftMessageChanged (chatId: Long, @Nullable draftMessage: TdApi.DraftMessage?) { }
   fun onChatUnreadMentionCount (chatId: Long, unreadMentionCount: Int, availabilityChanged: Boolean) { }
   fun onChatUnreadPollVoteCount (chatId: Long, unreadMentionCount: Int, availabilityChanged: Boolean) { }
   fun onChatUnreadReactionCount (chatId: Long, unreadReactionCount: Int, availabilityChanged: Boolean) { }
   fun onChatDefaultDisableNotifications (chatId: Long, defaultDisableNotifications: Boolean) { }
-  fun onChatDefaultMessageSenderIdChanged (chatId: Long, senderId: TdApi.MessageSender) { }
+  fun onChatDefaultMessageSenderIdChanged (chatId: Long, @Nullable senderId: TdApi.MessageSender?) { }
   fun onChatClientDataChanged (chatId: Long, @Nullable clientData: String?) { }
   fun onChatAvailableReactionsUpdated (chatId: Long, availableReactions: TdApi.ChatAvailableReactions) { }
 }
