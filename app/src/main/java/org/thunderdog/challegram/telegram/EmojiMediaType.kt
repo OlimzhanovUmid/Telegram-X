@@ -10,15 +10,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 19/01/2017
+ * File created on 21/03/2023
  */
-package org.thunderdog.challegram.theme;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.Retention
+import kotlin.annotation.AnnotationRetention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({ThemeManager.CHAT_STYLE_MODERN, ThemeManager.CHAT_STYLE_BUBBLES})
-public @interface ChatStyle {}
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
+  EmojiMediaType.EMOJI, EmojiMediaType.GIF, EmojiMediaType.STICKER
+)
+annotation class EmojiMediaType {
+  companion object {
+    const val STICKER = 0
+    const val GIF = 1
+    const val EMOJI = 2
+  }
+}

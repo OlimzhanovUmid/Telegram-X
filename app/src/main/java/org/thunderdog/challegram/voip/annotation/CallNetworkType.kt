@@ -12,15 +12,14 @@
  *
  * File created on 27/03/2023
  */
-package org.thunderdog.challegram.voip.annotation;
+package org.thunderdog.challegram.voip.annotation
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
   CallNetworkType.UNKNOWN,
   CallNetworkType.MOBILE_GPRS,
   CallNetworkType.MOBILE_EDGE,
@@ -33,20 +32,21 @@ import java.lang.annotation.RetentionPolicy;
   CallNetworkType.OTHER_LOW_SPEED,
   CallNetworkType.DIALUP,
   CallNetworkType.OTHER_MOBILE
-})
-public @interface CallNetworkType {
-  // enum from VoIPController.h:79
-  int
-    UNKNOWN = 0,
-    MOBILE_GPRS = 1,
-    MOBILE_EDGE = 2,
-    MOBILE_3G = 3,
-    MOBILE_HSPA = 4,
-    MOBILE_LTE = 5,
-    WIFI = 6,
-    ETHERNET = 7,
-    OTHER_HIGH_SPEED = 8,
-    OTHER_LOW_SPEED = 9,
-    DIALUP = 10,
-    OTHER_MOBILE = 11;
+)
+annotation class CallNetworkType {
+  companion object {
+    // enum from VoIPController.h:79
+    const val UNKNOWN = 0
+    const val MOBILE_GPRS = 1
+    const val MOBILE_EDGE = 2
+    const val MOBILE_3G = 3
+    const val MOBILE_HSPA = 4
+    const val MOBILE_LTE = 5
+    const val WIFI = 6
+    const val ETHERNET = 7
+    const val OTHER_HIGH_SPEED = 8
+    const val OTHER_LOW_SPEED = 9
+    const val DIALUP = 10
+    const val OTHER_MOBILE = 11
+  }
 }

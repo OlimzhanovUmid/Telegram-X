@@ -10,13 +10,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 04/03/2018
+ * File created on 01/04/2023
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.voip.annotation
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR})
-public @interface TdlibThread {
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
+  VideoState.INACTIVE,
+  VideoState.PAUSED,
+  VideoState.ACTIVE
+)
+annotation class VideoState {
+  companion object {
+    const val INACTIVE = 0
+    const val PAUSED = 1
+    const val ACTIVE = 2
+  }
 }

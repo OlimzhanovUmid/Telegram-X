@@ -10,24 +10,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 01/04/2023
+ * File created on 19/10/2023
  */
-package org.thunderdog.challegram.voip.annotation;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
-  VideoState.INACTIVE,
-  VideoState.PAUSED,
-  VideoState.ACTIVE
-})
-public @interface VideoState {
-  int
-    INACTIVE = 0,
-    PAUSED = 1,
-    ACTIVE = 2;
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(value = [ChatFolderOptions.DISPLAY_AT_TOP], flag = true)
+annotation class ChatFolderOptions {
+  companion object {
+    const val DISPLAY_AT_TOP = 1
+  }
 }

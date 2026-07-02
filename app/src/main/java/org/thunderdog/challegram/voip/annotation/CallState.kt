@@ -12,27 +12,27 @@
  *
  * File created on 27/03/2023
  */
-package org.thunderdog.challegram.voip.annotation;
+package org.thunderdog.challegram.voip.annotation
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
   CallState.WAIT_INIT,
   CallState.WAIT_INIT_ACK,
   CallState.ESTABLISHED,
   CallState.FAILED,
   CallState.RECONNECTING
-})
-public @interface CallState {
-  // enum from VoIPController.h:62
-  int
-    WAIT_INIT = 1,
-    WAIT_INIT_ACK = 2,
-    ESTABLISHED = 3,
-    FAILED = 4,
-    RECONNECTING = 5;
+)
+annotation class CallState {
+  companion object {
+    // enum from VoIPController.h:62
+    const val WAIT_INIT = 1
+    const val WAIT_INIT_ACK = 2
+    const val ESTABLISHED = 3
+    const val FAILED = 4
+    const val RECONNECTING = 5
+  }
 }

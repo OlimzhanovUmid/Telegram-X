@@ -12,15 +12,14 @@
  *
  * File created on 28/03/2023
  */
-package org.thunderdog.challegram.voip.annotation;
+package org.thunderdog.challegram.voip.annotation
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
   CallError.UNKNOWN,
   CallError.INCOMPATIBLE,
   CallError.TIMEOUT,
@@ -32,21 +31,22 @@ import java.lang.annotation.RetentionPolicy;
   CallError.LOCALIZED,
   CallError.INSECURE_UPGRADE,
   CallError.CONNECTION_SERVICE
-})
-public @interface CallError {
-  // VoIPController.h:70
-  int
-    UNKNOWN = 0,
-    INCOMPATIBLE = 1,
-    TIMEOUT = 2,
-    AUDIO_IO = 3,
-    PROXY = 4,
+)
+annotation class CallError {
+  companion object {
+    // VoIPController.h:70
+    const val UNKNOWN = 0
+    const val INCOMPATIBLE = 1
+    const val TIMEOUT = 2
+    const val AUDIO_IO = 3
+    const val PROXY = 4
 
-  // local error codes (unused)
+    // local error codes (unused)
 
-    PEER_OUTDATED = -1,
-    PRIVACY = -2,
-    LOCALIZED = -3,
-    INSECURE_UPGRADE = -4,
-    CONNECTION_SERVICE = -5;
+    const val PEER_OUTDATED = -1
+    const val PRIVACY = -2
+    const val LOCALIZED = -3
+    const val INSECURE_UPGRADE = -4
+    const val CONNECTION_SERVICE = -5
+  }
 }

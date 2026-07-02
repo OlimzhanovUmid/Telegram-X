@@ -10,22 +10,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 01/04/2023
+ * File created on 25/04/2024 (PR #563)
  */
-package org.thunderdog.challegram.voip.annotation;
+package org.thunderdog.challegram.util.text.bidi
 
-import androidx.annotation.IntDef;
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.AnnotationTarget
+import kotlin.annotation.Retention
+import kotlin.annotation.Target
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
-  AudioState.MUTED,
-  AudioState.ACTIVE
-})
-public @interface AudioState {
-  int
-    MUTED = 0,
-    ACTIVE = 1;
-}
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR, AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.FIELD, AnnotationTarget.LOCAL_VARIABLE)
+@Retention(AnnotationRetention.SOURCE)
+annotation class BiDiEntity

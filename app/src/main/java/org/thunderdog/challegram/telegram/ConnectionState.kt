@@ -12,28 +12,28 @@
  *
  * File created on 21/02/2018
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.Retention
+import kotlin.annotation.AnnotationRetention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
   ConnectionState.UNKNOWN,
   ConnectionState.CONNECTED,
   ConnectionState.CONNECTING_TO_PROXY,
   ConnectionState.CONNECTING,
   ConnectionState.UPDATING,
   ConnectionState.WAITING_FOR_NETWORK
-})
-public @interface ConnectionState {
-  int
-    UNKNOWN = -1,
-    CONNECTED = 0,
-    CONNECTING_TO_PROXY = 1,
-    CONNECTING = 2,
-    UPDATING = 3,
-    WAITING_FOR_NETWORK = 4;
+)
+annotation class ConnectionState {
+  companion object {
+    const val UNKNOWN = -1
+    const val CONNECTED = 0
+    const val CONNECTING_TO_PROXY = 1
+    const val CONNECTING = 2
+    const val UPDATING = 3
+    const val WAITING_FOR_NETWORK = 4
+  }
 }

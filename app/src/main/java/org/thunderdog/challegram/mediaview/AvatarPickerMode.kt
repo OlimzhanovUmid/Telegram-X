@@ -12,26 +12,26 @@
  *
  * File created on 19/11/2023 at 00:51
  */
-package org.thunderdog.challegram.mediaview;
+package org.thunderdog.challegram.mediaview
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
   AvatarPickerMode.NONE,
   AvatarPickerMode.PROFILE,
   AvatarPickerMode.GROUP,
   AvatarPickerMode.CHANNEL,
   AvatarPickerMode.BOT
-})
-public @interface AvatarPickerMode {
-  int
-    NONE = 0,
-    PROFILE = 1,
-    GROUP = 2,
-    CHANNEL = 3,
-    BOT = 4;
+)
+annotation class AvatarPickerMode {
+  companion object {
+    const val NONE = 0
+    const val PROFILE = 1
+    const val GROUP = 2
+    const val CHANNEL = 3
+    const val BOT = 4
+  }
 }

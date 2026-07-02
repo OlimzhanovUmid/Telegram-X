@@ -12,25 +12,25 @@
  *
  * File created on 27/03/2023
  */
-package org.thunderdog.challegram.voip.annotation;
+package org.thunderdog.challegram.voip.annotation
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
   DataSavingOption.NEVER,
   DataSavingOption.MOBILE,
   DataSavingOption.ALWAYS,
   DataSavingOption.ROAMING
-})
-public @interface DataSavingOption {
-  // enum from VoIPController.h:93
-  int
-    NEVER = 0,
-    MOBILE = 1,
-    ALWAYS = 2,
-    ROAMING = 3 /*this field is not present in VoIPController.h and is converted to MOBILE or NEVER*/;
+)
+annotation class DataSavingOption {
+  companion object {
+    // enum from VoIPController.h:93
+    const val NEVER = 0
+    const val MOBILE = 1
+    const val ALWAYS = 2
+    const val ROAMING = 3 /*this field is not present in VoIPController.h and is converted to MOBILE or NEVER*/
+  }
 }

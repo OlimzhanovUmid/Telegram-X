@@ -10,18 +10,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 21/03/2023
+ * File created on 01/04/2023
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.voip.annotation
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
-  EmojiMediaType.EMOJI, EmojiMediaType.GIF, EmojiMediaType.STICKER
-})
-public @interface EmojiMediaType {
-  int STICKER = 0, GIF = 1, EMOJI = 2;
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
+  AudioState.MUTED,
+  AudioState.ACTIVE
+)
+annotation class AudioState {
+  companion object {
+    const val MUTED = 0
+    const val ACTIVE = 1
+  }
 }

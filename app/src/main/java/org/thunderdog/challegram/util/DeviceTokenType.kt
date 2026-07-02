@@ -12,22 +12,22 @@
  *
  * File created on 01/06/2023
  */
-package org.thunderdog.challegram.util;
+package org.thunderdog.challegram.util
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.Retention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
   DeviceTokenType.FIREBASE_CLOUD_MESSAGING,
   DeviceTokenType.HUAWEI_PUSH_SERVICE,
   DeviceTokenType.SIMPLE_PUSH_SERVICE
-})
-public @interface DeviceTokenType {
-  int
-    FIREBASE_CLOUD_MESSAGING = 0,
-    HUAWEI_PUSH_SERVICE = 1,
-    SIMPLE_PUSH_SERVICE = 2;
+)
+annotation class DeviceTokenType {
+  companion object {
+    const val FIREBASE_CLOUD_MESSAGING = 0
+    const val HUAWEI_PUSH_SERVICE = 1
+    const val SIMPLE_PUSH_SERVICE = 2
+  }
 }

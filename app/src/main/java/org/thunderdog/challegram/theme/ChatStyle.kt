@@ -10,15 +10,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 25/04/2024 (PR #563)
+ * File created on 19/01/2017
  */
-package org.thunderdog.challegram.util.text.bidi;
+package org.thunderdog.challegram.theme
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import androidx.annotation.IntDef
 
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
-@Retention(RetentionPolicy.SOURCE)
-public @interface BiDiEntity {}
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(ThemeManager.CHAT_STYLE_MODERN, ThemeManager.CHAT_STYLE_BUBBLES)
+annotation class ChatStyle

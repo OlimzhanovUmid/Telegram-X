@@ -10,17 +10,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 19/10/2023
+ * File created on 04/03/2018
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.IntDef;
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.AnnotationTarget
+import kotlin.annotation.Retention
+import kotlin.annotation.Target
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef(value = {ChatFolderOptions.DISPLAY_AT_TOP}, flag = true)
-public @interface ChatFolderOptions {
-  int DISPLAY_AT_TOP = 1;
-}
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR, AnnotationTarget.PROPERTY_SETTER)
+@Retention(AnnotationRetention.BINARY)
+annotation class TdlibThread

@@ -12,20 +12,19 @@
  *
  * File created on 25/02/2018
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.IntDef;
+import androidx.annotation.IntDef
+import kotlin.annotation.Retention
+import kotlin.annotation.AnnotationRetention
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(
   TdlibManager.SWITCH_REASON_UNAUTHORIZED,
   TdlibManager.SWITCH_REASON_NAVIGATION,
   TdlibManager.SWITCH_REASON_USER_CLICK,
   TdlibManager.SWITCH_REASON_CHAT_OPEN,
   TdlibManager.SWITCH_REASON_CHAT_FOCUS,
   TdlibManager.SWITCH_REASON_EXISTING_NUMBER
-})
-public @interface AccountSwitchReason { }
+)
+annotation class AccountSwitchReason
