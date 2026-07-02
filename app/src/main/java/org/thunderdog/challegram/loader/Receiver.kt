@@ -39,7 +39,7 @@ interface Receiver : TooltipOverlayView.LocationProvider {
   fun getTargetWidth (): Int
   fun getTargetHeight (): Int
 
-  fun <T : Receiver> setUpdateListener (listener: ReceiverUpdateListener): T
+  fun <T : Receiver> setUpdateListener (listener: ReceiverUpdateListener?): T
 
   fun getLeft (): Int
   fun getTop (): Int
