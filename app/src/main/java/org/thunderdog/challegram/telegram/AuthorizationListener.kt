@@ -9,13 +9,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * File created on 17/02/2018
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-public interface AnimatedEmojiListener {
-  int TYPE_TGX = 0;
-  int TYPE_EMOJI = 1;
-  int TYPE_DICE = 2;
+import org.drinkless.tdlib.TdApi
 
-  default void onAnimatedEmojiChanged (int type) { }
+fun interface AuthorizationListener {
+  fun onAuthorizationStateChanged (authorizationState: TdApi.AuthorizationState)
+  fun onAuthorizationCodeReceived (code: String) { }
 }

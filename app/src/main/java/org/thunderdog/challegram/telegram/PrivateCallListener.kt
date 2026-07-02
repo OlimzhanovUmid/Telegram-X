@@ -9,11 +9,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * File created on 20/10/2019
  */
-package org.thunderdog.challegram.util;
+package org.thunderdog.challegram.telegram
 
-public interface WrapperProvider<T,V> {
-  T getWrap (V v);
+import org.drinkless.tdlib.TdApi
+
+interface PrivateCallListener {
+  fun onCallUpdated (call: TdApi.Call) { }
+  fun onNewCallSignalingDataArrived (callId: Int, data: ByteArray) { }
 }

@@ -9,16 +9,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * File created on 06/08/2017
  */
-package org.thunderdog.challegram.util;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.ColorInt;
+interface AnimatedEmojiListener {
+  fun onAnimatedEmojiChanged (type: Int) { }
 
-import org.thunderdog.challegram.theme.ColorId;
-
-public interface ColorChangeAcceptorDelegate {
-  void applyColor (@ColorId int fromColorId, @ColorId int toColorId, float factor);
-  @ColorInt int getDrawColor ();
+  companion object {
+    const val TYPE_TGX = 0
+    const val TYPE_EMOJI = 1
+    const val TYPE_DICE = 2
+  }
 }

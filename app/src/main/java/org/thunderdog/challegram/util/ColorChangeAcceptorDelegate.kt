@@ -10,12 +10,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 09/12/2016
+ * File created on 06/08/2017
  */
-package org.thunderdog.challegram.mediaview;
+package org.thunderdog.challegram.util
 
-import org.thunderdog.challegram.mediaview.data.MediaItem;
+import androidx.annotation.ColorInt
+import org.thunderdog.challegram.theme.ColorId
 
-public interface MediaStackCallback {
-  void onMediaChanged (int index, int estimatedTotalSize, MediaItem currentItem, boolean itemCountChanged);
+interface ColorChangeAcceptorDelegate {
+  fun applyColor (@ColorId fromColorId: Int, @ColorId toColorId: Int, factor: Float)
+  @ColorInt fun getDrawColor (): Int
 }

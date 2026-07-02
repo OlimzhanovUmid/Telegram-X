@@ -10,13 +10,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 20/03/2023
+ * File created on 23/03/2023
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-import androidx.annotation.NonNull;
-
-import org.thunderdog.challegram.unsorted.Settings;
-public interface GlobalProxyPingListener {
-  void onProxyPingChanged (@NonNull Settings.Proxy proxy, long pingMs);
+fun interface GlobalResolvableProblemListener {
+  fun onResolvableProblemAvailabilityMightHaveChanged ()
 }

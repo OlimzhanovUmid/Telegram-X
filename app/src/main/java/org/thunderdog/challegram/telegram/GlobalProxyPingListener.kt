@@ -9,11 +9,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * File created on 20/03/2023
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.telegram
 
-import org.drinkless.tdlib.TdApi;
+import org.thunderdog.challegram.unsorted.Settings
 
-public interface PollListener {
-  void onUpdatePoll (TdApi.Poll updatedPoll);
+fun interface GlobalProxyPingListener {
+  fun onProxyPingChanged (proxy: Settings.Proxy, pingMs: Long)
 }

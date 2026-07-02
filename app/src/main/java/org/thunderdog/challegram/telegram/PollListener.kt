@@ -9,11 +9,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * File created on 21/02/2016 at 01:02
  */
-package org.thunderdog.challegram.navigation;
+package org.thunderdog.challegram.telegram
 
-public interface SelectDelegate {
-  void finishSelectMode (int position);
+import org.drinkless.tdlib.TdApi
+
+fun interface PollListener {
+  fun onUpdatePoll (updatedPoll: TdApi.Poll)
 }

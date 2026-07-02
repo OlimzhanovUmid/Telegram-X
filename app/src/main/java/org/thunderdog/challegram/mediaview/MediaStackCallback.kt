@@ -9,12 +9,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * File created on 09/12/2016
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.mediaview
 
-import org.drinkless.tdlib.TdApi;
+import org.thunderdog.challegram.mediaview.data.MediaItem
 
-public interface PrivateCallListener {
-  default void onCallUpdated (TdApi.Call call)                         { }
-  default void onNewCallSignalingDataArrived (int callId, byte[] data) { }
+fun interface MediaStackCallback {
+  fun onMediaChanged (index: Int, estimatedTotalSize: Int, currentItem: MediaItem?, itemCountChanged: Boolean)
 }

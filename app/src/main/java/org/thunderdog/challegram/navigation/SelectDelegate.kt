@@ -10,10 +10,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 23/03/2023
+ * File created on 21/02/2016 at 01:02
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.navigation
 
-public interface GlobalResolvableProblemListener {
-  void onResolvableProblemAvailabilityMightHaveChanged ();
+fun interface SelectDelegate {
+  fun finishSelectMode (position: Int)
 }

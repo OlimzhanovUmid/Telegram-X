@@ -10,13 +10,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 17/02/2018
+ * File created on 20/10/2019
  */
-package org.thunderdog.challegram.telegram;
+package org.thunderdog.challegram.util
 
-import org.drinkless.tdlib.TdApi;
-
-public interface AuthorizationListener {
-  void onAuthorizationStateChanged (TdApi.AuthorizationState authorizationState);
-  default void onAuthorizationCodeReceived (String code) { }
+fun interface WrapperProvider<T, V> {
+  fun getWrap (v: V): T
 }
