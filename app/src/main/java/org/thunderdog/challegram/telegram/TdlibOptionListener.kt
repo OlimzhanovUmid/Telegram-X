@@ -19,7 +19,7 @@ import org.drinkless.tdlib.TdApi
 interface TdlibOptionListener {
   fun onTopChatsDisabled (areDisabled: Boolean) { }
   fun onSentScheduledMessageNotificationsDisabled (areDisabled: Boolean) { }
-  fun onSuggestedLanguagePackChanged (suggestedLanguagePackId: String, suggestedLanguagePack: TdApi.LanguagePackInfo) { }
+  fun onSuggestedLanguagePackChanged (suggestedLanguagePackId: String, suggestedLanguagePack: TdApi.LanguagePackInfo?) { }
   fun onContactRegisteredNotificationsDisabled (areDisabled: Boolean) { }
   fun onSuggestedActionsChanged (addedActions: Array<TdApi.SuggestedAction>, removedActions: Array<TdApi.SuggestedAction>) { }
   fun onChatRevenueUpdated (chatId: Long, revenueAmount: TdApi.ChatRevenueAmount) { }
