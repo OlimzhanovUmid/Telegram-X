@@ -10,22 +10,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 21/09/2017
+ * File created on 19/03/2023
  */
-package org.thunderdog.challegram.ui.camera;
+package org.thunderdog.challegram.voip
 
-import androidx.annotation.IntDef;
+import org.thunderdog.challegram.telegram.TdlibManager
+import java.io.File
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+object VoIPPersistentConfig {
+  @JvmStatic
+  fun getVoipConfigFile (): File {
+    return File(TdlibManager.getTgvoipDirectory(), "voip_persistent_state.json")
+  }
 
-public class CameraError {
-  @Retention(RetentionPolicy.SOURCE)
-  @IntDef({NOT_ENOUGH_SPACE})
-  public @interface Code {}
-
-  /**
-   * Not enough storage space. Offer user to free some space.
-   * */
-  public static final int NOT_ENOUGH_SPACE = -1;
+  @JvmStatic
+  fun getVoipConfigFileSize (): Long {
+    val file = getVoipConfigFile()
+    return if (file.exists()) file.length() else 0
+  }
 }

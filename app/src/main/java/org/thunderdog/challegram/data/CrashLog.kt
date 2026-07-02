@@ -10,29 +10,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 09/11/2016
+ * File created on 30/08/2015 at 18:12
  */
-package org.thunderdog.challegram.data;
+package org.thunderdog.challegram.data
 
-public class TGSwitchInline {
-  private final String username;
-  private final String query;
+import java.io.File
 
-  public TGSwitchInline (String username, String query) {
-    this.username = username;
-    this.query = query;
+class CrashLog(private val crashId: Long, private var file: File?) {
+  val id: Long
+    get() = crashId
+
+  fun deleteFile() {
+    if (file?.delete() == true) {
+      file = null
+    }
   }
 
-  public String getUsername () {
-    return username;
-  }
-
-  public String getQuery () {
-    return query;
-  }
-
-  @Override
-  public String toString () {
-    return "@" + username + " " + query;
+  fun getFile(): String {
+    return file!!.path
   }
 }

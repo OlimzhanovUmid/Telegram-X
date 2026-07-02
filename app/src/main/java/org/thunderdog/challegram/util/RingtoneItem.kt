@@ -10,16 +10,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * File created on 04/04/2017
+ * File created on 20/11/2016
  */
-package org.thunderdog.challegram.filegen;
+package org.thunderdog.challegram.util
 
-public class SimpleGenerationInfo extends GenerationInfo {
-  public SimpleGenerationInfo (long generationId, String originalPath, String destinationPath, String conversion) {
-    super(generationId, originalPath, destinationPath, conversion, false);
-  }
+import android.net.Uri
 
-  public static String makeConversion (String path) {
-    return GenerationInfo.TYPE_AVATAR;
-  }
-}
+class RingtoneItem (
+  val id: Int,
+  val name: String,
+  val uri: Uri,
+  val isDefault: Boolean
+)
