@@ -17,7 +17,7 @@ package org.thunderdog.challegram.telegram
 import org.drinkless.tdlib.TdApi
 
 interface GlobalAccountListener {
-  fun onAccountProfileChanged (account: TdlibAccount, profile: TdApi.User, isCurrent: Boolean, isLoaded: Boolean) { }
+  fun onAccountProfileChanged (account: TdlibAccount, profile: TdApi.User?, isCurrent: Boolean, isLoaded: Boolean) { }
   fun onAccountProfilePhotoChanged (account: TdlibAccount, big: Boolean, isCurrent: Boolean) { }
   fun onAccountProfileEmojiStatusChanged (account: TdlibAccount, isCurrent: Boolean) { }
   fun onAccountSwitched (newAccount: TdlibAccount, profile: TdApi.User?, reason: Int, oldAccount: TdlibAccount?) { }
