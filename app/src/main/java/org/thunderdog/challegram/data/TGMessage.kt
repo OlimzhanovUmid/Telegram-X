@@ -7243,7 +7243,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     }
 
     fun showContentHint(view: View?, locationProvider: TooltipOverlayView.LocationProvider?, text: TdApi.FormattedText?): TooltipInfo? {
-        return buildContentHint(view, locationProvider, true)!!.show(tdlib, text)
+        return buildContentHint(view, locationProvider, true)!!.show(tdlib, text!!)
     }
 
     fun buildContentHint(view: View?, locationProvider: TooltipOverlayView.LocationProvider?, applyContentOffset: Boolean): TooltipBuilder? {
@@ -8333,11 +8333,11 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
     private fun showLanguageSelectorInlineMode(v: View) {
         if (languageSelectorTooltip == null) return
 
-        val x = max(languageSelectorTooltip!!.getContentRight() - Screen.dp((178 + 16).toFloat()), 0f)
+        val x = max(languageSelectorTooltip!!.contentRight - Screen.dp((178 + 16).toFloat()), 0f)
         var y: Float
         var pivotY: Float
         if (useBubbles()) {
-            y = languageSelectorTooltip!!.getContentBottom() - Screen.dp((280 + 16).toFloat())
+            y = languageSelectorTooltip!!.contentBottom - Screen.dp((280 + 16).toFloat())
             pivotY = Screen.dp(288f).toFloat()
             if (y < HeaderView.getTopOffset()) {
                 pivotY = Screen.dp(288f) - (HeaderView.getTopOffset() - y)
@@ -8345,7 +8345,7 @@ abstract class TGMessage private constructor(manager: MessagesManager, msg: TdAp
             }
         } else {
             pivotY = Screen.dp(8f).toFloat()
-            y = languageSelectorTooltip!!.getContentTop()
+            y = languageSelectorTooltip!!.contentTop
             if (y > Screen.currentHeight() - Screen.dp((280 + 16).toFloat())) {
                 pivotY = Screen.dp(24f) + y - (Screen.currentHeight() - Screen.dp((280 + 16).toFloat()))
                 y = (Screen.currentHeight() - Screen.dp((280 + 16).toFloat())).toFloat()

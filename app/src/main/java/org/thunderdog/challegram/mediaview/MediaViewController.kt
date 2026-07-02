@@ -6714,8 +6714,8 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
             }
             if (!isEmpty(text)) {
                 if (brushToneHint != null) {
-                    if (text != brushToneHint!!.getContentText()) {
-                        brushToneHint!!.reset(context().tooltipManager().newContent(tdlib, text, textFlags), 0)
+                    if (text != brushToneHint!!.contentText) {
+                        brushToneHint!!.reset(context().tooltipManager().newContent(tdlib, text!!, textFlags), 0)
                     }
                     brushToneHint!!.show()
                 } else {
@@ -6723,7 +6723,7 @@ class MediaViewController(context: Context, tdlib: Tdlib?) : ViewController<Medi
                         context().tooltipManager().overrideColorProvider(
                             this@MediaViewController.forcedTheme
                         )
-                    ).show(context().tooltipManager().newContent(tdlib, text, textFlags))
+                    ).show(context().tooltipManager().newContent(tdlib, text!!, textFlags))
                 }
                 return
             }

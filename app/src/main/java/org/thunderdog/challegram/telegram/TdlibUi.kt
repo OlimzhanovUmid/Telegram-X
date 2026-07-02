@@ -8044,7 +8044,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 if (iconRes == 0) {
                     urlOpenParameters.tooltip!!.show(tdlib, message).hideDelayed(3500, TimeUnit.MILLISECONDS)
                 } else {
-                    TooltipBuilder(urlOpenParameters.tooltip).icon(iconRes).show(tdlib, message).hideDelayed(3500, TimeUnit.MILLISECONDS)
+                    TooltipBuilder(urlOpenParameters.tooltip!!).icon(iconRes).show(tdlib, message).hideDelayed(3500, TimeUnit.MILLISECONDS)
                 }
             } else {
                 UI.showToast(message, Toast.LENGTH_SHORT)

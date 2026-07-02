@@ -6620,7 +6620,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
                 .tooltipManager()
                 .builder(view)
                 .show(this, tdlib, R.drawable.baseline_info_24, Lang.getString(R.string.AnotherChatReplyHint))
-                .hideDelayed()
+                ?.hideDelayed()
         }
     }
 

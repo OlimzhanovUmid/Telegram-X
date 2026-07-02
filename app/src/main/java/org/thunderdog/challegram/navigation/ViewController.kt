@@ -3022,7 +3022,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
   fun showTooltip(view: View?, @DrawableRes icon: Int, text: CharSequence?): TooltipInfo? {
     return context.tooltipManager()
       .builder(view)
-      .show(this, tdlib, icon, text)
+      .show(this, tdlib, icon, text!!)
   }
 
   fun openTdlibLogs(testerLevel: Int, crashInfo: Crash?) {
