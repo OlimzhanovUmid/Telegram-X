@@ -21,7 +21,7 @@ interface GlobalCountersListener {
   @UiThread
   fun onUnreadCountersChanged (tdlib: Tdlib, chatList: TdApi.ChatList, count: Int, isMuted: Boolean) { }
   @UiThread
-  fun onTotalUnreadCounterChanged (chatList: TdApi.ChatList, isReset: Boolean) { }
+  fun onTotalUnreadCounterChanged (chatList: TdApi.ChatList?, isReset: Boolean) { }
   @UiThread
   fun onBadgeSettingsChanged () { }
 }
