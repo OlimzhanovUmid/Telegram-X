@@ -122,12 +122,15 @@ abstract class RecyclerViewController<T>(context: Context, tdlib: Tdlib?) : Tele
             ViewSupport.setThemedBackground(wrap, this.recyclerBackground, this)
         }
         wrap.setLayoutParams(newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-        recyclerView = onCreateRecyclerView()
+        // Use the created instance directly, not the recyclerView property: subclasses may
+        // override getRecyclerView() to return their own (still-null) field until onCreateView below.
+        val recyclerView = onCreateRecyclerView()
+        this.recyclerView = recyclerView
         if (needRecyclerBottomInset()) {
             Views.applyBottomInset(recyclerView, extraBottomInset)
         }
         Views.setScrollBarPosition(recyclerView)
-        recyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 if (scrollState != newState) {
                     prevScrollState = scrollState
@@ -135,7 +138,7 @@ abstract class RecyclerViewController<T>(context: Context, tdlib: Tdlib?) : Tele
                 }
             }
         })
-        onCreateView(context, recyclerView!!)
+        onCreateView(context, recyclerView)
         wrap.addView(recyclerView)
         if (needPersistentScrollPosition()) {
             restorePersistentScrollPosition()
