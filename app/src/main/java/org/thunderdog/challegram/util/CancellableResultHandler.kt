@@ -12,33 +12,33 @@
  *
  * File created on 21/05/2015 at 19:54
  */
-package org.thunderdog.challegram.util;
+package org.thunderdog.challegram.util
 
-import org.drinkless.tdlib.Client;
-import org.drinkless.tdlib.TdApi;
+import org.drinkless.tdlib.Client
+import org.drinkless.tdlib.TdApi
 
-public abstract class CancellableResultHandler implements Client.ResultHandler {
-  private volatile boolean isCancelled;
+abstract class CancellableResultHandler : Client.ResultHandler {
+  @Volatile private var isCancelled = false
 
-  public final void cancel () {
-    synchronized (this) {
-      isCancelled = true;
+  fun cancel () {
+    synchronized(this) {
+      isCancelled = true
     }
   }
 
-  public final void onResult (TdApi.Object object) {
-    synchronized (this) {
+  final override fun onResult (`object`: TdApi.Object) {
+    synchronized(this) {
       if (!isCancelled) {
-        processResult(object);
+        processResult(`object`)
       }
     }
   }
 
-  public final boolean isCancelled () {
-    synchronized (this) {
-      return isCancelled;
+  fun isCancelled (): Boolean {
+    synchronized(this) {
+      return isCancelled
     }
   }
 
-  public abstract void processResult (TdApi.Object object);
+  abstract fun processResult (`object`: TdApi.Object)
 }

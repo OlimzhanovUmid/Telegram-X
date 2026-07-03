@@ -12,28 +12,23 @@
  *
  * File created on 21/12/2019
  */
-package org.thunderdog.challegram.util;
+package org.thunderdog.challegram.util
 
-import android.graphics.ColorFilter;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
+import android.graphics.ColorFilter
+import android.graphics.PixelFormat
+import android.graphics.drawable.Drawable
 
-import androidx.annotation.Nullable;
-
-public abstract class SimpleDrawable extends Drawable {
-  @Override
-  public void setAlpha (int alpha) {
+abstract class SimpleDrawable : Drawable() {
+  override fun setAlpha (alpha: Int) {
 
   }
 
-  @Override
-  public void setColorFilter (@Nullable ColorFilter colorFilter) {
+  override fun setColorFilter (colorFilter: ColorFilter?) {
 
   }
 
-  @Override
-  @SuppressWarnings("deprecation")
-  public int getOpacity () {
-    return PixelFormat.UNKNOWN;
+  @Suppress("deprecation")
+  override fun getOpacity (): Int {
+    return PixelFormat.UNKNOWN
   }
 }
