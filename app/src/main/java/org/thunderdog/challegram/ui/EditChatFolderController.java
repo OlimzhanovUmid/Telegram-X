@@ -200,7 +200,7 @@ public class EditChatFolderController extends EditBaseController<EditChatFolderC
 
   @Override
   @SuppressWarnings("deprecation")
-  protected int getMaximumHeaderHeight () {
+  public int getMaximumHeaderHeight () {
     return Size.getHeaderBigPortraitSize(false);
   }
 

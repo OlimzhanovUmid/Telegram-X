@@ -213,7 +213,7 @@ public class CreateChannelController extends ViewController<String[]> implements
   }
 
   @Override
-  protected int getFloatingButtonId () {
+  public int getFloatingButtonId () {
     return headerCell.isInputEmpty() ? 0 : R.drawable.baseline_arrow_forward_24;
   }
 

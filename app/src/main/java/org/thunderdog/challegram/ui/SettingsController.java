@@ -169,12 +169,12 @@ public class SettingsController extends ViewController<Void> implements
   }
 
   @Override
-  protected int getMaximumHeaderHeight () {
+  public int getMaximumHeaderHeight () {
     return Size.getHeaderBigPortraitSize(true);
   }
 
   @Override
-  protected int getFloatingButtonId () {
+  public int getFloatingButtonId () {
     return R.drawable.baseline_edit_24;
   }
 

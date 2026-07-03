@@ -580,7 +580,7 @@ public class ContactsController extends TelegramViewController<ContactsControlle
   }
 
   @Override
-  protected int getFloatingButtonId () {
+  public int getFloatingButtonId () {
     return mode == MODE_ADD_MEMBER || mode == MODE_MULTI_PICK ? 0 : mode == MODE_PICK || mode == MODE_NEW_CHAT || mode == MODE_CALL || mode == MODE_NEW_SECRET_CHAT || pickedBubbles.isEmpty() ? 0 : mode == MODE_CHANNEL_MEMBERS || mode == MODE_MULTI_PICK ? R.drawable.baseline_check_24 : R.drawable.baseline_arrow_forward_24;
   }
 
@@ -751,7 +751,7 @@ public class ContactsController extends TelegramViewController<ContactsControlle
   }
 
   @Override
-  protected int getMaximumHeaderHeight () {
+  public int getMaximumHeaderHeight () {
     return Size.getHeaderBigPortraitSize(false);
   }
 

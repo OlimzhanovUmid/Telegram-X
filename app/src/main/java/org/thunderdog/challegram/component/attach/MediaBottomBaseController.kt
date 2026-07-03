@@ -311,7 +311,7 @@ abstract class MediaBottomBaseController<T> : ViewController<T> {
   protected open val recyclerBackgroundColorId: Int
     get() = ColorId.filling
 
-  fun dispatchRecyclerTouchEvent(e: MotionEvent?) {
+  fun dispatchRecyclerTouchEvent(e: MotionEvent) {
     recyclerView!!.processEvent(e)
   }
 

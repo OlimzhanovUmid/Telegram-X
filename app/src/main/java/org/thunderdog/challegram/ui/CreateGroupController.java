@@ -517,7 +517,7 @@ public class CreateGroupController extends ViewController<Void> implements EditH
   }
 
   @Override
-  protected int getFloatingButtonId () {
+  public int getFloatingButtonId () {
     return R.drawable.baseline_check_24;
   }
 }

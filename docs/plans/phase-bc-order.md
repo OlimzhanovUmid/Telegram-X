@@ -389,6 +389,39 @@ mediaview/MediaSpoilerSendDelegate, ui/{SinglePageBottomSheetViewController, cam
 telegram/{UserListManager, PollVoterListManager}, player/BasePlaybackController, voip/VoIPInstance.
 Excluded: widget/SparseDrawableViewGroup.java (dead code, see above — stays Java).
 
-### T-L3d+ (not yet scoped)
-After T-L3c: 121 View/ViewGroup/Drawable/Adapter subclasses (stateful, need device-test), then 280 plain
-classes (need finer sort). Scope when reached.
+### T-L3d — View/ViewGroup/Drawable/Adapter subclasses — **DONE (119 files, gate GREEN + 6-lens verify + device-test)**
+Largest single tranche yet (biggest prior was T-L3a's 73). Executed via Workflow: 119 parallel converters
+(concurrency-capped ~14 at a time) → single gate agent iterating to green → 6 targeted adversarial audits.
+5 of 6 verify agents found zero confirmed bugs; 1 found a genuine latent ABI deviation (`support/
+FillingDrawable.kt` declared non-`open` while 3 of its own methods stayed `open` — dead code, zero
+subclasses/callers, so inert, but fixed to `open class` to match the Java original's subclassability).
+New risk category vs prior tranches: these are STATEFUL rendered UI widgets (custom `View`/`Drawable`/
+`RecyclerView.Adapter` subclasses), so **Android view-constructor-overload preservation** became a first-class
+rule — any class with 2-3 standard `(Context)`/`(Context, AttributeSet)`/`(Context, AttributeSet, Int)`
+constructors needed `@JvmOverloads constructor (...)`, since Kotlin default-params alone collapse to ONE JVM
+constructor and silently break XML inflation or any Java caller using a shorter overload (a RUNTIME crash,
+not a compile error). One file (`v/MediaRecyclerView.kt`) is genuinely XML-inflated
+(`res/layout/recycler_sharedmedia.xml` root tag, consumed via `SharedBaseController.kt`'s `Views.inflate`) —
+verified via `javap` that all 3 constructors survive in the compiled bytecode, not just assumed from source.
+Gate found/fixed 7 categories across 43 files (beyond the 119 conversions): (1) 17 more `@JvmName`-facade
+import traps (recurring every tranche - see [[kt-migration-jvmname-facade-trap]]); (2) ~15 files needed
+explicit `int→float`/`int→long` widening Kotlin doesn't do implicitly; (3) `FrameLayoutFix.LayoutParams`
+qualified-through-subclass Java pattern doesn't resolve in Kotlin - use `android.widget.FrameLayout.LayoutParams`
+directly; (4) a Java-style `.setAlpha(...)` call on the (already-Kotlin) `Receiver` interface's `var alpha`
+property; (5) nullability-shape ripples into pre-existing large files (`MessagesController.kt`,
+`TdlibUi.kt`, `MediaBottomBaseController.kt`) where a batch-converted callee's param went non-null and the
+caller needed `!!`; (6) a real recurrence of [[kt-migration-protected-package-trap]] -
+`navigation/ComplexRecyclerView.java` (new in this batch) does cross-instance same-package access to
+`ViewController.headerView`/`getMaximumHeaderHeight()`/`getFloatingButtonId()`/`usePopupMode()`, forcing all
+4 members public in `ViewController.kt` and rippling into 11 unrelated Java `ViewController` subclasses'
+overrides; (7) a Kotlin `internal` method (`SyncAdapter.kt`) JVM-name-mangled and became uncallable from its
+same-package Java caller `SyncHelper.java` - dropped to `public` (Java has no `internal` analog).
+Same-batch inheritance chains handled correctly (base and subclass both mid-conversion, reconciled by the
+gate step regardless of ordering): `NoScrollTextView` ← 5 subclasses, `SparseDrawableView` ← 2,
+`InvisibleImageView` ← 1, `EmojiSpanImpl` ← `CustomEmojiSpanImpl`, `EmojiTextView` ← `CustomEmojiTextView`.
+Device-tested on a running Pixel 10 Pro emulator (`emulator-5554`, Android 17) via `/android-cli` - see
+device-test notes in the commit.
+Excluded (already decided in T-L3c): `widget/SparseDrawableViewGroup.java` stays Java (dead code).
+
+### T-L3e+ (not yet scoped)
+After T-L3d: 280 plain classes remain (need finer sort). Scope when reached.

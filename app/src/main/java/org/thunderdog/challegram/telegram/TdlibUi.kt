@@ -2074,7 +2074,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
         }
         val c = context.context().navigation().getCurrentStackItem()
         if (c != null) {
-            ModernActionedLayout.showJoinDialog(c, inviteLinkInfo, Runnable { joinChatByInviteLink(context, inviteLink, inviteLinkInfo, openParameters) })
+            ModernActionedLayout.showJoinDialog(c, inviteLinkInfo!!, Runnable { joinChatByInviteLink(context, inviteLink, inviteLinkInfo, openParameters) })
         }
         return
     }
@@ -3409,7 +3409,10 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                         }
                     } else {
                         post(Runnable {
-                            ModernActionedLayout.showGiftCode(context.context().navigation().getCurrentStackItem(), code, null, info!!)
+                            val c = context.context().navigation().getCurrentStackItem()
+                            if (c != null) {
+                                ModernActionedLayout.showGiftCode(c, code, null, info!!)
+                            }
                             if (after != null) {
                                 after.runWithBool(true)
                             }

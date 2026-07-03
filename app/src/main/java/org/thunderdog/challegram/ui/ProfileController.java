@@ -965,7 +965,7 @@ public class ProfileController extends ViewController<ProfileController.Args> im
   }
 
   @Override
-  protected int getFloatingButtonId () {
+  public int getFloatingButtonId () {
     return isEditing() ? 0 : R.drawable.baseline_chat_bubble_24;
   }
 
@@ -1008,7 +1008,7 @@ public class ProfileController extends ViewController<ProfileController.Args> im
   }
 
   @Override
-  protected int getMaximumHeaderHeight () {
+  public int getMaximumHeaderHeight () {
     return isEditing() ? super.getMaximumHeaderHeight() : Size.getHeaderBigPortraitSize(true);
   }
 

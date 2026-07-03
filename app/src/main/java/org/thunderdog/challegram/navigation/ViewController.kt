@@ -124,8 +124,9 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
 
   private var parentWrapper: ViewController<*>? = null
 
+  // NB: public not protected — cross-instance same-package (ComplexRecyclerView.headerView access)
   @JvmField
-  protected var headerView: HeaderView? = null
+  var headerView: HeaderView? = null
 
   @JvmField
   protected var floatingButton: FloatingButton? = null
@@ -1206,7 +1207,8 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
     return Size.getHeaderPortraitSize()
   }
 
-  protected open fun getMaximumHeaderHeight(): Int {
+  // NB: public not protected — cross-instance same-package (ComplexRecyclerView.getMaximumHeaderHeight() access)
+  open fun getMaximumHeaderHeight(): Int {
     return this.getHeaderHeight()
   }
 
@@ -1236,7 +1238,8 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
   val newStatusBarColor: Int
     get() = HeaderView.DEFAULT_STATUS_COLOR
 
-  protected open fun getFloatingButtonId(): Int {
+  // NB: public not protected — cross-instance same-package (ComplexRecyclerView.getFloatingButtonId() access)
+  open fun getFloatingButtonId(): Int {
     return 0
   }
 
@@ -1251,7 +1254,7 @@ abstract class ViewController<T>(context: Context, @JvmField val tdlib: Tdlib?) 
     return true
   }
 
-  protected open fun usePopupMode(): Boolean {
+  open fun usePopupMode(): Boolean {
     return false
   }
 

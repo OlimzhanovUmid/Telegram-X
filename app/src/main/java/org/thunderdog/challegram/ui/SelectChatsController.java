@@ -813,7 +813,7 @@ public class SelectChatsController extends RecyclerViewController<SelectChatsCon
   }
 
   @Override
-  protected int getMaximumHeaderHeight () {
+  public int getMaximumHeaderHeight () {
     return hasBubbles() ? Size.getHeaderPortraitSize() + BubbleHeaderView.maxBubbleHeight(MAX_BUBBLE_LINES) : super.getMaximumHeaderHeight();
   }
 

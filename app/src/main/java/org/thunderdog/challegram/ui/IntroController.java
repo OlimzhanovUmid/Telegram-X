@@ -118,7 +118,7 @@ public class IntroController extends ViewController<Void> implements GLSurfaceVi
   }
 
   @Override
-  protected boolean usePopupMode () {
+  public boolean usePopupMode () {
     return true;
   }
 

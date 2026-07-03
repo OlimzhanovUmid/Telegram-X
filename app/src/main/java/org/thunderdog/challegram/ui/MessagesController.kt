@@ -525,7 +525,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
 
         var params: RelativeLayout.LayoutParams?
 
-        headerCell = ChatHeaderView(context, tdlib, this)
+        headerCell = ChatHeaderView(context, tdlib!!, this)
         headerCell!!.setPhotoOpenCallback(this)
         when (previewMode) {
             PREVIEW_MODE_EVENT_LOG -> {
@@ -11094,7 +11094,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     @UiThread
     override fun onUserStatusChanged(userId: Long, status: UserStatus?, uiOnly: Boolean) {
         if (chat != null && headerCell != null && TD.getUserId(chat) == userId) {
-            headerCell!!.updateUserStatus(chat)
+            headerCell!!.updateUserStatus(chat!!)
         }
     }
 
@@ -11116,7 +11116,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     override fun onSupergroupFullUpdated(supergroupId: Long, newSupergroupFull: SupergroupFullInfo?) {
         tdlib!!.ui().post(Runnable {
             if (toSupergroupId(this.headerChatId) == supergroupId) {
-                headerCell!!.updateUserStatus(chat)
+                headerCell!!.updateUserStatus(chat!!)
             }
             if (toSupergroupId(getChatId()) == supergroupId) {
                 checkLinkedChat()
@@ -11150,7 +11150,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     override fun onBasicGroupFullUpdated(basicGroupId: Long, basicGroupFull: BasicGroupFullInfo?) {
         tdlib!!.ui().post(Runnable {
             if (chat != null && toBasicGroupId(this.headerChatId) == basicGroupId) {
-                headerCell!!.updateUserStatus(chat)
+                headerCell!!.updateUserStatus(chat!!)
             }
         })
     }
@@ -11158,7 +11158,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     override fun onChatOnlineMemberCountChanged(chatId: Long, onlineMemberCount: Int) {
         tdlib!!.ui().post(Runnable {
             if (chat != null && this.headerChatId == chatId) {
-                headerCell!!.updateUserStatus(chat)
+                headerCell!!.updateUserStatus(chat!!)
             }
         })
     }
@@ -11375,7 +11375,7 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
         if (isFocused() && !inPreviewMode()) {
             manager!!.rebuildLayouts()
             if (headerCell != null) {
-                headerCell!!.setChat(tdlib, chat, messageThread)
+                headerCell!!.setChat(tdlib!!, chat, messageThread)
                 if (messageThread != null) {
                     updateMessageThreadSubtitle()
                 } else {

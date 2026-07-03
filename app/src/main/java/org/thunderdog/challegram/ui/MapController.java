@@ -151,7 +151,7 @@ public abstract class MapController<V extends View, T> extends ViewController<Ma
   }
 
   @Override
-  protected boolean usePopupMode () {
+  public boolean usePopupMode () {
     return true;
   }
 

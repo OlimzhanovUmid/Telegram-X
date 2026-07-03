@@ -345,7 +345,7 @@ public class CreateChannelLinkController extends ViewController<CreateChannelLin
   }
 
   @Override
-  protected int getFloatingButtonId () {
+  public int getFloatingButtonId () {
     return R.drawable.baseline_arrow_forward_24;
   }
 

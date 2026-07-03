@@ -19,7 +19,7 @@ import org.thunderdog.challegram.data.ComplexMediaItem
 import org.thunderdog.challegram.loader.ComplexReceiver
 
 interface CustomEmojiSurfaceProvider {
-  fun onCreateNewSpan (emojiCode: CharSequence, info: EmojiInfo, customEmojiId: Long): EmojiSpan
+  fun onCreateNewSpan (emojiCode: CharSequence, info: EmojiInfo, customEmojiId: Long): EmojiSpan?
   fun onInvalidateSpan (span: EmojiSpan, requiresLayoutUpdate: Boolean)
   fun provideComplexReceiverForSpan (span: EmojiSpan): ComplexReceiver
   fun getDuplicateMediaItemCount (span: EmojiSpan, mediaItem: ComplexMediaItem): Int

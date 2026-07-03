@@ -1182,7 +1182,7 @@ public class CallController extends ViewController<CallController.Arguments> imp
   }
 
   @Override
-  protected boolean usePopupMode () {
+  public boolean usePopupMode () {
     return true;
   }
 }
