@@ -815,7 +815,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
             Intents.openNumber('+'.toString() + user.phoneNumber)
             return true
         } else if (id == R.id.btn_changePhoneNumber) {
-            context.navigationController()!!.navigateTo(SettingsPhoneController(context.context(), context.tdlib()))
+            context.navigationController()!!.navigateTo(SettingsPhoneController(context.context(), context.tdlib()!!))
             return true
         }
         return false
@@ -3166,7 +3166,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                             val sessions = SettingsSessionsController(context.context(), context.tdlib())
                             val websites = SettingsWebsitesController(context.context(), context.tdlib())
                             result = SimpleViewPagerController(
-                                context.context(), context.tdlib(), arrayOf<ViewController<*>>(sessions, websites), arrayOf<String>(
+                                context.context(), context.tdlib()!!, arrayOf<ViewController<*>>(sessions, websites), arrayOf<String>(
                                     Lang.getString(R.string.Devices).uppercase(Locale.getDefault()),
                                     Lang.getString(R.string.Websites).uppercase(Locale.getDefault())
                                 ), false
@@ -3339,7 +3339,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                             val editProfile = section as SettingsSectionEditProfile
                             when (editProfile.subsection) {
                                 "change-number" -> {
-                                    result = SettingsPhoneController(context.context(), context.tdlib())
+                                    result = SettingsPhoneController(context.context(), context.tdlib()!!)
                                 }
 
                                 "", "set-photo", "first-name", "last-name", "emoji-status", "bio", "birthday", "username", "your-color", "channel", "add-account", "log-out", "profile-color/profile", "profile-color/profile/add-icons", "profile-color/profile/use-gift", "profile-color/name", "profile-color/name/add-icons", "profile-color/name/use-gift", "profile-photo/use-emoji" -> {
@@ -3712,7 +3712,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
 
                                         override fun onPasswordConfirmed(c: ViewController<*>, password: String?) {
                                             val target = EditDeleteAccountReasonController(context.context(), tdlib)
-                                            target.setArguments(password)
+                                            target.setArguments(password!!)
                                             c.navigateTo(target)
                                         }
                                     })
@@ -4864,7 +4864,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 c2.setArguments(ChatLinkMembersController.Args(chatId, link.inviteLink))
                 context.navigateTo(c2)
             } else if (id == R.id.btn_manageJoinRequests) {
-                val c3 = ChatJoinRequestsController(context.context(), context.tdlib())
+                val c3 = ChatJoinRequestsController(context.context(), context.tdlib()!!)
                 c3.setArguments(ChatJoinRequestsController.Args(chatId, link.inviteLink, context))
                 context.navigateTo(c3)
             } else if (id == R.id.btn_edit) {
@@ -8082,7 +8082,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 })
                 return
             }
-            val controller = ChatFolderInviteLinkController(context.context(), context.tdlib())
+            val controller = ChatFolderInviteLinkController(context.context(), context.tdlib()!!)
             controller.setArguments(ChatFolderInviteLinkController.Arguments(inviteLinkUrl, inviteLinkInfo))
             controller.show()
         }
@@ -8370,7 +8370,7 @@ class TdlibUi /*package*/ internal constructor(private val tdlib: Tdlib) : Handl
                 else -> throw UnsupportedOperationException(request.toString())
             }
             if (forceText) {
-                val c = RequestController(context.context(), context.tdlib())
+                val c = RequestController(context.context(), context.tdlib()!!)
                 c.setArguments(object : RequestController.Delegate {
                     override fun getName(): CharSequence? {
                         return title

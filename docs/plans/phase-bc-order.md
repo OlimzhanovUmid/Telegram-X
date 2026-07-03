@@ -423,5 +423,75 @@ Device-tested on a running Pixel 10 Pro emulator (`emulator-5554`, Android 17) v
 device-test notes in the commit.
 Excluded (already decided in T-L3c): `widget/SparseDrawableViewGroup.java` stays Java (dead code).
 
-### T-L3e+ (not yet scoped)
-After T-L3d: 280 plain classes remain (need finer sort). Scope when reached.
+### T-L3e+f — FrameLayoutFix/View leaves + ViewController screens — **DONE (58 files, gate GREEN + 6-lens verify clean)**
+Fresh recompute after T-L3d: 283 leaf `.java` remained. Classified into 7 groups (see below); executed the
+two lowest-risk groups together via Workflow (26 Group-A View/ViewGroup widgets + 32 Group-B ViewController
+screens) — same playbook as T-L3d/T-L3c: pipeline convert (self-discovery per file) → single gate agent → 6
+targeted adversarial audits. All 6 verify agents reported zero confirmed findings (several ran real
+`javap`/fresh-compile round-trips, not just static reading). Gate found exactly 1 issue: `HashtagController.kt`
+needed `open` (a Java anonymous subclass in `HashtagChatController.java` overrides it) — fixed, re-gated green.
+Note: this run hit a session interruption mid-Gate-phase (background-fork checkpoint issue, unrelated to the
+script) — all 58 Convert-phase agents had already completed and were sitting uncommitted in the working tree;
+resumed via `Workflow({scriptPath, resumeFromRunId})`, which replayed the 58 completed conversions from cache
+and continued Gate+Verify from where they stopped. No work was lost.
+Group-A scope correction discovered while finalizing the file list: T-L3d's automated View/Drawable/Adapter
+scan (regex-anchored on `View`/`ViewGroup`/`Layout`/`Drawable`/`Adapter` as an extends-target SUFFIX) missed
+20 files extending `me.vkryl.android.widget.FrameLayoutFix` — the suffix "Layout" doesn't appear at the end of
+"FrameLayoutFix" so the anchor never matched. Also missed via a separate false-positive filter (`grep -vi
+controller` dropped anything mentioning "controller" anywhere, including `player/RecordControllerButton.java`,
+a View widget whose NAME merely contains "Controller") — this file (and its subclass
+`RecordDisposableSwitchButton.java`) were correctly re-triaged into Group A, not Group B, before executing.
+Same-batch inheritance chains handled correctly: `RecordControllerButton` ← `RecordDisposableSwitchButton`
+(Group A), `WebkitController` ← `GameController`/`TelegramFaqController` (Group B, all three converted
+concurrently).
+Cross-hierarchy overrides against already-Kotlin ViewController-family bases (`ViewController.kt`,
+`RecyclerViewController.kt`, `TelegramViewController.kt`, `EditBaseController.kt`, `EditTextController.kt`,
+`BottomSheetViewController.kt`, `ViewPagerController.kt`, `MediaBottomBaseController.kt`,
+`SharedBaseController.kt`, `DisposableMediaViewController.kt`) all matched correctly on the first pass — no
+function/property or nullability mismatches found, a good sign the established shape-matching discipline from
+T-L3c/d has become reliable. `emoji/CustomEmojiId.kt`'s Parcelable `CREATOR` (the exact landmine flagged in its
+verify prompt) was confirmed correct via `javap` — Kotlin's named-companion trick correctly produces the
+`public static final CustomEmojiId$CREATOR CREATOR` field Android's reflection-based unparceling needs.
+Files: Group A (26) — widget/{DoubleTextViewWithIcon, GearView, ScoutFrameLayout, CircleFrameLayout,
+RectFrameLayout, ListInfoView, SwirlView, SuggestedChatsView, emoji/header/EmojiHeaderViewNonPremium},
+mediaview/{MediaFilterNameView, MediaOtherView, crop/CropLayout}, navigation/{ContentFrameLayout,
+DrawerContentView, RootLayout, SimpleHeaderView, InterceptLayout}, ui/{camera/CameraRootLayout,
+camera/CameraLayout, SingleViewAdapter}, component/{chat/TopBarView, attach/MediaBottomGalleryBucketView,
+base/ProgressWrap}, player/{RecordControllerButton, RecordDisposableSwitchButton}, emoji/CustomEmojiId.
+Group B (32) — ui/{HashtagController, ChatJoinRequestsController, ChatFolderInviteLinkController,
+SettingsCloudIconController, MessageOptionsReactedController, SimpleViewPagerController, RequestController,
+GameController, SettingsLogFilesController, SettingsNetworkStatsController, WebkitController,
+SettingsLogOutController, WaitForPremiumController, MessageOptionsSeenController, SettingsPhoneController,
+EncryptionKeyController, TelegramFaqController, SharedRestrictionController, EditLinkedChatController,
+SettingsCloudEmojiController, SimpleMediaViewController, SettingsArchiveChatListController,
+EditDeleteAccountReasonController, SetSenderController}, widget/ViewControllerPagerAdapter,
+mediaview/disposable/DisposableMediaViewControllerAudio, component/attach/{MediaBottomContactsController,
+MediaBottomInlineBotsController, SponsoredMessagesInfoController}, component/popups/{JoinDialogController,
+JoinRequestsController, MessageSeenController}.
+
+### Remaining classification of the 283-file leaf pool (recomputed after T-L3d, before T-L3e+f)
+Full breakdown for future tranches:
+- Group A — FrameLayoutFix/View leaves: 26 (T-L3e, DONE above)
+- Group B — ViewController screens: 32 (T-L3f, DONE above)
+- Group C — subclasses of already-migrated god-object/Phase-C data classes (message rendering / page blocks /
+  inline results), higher semantic risk, message-rendering-adjacent: `TGMessage` (3), `TGSource` (3),
+  `TGMessageGiveawayBase` (3), `PageBlock` (3), `InlineResult<T>` (8) — 20 files. NOT yet scoped; deliberately
+  deferred, touches message-rendering, deserves its own device-test pass.
+- Group D — system/lifecycle components: `BroadcastReceiver` (9), `Service` (4), `BaseThread` (4) — 17 files.
+  NOT yet scoped.
+- Group E — misc small-base subclasses: `ImageFile` (6), `ChartData` (3), `EmojiEditText` (2 remaining),
+  plus ~15 one-off extends targets (`Worker`, `Thread`, `TdlibDataManager`, `RecyclerView.Adapter`,
+  `PasswordTransformationMethod`, `LinearLayoutManager`, `InputConnectionWrapper`, `ImageView`, `HeaderButton`,
+  `Handler`, `GridLayoutManager`, `GenerationInfo`, `EndIconModifier`, `EditText`, `TextDrawable`,
+  `TdApi.Object` x2) — ~26 files. NOT yet scoped. Also noted: `voip/TgCallsController.java` (extends
+  `VoIPInstance`, already Kotlin from T-L3c) is a leaf-sized outlier not yet grouped — check alongside its
+  sibling `voip/VoIPController.java`.
+- Group F — plain classes, no supertype (pure Object, static-utility/data/logic, e.g. `TDLib.java`, `N.java`,
+  `FeatureToggles.java`): 109 files. NOT yet scoped — needs content-level sub-classification before execution.
+- Group G — implements-only classes (no extends, interfaces mostly already Kotlin from T-L1/T-L3a): 36 files.
+  NOT yet scoped.
+
+### T-L3g+ (not yet scoped)
+Groups C/D/E/F/G above (~208 files) remain. Scope when reached — recommended order: D/E (low risk, small
+well-defined bases) → G (implements-only, likely low risk) → F (needs content-level look first) → C last
+(higher risk, message-rendering, wants its own device-test pass).

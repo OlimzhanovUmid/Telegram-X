@@ -38,7 +38,9 @@ class MediaBottomGalleryBucketAdapter(
   override fun onClick (v: View) {
     if (v.id == R.id.bucket) {
       val bucket = (v as MediaBottomGalleryBucketView).bucket
-      callback?.onBucketSelected(bucket)
+      if (bucket != null) {
+        callback?.onBucketSelected(bucket)
+      }
     }
   }
 
@@ -77,7 +79,7 @@ class MediaBottomGalleryBucketAdapter(
     }
 
     fun setBucket (bucket: Media.GalleryBucket) {
-      (itemView as MediaBottomGalleryBucketView).setBucket(bucket)
+      (itemView as MediaBottomGalleryBucketView).bucket = bucket
     }
 
     companion object {

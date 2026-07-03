@@ -166,7 +166,7 @@ abstract class SharedBaseController<T : MessageSourceProvider>(context: Context,
                 if (isLoading || canLoadMore()) {
                     infoView.showProgress()
                 } else {
-                    infoView.showInfo(buildTotalCount(if (this@SharedBaseController.isSearching) searchData else data))
+                    infoView.showInfo(buildTotalCount(if (this@SharedBaseController.isSearching) searchData else data) ?: "")
                 }
             }
 

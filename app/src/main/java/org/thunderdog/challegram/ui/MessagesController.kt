@@ -12004,8 +12004,10 @@ open class MessagesController(context: Context, tdlib: Tdlib?) : ViewController<
     //
     private fun openSetSenderPopup() {
         getChatAvailableMessagesSenders(Runnable {
-            val c = SetSenderController(context, tdlib)
-            c.setArguments(SetSenderController.Args(chat, chatAvailableSenders, chat!!.messageSenderId))
+            val c = SetSenderController(context, tdlib!!)
+            @Suppress("UNCHECKED_CAST")
+            val senders = chatAvailableSenders as Array<ChatMessageSender>
+            c.setArguments(SetSenderController.Args(chat!!, senders, chat!!.messageSenderId))
             c.setDelegate(SetSenderControllerPage.Delegate { sender: ChatMessageSender? -> this.setNewMessageSender(sender!!) })
             c.show()
             hideCursorsForInputView()
